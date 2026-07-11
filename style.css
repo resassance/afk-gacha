@@ -1,0 +1,210 @@
+:root {
+    --bg-color: #0f0f12;
+    --container-bg: #16161e;
+    --card-bg: #1f1f2e;
+    --text-main: #f5f5f7;
+    --text-muted: #8e8e93;
+    
+    --rarity-1: #757575;
+    --rarity-2: #388e3c;
+    --rarity-3: #0288d1;
+    --rarity-4: #a124c7;
+    --rarity-5: #ff8f00;
+    --rarity-legendary: #ff8f00; /* Изменено под цвет 5-звездочных персонажей */
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-main);
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 1000px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.header-panel {
+    background: var(--container-bg);
+    border-radius: 16px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    border: 1px solid #2a2a3a;
+}
+
+.stat-box { text-align: center; }
+.stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+.stat-value { font-size: 18px; font-weight: bold; color: #fff; }
+.stat-value.gold { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+
+/* Цвета жетонов */
+.tokens-display { display: flex; gap: 12px; font-size: 16px; font-weight: bold; }
+.tok-t.common { color: #4caf50; }
+.tok-t.rare { color: #2196f3; }
+.tok-t.epic { color: #e040fb; }
+.tok-t.legendary { color: var(--rarity-legendary); text-shadow: 0 0 8px rgba(255, 143, 0, 0.6); }
+
+.banner-section {
+    background: linear-gradient(135deg, #1a1a26 0%, #111118 100%);
+    border-radius: 20px;
+    padding: 30px 20px;
+    text-align: center;
+    border: 1px solid #3a2a4a;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+}
+
+.banner-title {
+    font-size: 26px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, #ffd700, #ff8f00);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+.banner-subtitle { color: var(--text-muted); font-size: 13px; margin-bottom: 20px; }
+
+.btn-group { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.btn-summon { color: white; border: none; padding: 12px 26px; font-size: 14px; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.2s ease; }
+.btn-x1 { background: #4a5568; }
+.btn-x10 { background: linear-gradient(135deg, #8a2be2 0%, #4a00e0 100%); }
+.btn-x100 { background: linear-gradient(135deg, #ff007b 0%, #9900ffd0 100%); }
+.btn-summon:hover { transform: translateY(-2px); filter: brightness(1.2); }
+
+/* Зона Кузницы артефактов */
+.shop-section, .inventory-section {
+    background: var(--container-bg);
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #2a2a3a;
+}
+.section-title { font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #2a2a3a; display: flex; justify-content: space-between; align-items: center; }
+
+.gear-gacha-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 15px;
+}
+.gear-box {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 15px;
+    border: 2px solid #3a3a4a;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.gear-box.style-common { border-color: #4caf50; }
+.gear-box.style-rare { border-color: #2196f3; }
+.gear-box.style-epic { border-color: #e040fb; }
+.gear-box.style-legendary { border-color: var(--rarity-legendary); box-shadow: inset 0 0 10px rgba(255, 143, 0, 0.15); }
+
+.gear-box-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+.gear-box-desc { font-size: 11px; color: var(--text-muted); margin-bottom: 12px; }
+
+.btn-forge-group { display: flex; gap: 8px; }
+.btn-forge {
+    flex: 2;
+    border: none;
+    padding: 8px;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    color: #fff;
+    transition: filter 0.2s;
+}
+.btn-forge.btn-max { flex: 1; background: #2a2a3a !important; border: 1px solid rgba(255,255,255,0.1); }
+.style-common .btn-forge:not(.btn-max) { background: #4caf50; }
+.style-rare .btn-forge:not(.btn-max) { background: #2196f3; }
+.style-epic .btn-forge:not(.btn-max) { background: #e040fb; }
+.style-legendary .btn-forge:not(.btn-max) { background: var(--rarity-legendary); }
+.btn-forge:hover { filter: brightness(1.2); }
+
+.warehouse-summary { margin-top: 12px; font-size: 13px; color: var(--text-muted); text-align: right; letter-spacing: 0.5px; }
+
+/* Карточки и инвентарь */
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    max-height: 550px;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+.char-card {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 12px;
+    text-align: center;
+    position: relative;
+    border: 2px solid var(--rarity-color);
+}
+.char-stars { color: #ffd700; font-size: 12px; margin-bottom: 6px; }
+.char-name { font-size: 13px; font-weight: bold; margin-bottom: 6px; text-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
+.char-income { font-size: 12px; color: #66bb6a; font-weight: bold; margin-bottom: 8px; }
+.char-count { position: absolute; top: -8px; right: -8px; background: #e91e63; color: white; font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid var(--container-bg); }
+.char-passive { font-size: 10px; color: #b0bec5; background: rgba(255,255,255,0.05); padding: 2px 4px; border-radius: 4px; margin-bottom: 4px; display: block; }
+.char-passive.awaken { color: #ffd700; background: rgba(255, 215, 0, 0.1); border: 1px dashed rgba(255, 215, 0, 0.3); font-weight: bold; }
+
+.gear-selector {
+    width: 100%;
+    background: #121214;
+    color: #fff;
+    border: 1px solid #3a3a4a;
+    padding: 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    outline: none;
+    font-weight: 500;
+}
+
+/* Стили отображения предметов в анимации гачи */
+.gear-card-anim {
+    background: #1c1c28;
+    border-radius: 12px;
+    padding: 20px;
+    border: 2px solid var(--rarity-color);
+    text-align: center;
+    min-width: 180px;
+    margin: 5px auto;
+}
+.gear-title-anim { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #fff; }
+.gear-bonus-anim { font-size: 14px; color: #00e5ff; font-weight: 600; }
+
+/* Анимация и модалка */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 8, 0.96); display: none; justify-content: center; align-items: center; z-index: 100; }
+.modal-content { width: 90%; max-width: 850px; text-align: center; background: var(--container-bg); padding: 30px; border-radius: 20px; border: 1px solid #3a3a4a; box-shadow: 0 0 30px rgba(0,0,0,0.6); }
+.gacha-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; max-height: 55vh; overflow-y: auto; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.2); }
+.btn-close-modal { background: #f5f5f7; color: #121214; border: none; padding: 12px 35px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; }
+
+.glow-5 { box-shadow: 0 0 15px var(--rarity-5); animation: pulse-glow-5 2s infinite alternate; }
+.glow-4 { box-shadow: 0 0 10px var(--rarity-4); }
+.glow-legendary { box-shadow: 0 0 25px var(--rarity-legendary); animation: pulse-glow-l 1.5s infinite alternate; }
+
+@keyframes pulse-glow-5 { 0% { box-shadow: 0 0 10px var(--rarity-5); } 100% { box-shadow: 0 0 20px #ffea00; } }
+@keyframes pulse-glow-l { 0% { box-shadow: 0 0 12px var(--rarity-legendary); } 100% { box-shadow: 0 0 30px #ffd700; } }
+
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
+::-webkit-scrollbar-thumb { background: #3a3a4a; border-radius: 3px; }

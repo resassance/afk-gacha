@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle Gacha Chronicles</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="game-container">
+    <!-- Верхняя панель ресурсов -->
+    <div class="header-panel">
+        <div class="stat-box">
+            <div class="stat-label">Кредиты</div>
+            <div class="stat-value gold" id="gold-display">1 000</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Общая БМ Отряда</div>
+            <div class="stat-value" id="income-display" style="color: #66bb6a;">0 БМ</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Жетоны (Обыч / Редк / Эпик / Легенд)</div>
+            <div class="tokens-display">
+                <span class="tok-t common" id="tok-c">0</span>
+                <span class="tok-t rare" id="tok-r">0</span>
+                <span class="tok-t epic" id="tok-e">0</span>
+                <span class="tok-t legendary" id="tok-l">0</span>
+            </div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-label">Герои</div>
+            <div class="stat-value" id="unique-display">0</div>
+        </div>
+    </div>
+
+    <!-- Баннер призыва персонажей -->
+    <div class="banner-section">
+        <h1 class="banner-title">Квантовый Баннер Персонажей</h1>
+        <p class="banner-subtitle">1 призыв = 100 Кредитов. Повышайте БМ своего отряда.</p>
+        <div class="btn-group">
+            <button class="btn-summon btn-x1" onclick="handlePulls(1)">Призвать x1</button>
+            <button class="btn-summon btn-x10" onclick="handlePulls(10)">Призвать x10</button>
+            <button class="btn-summon btn-x100" onclick="handlePulls(100)">Призвать x100</button>
+        </div>
+    </div>
+
+    <!-- Кузня Снаряжения (Гача) -->
+    <div class="shop-section">
+        <div class="section-title">Кузня Квантового Снаряжения (Лимит: 10 шт. на редкость)</div>
+        <div class="gear-gacha-grid">
+            <div class="gear-box style-common">
+                <div class="gear-box-title">Обычный Кейс</div>
+                <div class="gear-box-desc">Common артефакты (5 жетонов)</div>
+                <div class="btn-forge-group">
+                    <button class="btn-forge" onclick="rollGear('common', 'one')">x1</button>
+                    <button class="btn-forge btn-max" onclick="rollGear('common', 'max')">MAX</button>
+                </div>
+            </div>
+            <div class="gear-box style-rare">
+                <div class="gear-box-title">Редкий Кейс</div>
+                <div class="gear-box-desc">Rare артефакты (3 жетона)</div>
+                <div class="btn-forge-group">
+                    <button class="btn-forge" onclick="rollGear('rare', 'one')">x1</button>
+                    <button class="btn-forge btn-max" onclick="rollGear('rare', 'max')">MAX</button>
+                </div>
+            </div>
+            <div class="gear-box style-epic">
+                <div class="gear-box-title">Эпический Кейс</div>
+                <div class="gear-box-desc">Epic артефакты (2 жетона)</div>
+                <div class="btn-forge-group">
+                    <button class="btn-forge" onclick="rollGear('epic', 'one')">x1</button>
+                    <button class="btn-forge btn-max" onclick="rollGear('epic', 'max')">MAX</button>
+                </div>
+            </div>
+            <div class="gear-box style-legendary">
+                <div class="gear-box-title">Легендарный Кейс</div>
+                <div class="gear-box-desc">Legendary артефакты (1 жетон)</div>
+                <div class="btn-forge-group">
+                    <button class="btn-forge" onclick="rollGear('legendary', 'one')">x1</button>
+                    <button class="btn-forge btn-max" onclick="rollGear('legendary', 'max')">MAX</button>
+                </div>
+            </div>
+        </div>
+        <div class="warehouse-summary" id="warehouse-summary">
+            Склад: C: 0/10 | R: 0/10 | E: 0/10 | L: 0/10
+        </div>
+    </div>
+
+    <!-- Инвентарь -->
+    <div class="inventory-section">
+        <div class="section-title">
+            <span>Ваш Боевой Отряд</span>
+            <span style="font-size: 13px; color: var(--text-muted);">При достижении MAX (10 копий) открывается пассивная абилка Прорыва.</span>
+        </div>
+        <div class="grid-container" id="inventory-grid">
+            <!-- Персонажи генерируются тут -->
+        </div>
+    </div>
+</div>
+
+<!-- Универсальное Модальное окно результатов -->
+<div class="modal-overlay" id="gacha-modal">
+    <div class="modal-content">
+        <h2 style="font-size: 24px; margin-bottom: 25px; color: #fff;" id="modal-title">Результаты Квантового Сдвига</h2>
+        <div class="gacha-results" id="modal-results-grid"></div>
+        <button class="btn-close-modal" onclick="closeModal()">Подтвердить получение</button>
+    </div>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
