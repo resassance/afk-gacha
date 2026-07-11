@@ -3,108 +3,181 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idle Gacha Chronicles</title>
+    <title>Fantasy Waifu Idle Chronicles</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+<div id="toast-container" class="toast-container"></div>
+
 <div class="game-container">
-    <!-- Верхняя панель ресурсов -->
     <div class="header-panel">
         <div class="stat-box">
-            <div class="stat-label">Кредиты</div>
+            <div class="stat-label">Золотые Кредиты</div>
             <div class="stat-value gold" id="gold-display">1 000</div>
+            <div id="gold-speed-display" style="font-size: 11px; color: #4caf50; font-weight: bold; margin-top: 2px;">+0/сек</div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Общая БМ Отряда</div>
-            <div class="stat-value" id="income-display" style="color: #66bb6a;">0 БМ</div>
+            <div class="stat-label">Общая БМ Отряда (АТК + ХП)</div>
+            <div class="stat-value" id="income-display" style="color: #ffaa00;">0 БМ</div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Жетоны (Обыч / Редк / Эпик / Легенд)</div>
+            <div class="stat-label">Жетоны (Ковка и Выкуп Тян)</div>
             <div class="tokens-display">
-                <span class="tok-t common" id="tok-c">0</span>
-                <span class="tok-t rare" id="tok-r">0</span>
-                <span class="tok-t epic" id="tok-e">0</span>
-                <span class="tok-t legendary" id="tok-l">0</span>
+                <span class="tok-t common" id="tok-c">🟢 0</span>
+                <span class="tok-t rare" id="tok-r">🔵 0</span>
+                <span class="tok-t epic" id="tok-e">🟣 0</span>
+                <span class="tok-t legendary" id="tok-l">🟡 0</span>
             </div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Герои</div>
-            <div class="stat-value" id="unique-display">0</div>
+            <div class="stat-label">Собрано Тян</div>
+            <div class="stat-value" id="unique-display">0 / 23</div>
         </div>
     </div>
 
-    <!-- Баннер призыва персонажей -->
+    <div class="battle-section" id="battle-zone-container">
+        <h3 style="margin-top: 0; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px;">
+            <span class="stage-title" id="stage-display">ЭТАП 1</span>
+            <span class="enemy-name" id="enemy-name">Дикий Слайм</span>
+        </h3>
+        
+        <div style="display: flex; justify-content: flex-start; gap: 15px; font-size: 13px; margin-bottom: 10px; color: var(--text-main);">
+            <span id="enemy-info-atk">0.00 АТК/с</span> | 
+            <span id="enemy-info-bm">БМ Врага: 0.00</span>
+        </div>
+        
+        <div class="hp-bar-container enemy-hp">
+            <div class="hp-bar-fill" id="hp-bar" style="width: 100%;"></div>
+            <div class="hp-text" id="hp-text">100 / 100 HP</div>
+        </div>
+
+        <div id="battle-info" style="display: none;"></div>
+    </div>
+
+    <div id="squad-container" style="background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px;">
+        <h3 style="margin-top:0; color:#ffd700;">⚔️ Тактический статус отряда</h3>
+        <div style="display: flex; gap: 15px; font-size: 13px; margin-bottom: 10px;">
+            <span id="squad-info-count">В строю: 0 тян</span> | 
+            <span id="squad-info-atk">0.00 АТК/с</span> | 
+            <span id="squad-info-bm">Общая БМ: 0.00</span>
+        </div>
+        <div style="background: #222; border-radius: 4px; height: 16px; overflow: hidden; position: relative;">
+            <div id="squad-hp-bar" style="background: linear-gradient(90deg, #4caf50, #81c784); width: 0%; height: 100%; transition: width 0.2s;"></div>
+            <div id="squad-hp-text" style="position: absolute; width: 100%; text-align: center; top:0; left:0; font-size: 11px; font-weight: bold; line-height: 16px; color: #fff;">0 / 0 HP</div>
+        </div>
+    </div>
+
     <div class="banner-section">
-        <h1 class="banner-title">Квантовый Баннер Персонажей</h1>
-        <p class="banner-subtitle">1 призыв = 100 Кредитов. Повышайте БМ своего отряда.</p>
+        <h1 class="banner-title">Молитва Прекрасных Воительниц</h1>
+        <p class="banner-subtitle">1 призыв = 100 Кредитов. Соберите сильнейший гарем для покорения подземелий.</p>
         <div class="btn-group">
-            <button class="btn-summon btn-x1" onclick="handlePulls(1)">Призвать x1</button>
-            <button class="btn-summon btn-x10" onclick="handlePulls(10)">Призвать x10</button>
-            <button class="btn-summon btn-x100" onclick="handlePulls(100)">Призвать x100</button>
+            <button class="btn-summon btn-x1" onclick="handlePulls(1)">Призыв x1</button>
+            <button class="btn-summon btn-x10" onclick="handlePulls(10)">Призыв x10</button>
+            <button class="btn-summon btn-xmax" onclick="handlePulls('max')" id="btn-summon-max">Призыв МАКС (0)</button>
         </div>
     </div>
 
-    <!-- Кузня Снаряжения (Гача) -->
     <div class="shop-section">
-        <div class="section-title">Кузня Квантового Снаряжения (Лимит: 10 шт. на редкость)</div>
+        <div class="section-title" id="warehouse-summary">Древняя Кузня Реликвий (Загрузка склада: 0 / 23)</div>
         <div class="gear-gacha-grid">
             <div class="gear-box style-common">
-                <div class="gear-box-title">Обычный Кейс</div>
-                <div class="gear-box-desc">Common артефакты (5 жетонов)</div>
+                <div class="gear-box-title">🟢 Обычная Ковка</div>
+                <div class="gear-box-desc">Стоимость: 10 🟢</div>
                 <div class="btn-forge-group">
                     <button class="btn-forge" onclick="rollGear('common', 'one')">x1</button>
                     <button class="btn-forge btn-max" onclick="rollGear('common', 'max')">MAX</button>
                 </div>
             </div>
             <div class="gear-box style-rare">
-                <div class="gear-box-title">Редкий Кейс</div>
-                <div class="gear-box-desc">Rare артефакты (3 жетона)</div>
+                <div class="gear-box-title">🔵 Редкая Ковка</div>
+                <div class="gear-box-desc">Стоимость: 10 🔵</div>
                 <div class="btn-forge-group">
                     <button class="btn-forge" onclick="rollGear('rare', 'one')">x1</button>
                     <button class="btn-forge btn-max" onclick="rollGear('rare', 'max')">MAX</button>
                 </div>
             </div>
             <div class="gear-box style-epic">
-                <div class="gear-box-title">Эпический Кейс</div>
-                <div class="gear-box-desc">Epic артефакты (2 жетона)</div>
+                <div class="gear-box-title">🟣 Эпическая Ковка</div>
+                <div class="gear-box-desc">Стоимость: 10 🟣</div>
                 <div class="btn-forge-group">
                     <button class="btn-forge" onclick="rollGear('epic', 'one')">x1</button>
                     <button class="btn-forge btn-max" onclick="rollGear('epic', 'max')">MAX</button>
                 </div>
             </div>
             <div class="gear-box style-legendary">
-                <div class="gear-box-title">Легендарный Кейс</div>
-                <div class="gear-box-desc">Legendary артефакты (1 жетон)</div>
+                <div class="gear-box-title">🟡 Легендарная Ковка</div>
+                <div class="gear-box-desc">Стоимость: 5 🟡</div>
                 <div class="btn-forge-group">
                     <button class="btn-forge" onclick="rollGear('legendary', 'one')">x1</button>
                     <button class="btn-forge btn-max" onclick="rollGear('legendary', 'max')">MAX</button>
                 </div>
             </div>
         </div>
-        <div class="warehouse-summary" id="warehouse-summary">
-            Склад: C: 0/10 | R: 0/10 | E: 0/10 | L: 0/10
+    </div>
+
+    <div class="reforge-section">
+        <div class="section-title">Мастерская утилизации и Сортировки реликвий</div>
+        <div class="reforge-controls">
+            <button class="btn-action-reforge reforge-c" onclick="bulkReforge('common')">Скрестить 3x Common</button>
+            <button class="btn-action-reforge reforge-r" onclick="bulkReforge('rare')">Скрестить 3x Rare</button>
+            <button class="btn-action-reforge reforge-e" onclick="bulkReforge('epic')">Скрестить 3x Epic</button>
+        </div>
+        
+        <div class="unassigned-gear-title">Свободный склад по разрядам редкости:</div>
+        <div class="unassigned-split-container">
+            <div class="rarity-warehouse-block">
+                <div class="r-block-head common">🟢 Common</div>
+                <div class="unassigned-gear-grid" id="gear-grid-common"></div>
+            </div>
+            <div class="rarity-warehouse-block">
+                <div class="r-block-head rare">🔵 Rare</div>
+                <div class="unassigned-gear-grid" id="gear-grid-rare"></div>
+            </div>
+            <div class="rarity-warehouse-block">
+                <div class="r-block-head epic">🟣 Epic</div>
+                <div class="unassigned-gear-grid" id="gear-grid-epic"></div>
+            </div>
+            <div class="rarity-warehouse-block">
+                <div class="r-block-head legendary">🟡 Legendary</div>
+                <div class="unassigned-gear-grid" id="gear-grid-legendary"></div>
+            </div>
         </div>
     </div>
 
-    <!-- Инвентарь -->
     <div class="inventory-section">
         <div class="section-title">
-            <span>Ваш Боевой Отряд</span>
-            <span style="font-size: 13px; color: var(--text-muted);">При достижении MAX (10 копий) открывается пассивная абилка Прорыва.</span>
+            <span>Ваш Боевой Отряд Тян</span>
+            <span style="font-size: 13px; color: var(--text-muted);">Прямой выкуп дубликатов доступен за Жетоны!</span>
         </div>
-        <div class="grid-container" id="inventory-grid">
-            <!-- Персонажи генерируются тут -->
-        </div>
+        <div class="grid-container" id="inventory-grid"></div>
     </div>
 </div>
 
-<!-- Универсальное Модальное окно результатов -->
 <div class="modal-overlay" id="gacha-modal">
     <div class="modal-content">
-        <h2 style="font-size: 24px; margin-bottom: 25px; color: #fff;" id="modal-title">Результаты Квантового Сдвига</h2>
+        <h2 style="font-size: 24px; margin-bottom: 25px; color: #fff;" id="modal-title">Результаты Призыва</h2>
         <div class="gacha-results" id="modal-results-grid"></div>
-        <button class="btn-close-modal" onclick="closeModal()">Подтвердить получение</button>
+        <button class="btn-close-modal" onclick="closeModal()">Принять</button>
+    </div>
+</div>
+
+<div id="overflow-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; font-family: sans-serif;">
+    <div style="background: #252525; border: 2px solid #ff3333; border-radius: 8px; width: 90%; max-width: 500px; padding: 20px; color: #fff; box-shadow: 0 0 20px rgba(255,51,51,0.3);">
+        <h2 style="color: #ff3333; margin-top: 0; display:flex; align-items:center; gap:8px;">🚨 Оружейная переполнена!</h2>
+        <p style="font-size: 13px; color:#ddd;">Вы выбили новый предмет, но в инвентаре нет свободного места. Выберите действие:</p>
+        
+        <div id="overflow-gear-info" style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 4px; margin-bottom: 15px; text-align: center;"></div>
+        
+        <div style="display:flex; gap:10px; margin-bottom:15px;">
+            <button onclick="sellPendingGearImmediate()" style="flex:1; background:#aa8100; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold;">💰 Продать этот трофей</button>
+            <button id="btn-overflow-claim" onclick="claimPendingGear()" style="flex:1; background:#4caf50; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold;" disabled>📥 Забрать трофей</button>
+        </div>
+        
+        <hr style="border:0; border-top:1px solid #444; margin:15px 0;">
+        <h4 style="margin: 0 0 8px 0; color:#00e5ff;">Управление инвентарем (Освободите место):</h4>
+        
+        <div id="overflow-inventory-list" style="max-height: 200px; overflow-y: auto; background:#1a1a1a; padding:5px; border-radius:4px;"></div>
     </div>
 </div>
 
