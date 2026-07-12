@@ -72,6 +72,7 @@ body {
     to { opacity: 0; transform: scale(0.9); }
 }
 
+/* Шапка со статами */
 .header-panel {
     background: var(--container-bg);
     border-radius: 16px;
@@ -87,6 +88,8 @@ body {
 .stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
 .stat-value { font-size: 18px; font-weight: bold; color: #fff; }
 .stat-value.gold { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+.bm-value { color: #ffaa00; }
+.gold-speed-display { font-size: 11px; color: #4caf50; font-weight: bold; margin-top: 2px; }
 
 /* Боевая секция */
 .battle-section {
@@ -104,15 +107,25 @@ body {
 }
 
 .battle-header {
+    margin-top: 0;
+    margin-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 12px;
-    padding: 0 10px;
+    font-size: 16px;
 }
 .stage-title { font-weight: 900; color: #ff4444; font-size: 18px; letter-spacing: 1px; }
 .battle-section.camp-mode .stage-title { color: #4caf50; }
 .enemy-name { font-weight: bold; font-size: 16px; color: #fff; }
+
+.battle-subinfo {
+    display: flex; 
+    justify-content: flex-start; 
+    gap: 15px; 
+    font-size: 13px; 
+    margin-bottom: 10px; 
+    color: var(--text-main);
+}
 
 .hp-bar-container {
     position: relative;
@@ -125,8 +138,6 @@ body {
     box-shadow: inset 0 0 10px rgba(0,0,0,0.8);
 }
 .hp-bar-container.enemy-hp { border: 1px solid #ff3333; }
-.hp-bar-container.player-hp { border: 1px solid #2196f3; margin-bottom: 12px;}
-
 .battle-section.camp-mode .hp-bar-container.enemy-hp {
     background: #112211;
     border-color: #4caf50;
@@ -137,10 +148,6 @@ body {
     background: linear-gradient(90deg, #cc1111 0%, #ff4444 100%);
     box-shadow: 0 0 8px #ff3333;
     transition: width 0.25s ease-out;
-}
-.hp-bar-fill.player {
-    background: linear-gradient(90deg, #1976d2 0%, #2196f3 100%);
-    box-shadow: 0 0 8px #2196f3;
 }
 .battle-section.camp-mode .hp-bar-fill {
     background: linear-gradient(90deg, #2e7d32 0%, #4caf50 100%);
@@ -158,7 +165,48 @@ body {
     color: #fff;
     text-shadow: 1px 1px 2px #000;
 }
-.battle-info { font-size: 12px; color: var(--text-muted); font-weight: 600; }
+
+/* Статус отряда */
+.squad-panel {
+    background: #1e1e1e; 
+    padding: 15px; 
+    border-radius: 8px; 
+    border: 1px solid #333; 
+    margin-bottom: 15px;
+}
+.squad-title {
+    margin-top: 0; 
+    color: #ffd700;
+}
+.squad-subinfo {
+    display: flex; 
+    gap: 15px; 
+    font-size: 13px; 
+    margin-bottom: 10px;
+}
+.squad-hp-container {
+    background: #222; 
+    border-radius: 4px; 
+    height: 16px; 
+    overflow: hidden; 
+    position: relative;
+}
+.squad-hp-bar-fill {
+    background: linear-gradient(90deg, #4caf50, #81c784); 
+    height: 100%; 
+    transition: width 0.2s;
+}
+.squad-hp-text-display {
+    position: absolute; 
+    width: 100%; 
+    text-align: center; 
+    top: 0; 
+    left: 0; 
+    font-size: 11px; 
+    font-weight: bold; 
+    line-height: 16px; 
+    color: #fff;
+}
 
 .tokens-display { display: flex; gap: 12px; font-size: 14px; font-weight: bold; }
 .tok-t.common { color: #4caf50; }
@@ -166,6 +214,7 @@ body {
 .tok-t.epic { color: #e040fb; }
 .tok-t.legendary { color: var(--rarity-legendary); }
 
+/* Баннер призыва */
 .banner-section {
     background: linear-gradient(135deg, #181528 0%, #0e0d16 100%);
     border-radius: 20px;
@@ -200,6 +249,8 @@ body {
     border: 1px solid #222232;
 }
 .section-title { font-size: 18px; margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid #222232; display: flex; justify-content: space-between; align-items: center; }
+.flex-title { display: flex; justify-content: space-between; align-items: center; }
+.subtitle-notice { font-size: 13px; color: var(--text-muted); }
 
 .reforge-controls { display: flex; gap: 15px; margin-bottom: 15px; }
 .btn-action-reforge { flex: 1; border: none; padding: 10px; font-weight: bold; border-radius: 6px; cursor: pointer; color: #fff; transition: background 0.2s; }
@@ -215,9 +266,7 @@ body {
     grid-template-columns: repeat(2, 1fr);
     gap: 15px;
 }
-@media (max-width: 768px) {
-    .unassigned-split-container { grid-template-columns: 1fr; }
-}
+
 .rarity-warehouse-block {
     background: rgba(0, 0, 0, 0.3);
     border-radius: 8px;
@@ -366,6 +415,27 @@ body {
     outline: none;
 }
 
+/* Модалки и оверфлоу */
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.97); display: none; justify-content: center; align-items: center; z-index: 100; }
+.modal-content { width: 90%; max-width: 850px; text-align: center; background: var(--container-bg); padding: 30px; border-radius: 20px; border: 1px solid #2d2d3d; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
+.modal-results-title { font-size: 24px; margin-bottom: 25px; color: #fff; }
+.gacha-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; max-height: 55vh; overflow-y: auto; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.3); }
+.btn-close-modal { background: #f5f5f7; color: #121214; border: none; padding: 12px 35px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; }
+
+.overflow-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
+.overflow-modal-content { background: #252525; border: 2px solid #ff3333; border-radius: 8px; width: 95%; max-width: 500px; padding: 20px; color: #fff; box-shadow: 0 0 20px rgba(255,51,51,0.3); }
+.overflow-title { color: #ff3333; margin-top: 0; display:flex; align-items:center; gap:8px; font-size: 18px; }
+.overflow-subtitle { font-size: 13px; color:#ddd; margin-bottom: 12px; }
+.overflow-gear-info-box { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 4px; margin-bottom: 15px; text-align: center; }
+.overflow-btn-group { display:flex; gap:10px; margin-bottom:15px; }
+.btn-overflow-action { flex:1; border:none; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold; color: white; }
+.btn-overflow-action.btn-sell { background:#aa8100; }
+.btn-overflow-action.btn-claim { background:#4caf50; }
+.btn-overflow-action:disabled { opacity: 0.5; cursor: not-allowed; }
+.overflow-divider { border:0; border-top:1px solid #444; margin:15px 0; }
+.overflow-manage-title { margin: 0 0 8px 0; color:#00e5ff; font-size: 14px; }
+.overflow-list-container { max-height: 200px; overflow-y: auto; background:#1a1a1a; padding:5px; border-radius:4px; }
+
 .gear-card-anim {
     background: #191922;
     border-radius: 12px;
@@ -378,11 +448,6 @@ body {
 .gear-title-anim { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #fff; }
 .gear-bonus-anim { font-size: 14px; color: #00e5ff; font-weight: 600; }
 
-.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.97); display: none; justify-content: center; align-items: center; z-index: 100; }
-.modal-content { width: 90%; max-width: 850px; text-align: center; background: var(--container-bg); padding: 30px; border-radius: 20px; border: 1px solid #2d2d3d; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
-.gacha-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; max-height: 55vh; overflow-y: auto; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.3); }
-.btn-close-modal { background: #f5f5f7; color: #121214; border: none; padding: 12px 35px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; }
-
 .glow-5 { box-shadow: 0 0 15px var(--rarity-5); animation: pulse-glow-5 2s infinite alternate; }
 .glow-4 { box-shadow: 0 0 10px var(--rarity-4); }
 .glow-legendary { box-shadow: 0 0 25px var(--rarity-legendary); animation: pulse-glow-l 1.5s infinite alternate; }
@@ -393,3 +458,171 @@ body {
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
 ::-webkit-scrollbar-thumb { background: #2d2d3d; border-radius: 3px; }
+
+/* ==========================================================================
+   АДАПТИВНЫЙ БЛОК ДЛЯ МОБИЛЬНЫХ ТЕЛЕФОНОВ (Экраны менее 600px)
+   ========================================================================== */
+@media (max-width: 600px) {
+    body {
+        padding: 8px;
+    }
+
+    .game-container {
+        gap: 12px;
+    }
+
+    /* Статы в шапке перестраиваем в красивую плитку 2x2 */
+    .header-panel {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px;
+        padding: 12px;
+    }
+    .stat-box {
+        text-align: left;
+        background: rgba(255, 255, 255, 0.03);
+        padding: 8px;
+        border-radius: 8px;
+    }
+    /* Строку с жетонами растягиваем на всю ширину плитки */
+    .stat-box:nth-child(3) {
+        grid-column: span 2;
+    }
+    .stat-value {
+        font-size: 15px;
+    }
+    .tokens-display {
+        justify-content: space-between;
+        font-size: 12px;
+        gap: 4px;
+    }
+
+    /* Боевая секция */
+    .battle-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+    .battle-subinfo, .squad-subinfo {
+        flex-wrap: wrap;
+        gap: 4px 8px;
+        font-size: 11px;
+    }
+
+    /* Секция призыва */
+    .banner-section {
+        padding: 20px 12px;
+    }
+    .banner-title {
+        font-size: 18px;
+        letter-spacing: 1px;
+    }
+    .btn-group {
+        flex-direction: column;
+        width: 100%;
+        gap: 8px;
+    }
+    .btn-summon {
+        width: 100%;
+        padding: 10px;
+        font-size: 13px;
+        border-radius: 8px;
+    }
+
+    /* Кузня реликвий (плитки кузни в один столбец) */
+    .gear-gacha-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+    .gear-box {
+        padding: 12px;
+    }
+
+    /* Мастерская и свободный склад */
+    .reforge-controls {
+        flex-direction: column;
+        gap: 8px;
+    }
+    .btn-action-reforge {
+        font-size: 12px;
+        padding: 8px;
+    }
+    .unassigned-split-container {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    /* Заголовки разделов */
+    .section-title {
+        font-size: 15px;
+    }
+    .flex-title {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    /* Главный отряд тян (делаем плотную и аккуратную сетку 2х2) */
+    .grid-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+        max-height: none; /* На мобилке лучше прокручивать всю страницу */
+    }
+    .char-card {
+        padding: 8px;
+        border-width: 1px;
+    }
+    .char-name {
+        font-size: 11px;
+        margin-bottom: 4px;
+    }
+    .char-stars {
+        font-size: 9px;
+        margin-bottom: 4px;
+    }
+    .char-income, .char-hp-stat, .char-gold-income {
+        font-size: 10px;
+        margin-bottom: 2px;
+    }
+    .char-passive {
+        font-size: 9px;
+        padding: 1px 2px;
+    }
+    .gear-selector {
+        font-size: 10px;
+        padding: 4px;
+    }
+    .btn-buy-copy {
+        font-size: 9px;
+        padding: 4px;
+    }
+    .char-count {
+        top: 4px;
+        right: 4px;
+        font-size: 8px;
+        padding: 1px 4px;
+    }
+
+    /* Модалки */
+    .modal-content {
+        padding: 15px 10px;
+    }
+    .modal-results-title {
+        font-size: 18px;
+        margin-bottom: 15px;
+    }
+    .gacha-results {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+    }
+    .gear-card-anim {
+        padding: 10px;
+        min-width: unset;
+    }
+    .gear-title-anim {
+        font-size: 13px;
+    }
+    .gear-bonus-anim {
+        font-size: 11px;
+    }
+}

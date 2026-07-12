@@ -15,11 +15,11 @@
         <div class="stat-box">
             <div class="stat-label">Золотые Кредиты</div>
             <div class="stat-value gold" id="gold-display">1 000</div>
-            <div id="gold-speed-display" style="font-size: 11px; color: #4caf50; font-weight: bold; margin-top: 2px;">+0/сек</div>
+            <div id="gold-speed-display" class="gold-speed-display">+0/сек</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Общая БМ Отряда (АТК + ХП)</div>
-            <div class="stat-value" id="income-display" style="color: #ffaa00;">0 БМ</div>
+            <div class="stat-value bm-value" id="income-display">0 БМ</div>
         </div>
         <div class="stat-box">
             <div class="stat-label">Жетоны (Ковка и Выкуп Тян)</div>
@@ -37,12 +37,12 @@
     </div>
 
     <div class="battle-section" id="battle-zone-container">
-        <h3 style="margin-top: 0; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; font-size: 16px;">
+        <h3 class="battle-header">
             <span class="stage-title" id="stage-display">ЭТАП 1</span>
             <span class="enemy-name" id="enemy-name">Дикий Слайм</span>
         </h3>
         
-        <div style="display: flex; justify-content: flex-start; gap: 15px; font-size: 13px; margin-bottom: 10px; color: var(--text-main);">
+        <div class="battle-subinfo">
             <span id="enemy-info-atk">0.00 АТК/с</span> | 
             <span id="enemy-info-bm">БМ Врага: 0.00</span>
         </div>
@@ -55,16 +55,16 @@
         <div id="battle-info" style="display: none;"></div>
     </div>
 
-    <div id="squad-container" style="background: #1e1e1e; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px;">
-        <h3 style="margin-top:0; color:#ffd700;">⚔️ Тактический статус отряда</h3>
-        <div style="display: flex; gap: 15px; font-size: 13px; margin-bottom: 10px;">
+    <div id="squad-container" class="squad-panel">
+        <h3 class="squad-title">⚔️ Тактический статус отряда</h3>
+        <div class="squad-subinfo">
             <span id="squad-info-count">В строю: 0 тян</span> | 
             <span id="squad-info-atk">0.00 АТК/с</span> | 
             <span id="squad-info-bm">Общая БМ: 0.00</span>
         </div>
-        <div style="background: #222; border-radius: 4px; height: 16px; overflow: hidden; position: relative;">
-            <div id="squad-hp-bar" style="background: linear-gradient(90deg, #4caf50, #81c784); width: 0%; height: 100%; transition: width 0.2s;"></div>
-            <div id="squad-hp-text" style="position: absolute; width: 100%; text-align: center; top:0; left:0; font-size: 11px; font-weight: bold; line-height: 16px; color: #fff;">0 / 0 HP</div>
+        <div class="squad-hp-container">
+            <div id="squad-hp-bar" class="squad-hp-bar-fill" style="width: 0%;"></div>
+            <div id="squad-hp-text" class="squad-hp-text-display">0 / 0 HP</div>
         </div>
     </div>
 
@@ -146,9 +146,9 @@
     </div>
 
     <div class="inventory-section">
-        <div class="section-title">
+        <div class="section-title flex-title">
             <span>Ваш Боевой Отряд Тян</span>
-            <span style="font-size: 13px; color: var(--text-muted);">Прямой выкуп дубликатов доступен за Жетоны!</span>
+            <span class="subtitle-notice">Прямой выкуп дубликатов доступен за Жетоны!</span>
         </div>
         <div class="grid-container" id="inventory-grid"></div>
     </div>
@@ -156,28 +156,28 @@
 
 <div class="modal-overlay" id="gacha-modal">
     <div class="modal-content">
-        <h2 style="font-size: 24px; margin-bottom: 25px; color: #fff;" id="modal-title">Результаты Призыва</h2>
+        <h2 class="modal-results-title" id="modal-title">Результаты Призыва</h2>
         <div class="gacha-results" id="modal-results-grid"></div>
         <button class="btn-close-modal" onclick="closeModal()">Принять</button>
     </div>
 </div>
 
-<div id="overflow-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; font-family: sans-serif;">
-    <div style="background: #252525; border: 2px solid #ff3333; border-radius: 8px; width: 90%; max-width: 500px; padding: 20px; color: #fff; box-shadow: 0 0 20px rgba(255,51,51,0.3);">
-        <h2 style="color: #ff3333; margin-top: 0; display:flex; align-items:center; gap:8px;">🚨 Оружейная переполнена!</h2>
-        <p style="font-size: 13px; color:#ddd;">Вы выбили новый предмет, но в инвентаре нет свободного места. Выберите действие:</p>
+<div id="overflow-modal" class="overflow-modal-overlay">
+    <div class="overflow-modal-content">
+        <h2 class="overflow-title">🚨 Оружейная переполнена!</h2>
+        <p class="overflow-subtitle">Вы выбили новый предмет, но в инвентаре нет свободного места. Выберите действие:</p>
         
-        <div id="overflow-gear-info" style="background: rgba(0,0,0,0.4); padding: 12px; border-radius: 4px; margin-bottom: 15px; text-align: center;"></div>
+        <div id="overflow-gear-info" class="overflow-gear-info-box"></div>
         
-        <div style="display:flex; gap:10px; margin-bottom:15px;">
-            <button onclick="sellPendingGearImmediate()" style="flex:1; background:#aa8100; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold;">💰 Продать этот трофей</button>
-            <button id="btn-overflow-claim" onclick="claimPendingGear()" style="flex:1; background:#4caf50; color:white; border:none; padding:10px; border-radius:4px; cursor:pointer; font-weight:bold;" disabled>📥 Забрать трофей</button>
+        <div class="overflow-btn-group">
+            <button onclick="sellPendingGearImmediate()" class="btn-overflow-action btn-sell">💰 Продать этот трофей</button>
+            <button id="btn-overflow-claim" onclick="claimPendingGear()" class="btn-overflow-action btn-claim" disabled>📥 Забрать трофей</button>
         </div>
         
-        <hr style="border:0; border-top:1px solid #444; margin:15px 0;">
-        <h4 style="margin: 0 0 8px 0; color:#00e5ff;">Управление инвентарем (Освободите место):</h4>
+        <hr class="overflow-divider">
+        <h4 class="overflow-manage-title">Управление инвентарем (Освободите место):</h4>
         
-        <div id="overflow-inventory-list" style="max-height: 200px; overflow-y: auto; background:#1a1a1a; padding:5px; border-radius:4px;"></div>
+        <div id="overflow-inventory-list" class="overflow-list-container"></div>
     </div>
 </div>
 
