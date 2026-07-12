@@ -4,7 +4,6 @@
     --card-bg: #1a1a24;
     --text-main: #f5f5f7;
     --text-muted: #7e7e8a;
-    
     --rarity-1: #757575;
     --rarity-2: #388e3c;
     --rarity-3: #0288d1;
@@ -72,7 +71,6 @@ body {
     to { opacity: 0; transform: scale(0.9); }
 }
 
-/* Шапка со статами */
 .header-panel {
     background: var(--container-bg);
     border-radius: 16px;
@@ -91,7 +89,6 @@ body {
 .bm-value { color: #ffaa00; }
 .gold-speed-display { font-size: 11px; color: #4caf50; font-weight: bold; margin-top: 2px; }
 
-/* Боевая секция */
 .battle-section {
     background: linear-gradient(180deg, #1c1313 0%, #13131a 100%);
     border: 1px solid #4a1515;
@@ -166,7 +163,6 @@ body {
     text-shadow: 1px 1px 2px #000;
 }
 
-/* Статус отряда */
 .squad-panel {
     background: #1e1e1e; 
     padding: 15px; 
@@ -214,7 +210,6 @@ body {
 .tok-t.epic { color: #e040fb; }
 .tok-t.legendary { color: var(--rarity-legendary); }
 
-/* Баннер призыва */
 .banner-section {
     background: linear-gradient(135deg, #181528 0%, #0e0d16 100%);
     border-radius: 20px;
@@ -415,7 +410,6 @@ body {
     outline: none;
 }
 
-/* Модалки и оверфлоу */
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.97); display: none; justify-content: center; align-items: center; z-index: 100; }
 .modal-content { width: 90%; max-width: 850px; text-align: center; background: var(--container-bg); padding: 30px; border-radius: 20px; border: 1px solid #2d2d3d; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
 .modal-results-title { font-size: 24px; margin-bottom: 25px; color: #fff; }
@@ -459,9 +453,6 @@ body {
 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
 ::-webkit-scrollbar-thumb { background: #2d2d3d; border-radius: 3px; }
 
-/* ==========================================================================
-   АДАПТИВНЫЙ БЛОК ДЛЯ МОБИЛЬНЫХ ТЕЛЕФОНОВ (Экраны менее 600px)
-   ========================================================================== */
 @media (max-width: 600px) {
     body {
         padding: 8px;
@@ -471,7 +462,6 @@ body {
         gap: 12px;
     }
 
-    /* Статы в шапке перестраиваем в красивую плитку 2x2 */
     .header-panel {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
@@ -484,7 +474,6 @@ body {
         padding: 8px;
         border-radius: 8px;
     }
-    /* Строку с жетонами растягиваем на всю ширину плитки */
     .stat-box:nth-child(3) {
         grid-column: span 2;
     }
@@ -497,7 +486,6 @@ body {
         gap: 4px;
     }
 
-    /* Боевая секция */
     .battle-header {
         flex-direction: column;
         align-items: flex-start;
@@ -509,7 +497,6 @@ body {
         font-size: 11px;
     }
 
-    /* Секция призыва */
     .banner-section {
         padding: 20px 12px;
     }
@@ -529,7 +516,6 @@ body {
         border-radius: 8px;
     }
 
-    /* Кузня реликвий (плитки кузни в один столбец) */
     .gear-gacha-grid {
         grid-template-columns: 1fr;
         gap: 10px;
@@ -538,7 +524,6 @@ body {
         padding: 12px;
     }
 
-    /* Мастерская и свободный склад */
     .reforge-controls {
         flex-direction: column;
         gap: 8px;
@@ -552,7 +537,6 @@ body {
         gap: 10px;
     }
 
-    /* Заголовки разделов */
     .section-title {
         font-size: 15px;
     }
@@ -562,11 +546,10 @@ body {
         gap: 4px;
     }
 
-    /* Главный отряд тян (делаем плотную и аккуратную сетку 2х2) */
     .grid-container {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
-        max-height: none; /* На мобилке лучше прокручивать всю страницу */
+        max-height: none; 
     }
     .char-card {
         padding: 8px;
@@ -603,7 +586,6 @@ body {
         padding: 1px 4px;
     }
 
-    /* Модалки */
     .modal-content {
         padding: 15px 10px;
     }

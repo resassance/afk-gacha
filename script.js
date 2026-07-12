@@ -65,8 +65,8 @@ const GEAR_POOLS = {
     ]
 };
 
-const MAX_GEAR_LIMIT = Object.values(CHARACTER_DATABASE).flat().length;
-const TOTAL_CHARACTERS_COUNT = MAX_GEAR_LIMIT;
+const MAX_GEAR_PER_RARITY = 50;
+const TOTAL_CHARACTERS_COUNT = Object.values(CHARACTER_DATABASE).flat().length;
 
 const TOKEN_MAP = { 1: 'common', 2: 'common', 3: 'rare', 4: 'epic', 5: 'legendary' };
 const CHAR_TOKEN_COST = { 1: 15, 2: 30, 3: 15, 4: 10, 5: 5 };
@@ -103,12 +103,36 @@ let player = {
 let currentEnemy = { name: "", hp: 0, maxHp: 0, atk: 0, reward: 0 };
 let gearCounter = 0;
 let pendingDroppedGear = null;
+let saveTimerCounter = 0;
 
 let campState = {
     isActive: false,
     timeLeft: 0,
     hasDroppedGear: false
 };
+
+function saveGame() {
+    try {
+        localStorage.setItem('waifu_idle_save_v1', JSON.stringify(player));
+    } catch (e) {
+        console.error(e);
+    }
+}
+
+function loadGame() {
+    try {
+        const saved = localStorage.getItem('waifu_idle_save_v1');
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            if (parsed) {
+                player = Object.assign({}, player, parsed);
+                gearCounter = player.gearInventory.length;
+            }
+        }
+    } catch (e) {
+        console.error(e);
+    }
+}
 
 function showToast(message, color = '#ff8f00') {
     const container = document.getElementById('toast-container');
@@ -119,6 +143,10 @@ function showToast(message, color = '#ff8f00') {
     toast.innerText = message;
     container.appendChild(toast);
     setTimeout(() => { toast.remove(); }, 3000);
+}
+
+function getGearCountByRarity(rarity) {
+    return player.gearInventory.filter(g => g.rarity === rarity).length;
 }
 
 function calculateTotalAtk() {
@@ -229,7 +257,7 @@ function generateRandomGear(tier) {
     
     gearCounter++;
     return {
-        instanceId: "gear_inst_" + gearCounter,
+        instanceId: "gear_inst_" + gearCounter + "_" + Date.now(),
         id: template.id,
         name: template.name,
         bonus: parseFloat(randomBonus.toFixed(4)),
@@ -258,7 +286,7 @@ function executeMonsterDrop() {
     const tier = getDynamicDropTier(player.battleStage);
     const newGear = generateRandomGear(tier);
     
-    if (player.gearInventory.length >= MAX_GEAR_LIMIT) {
+    if (getGearCountByRarity(tier) >= MAX_GEAR_PER_RARITY) {
         pendingDroppedGear = newGear;
         openOverflowModal();
         return;
@@ -267,6 +295,7 @@ function executeMonsterDrop() {
     player.gearInventory.push(newGear);
     showToast(`⚔️ Выбит трофей: ${newGear.name} (+${newGear.bonus.toFixed(2)} ${getGearLabel(newGear.type)})!`, rarityColors[tier]);
     renderInventory();
+    saveGame();
 }
 
 function openOverflowModal() {
@@ -302,12 +331,13 @@ function sellPendingGearImmediate() {
     showToast(`💰 Новый трофей сразу продан за +${price} монет!`, '#4caf50');
     closeOverflowModal();
     updateUI();
+    saveGame();
 }
 
 function claimPendingGear() {
     if (!pendingDroppedGear) return;
-    if (player.gearInventory.length >= MAX_GEAR_LIMIT) {
-        alert("Оружейная всё ещё полна!");
+    if (getGearCountByRarity(pendingDroppedGear.rarity) >= MAX_GEAR_PER_RARITY) {
+        alert("Склад этой редкости всё ещё полон!");
         return;
     }
     player.gearInventory.push(pendingDroppedGear);
@@ -315,6 +345,7 @@ function claimPendingGear() {
     closeOverflowModal();
     renderInventory();
     updateUI();
+    saveGame();
 }
 
 function sellOldGearFromOverflow(instanceId) {
@@ -331,6 +362,7 @@ function sellOldGearFromOverflow(instanceId) {
     renderOverflowInventoryManager();
     renderInventory();
     updateUI();
+    saveGame();
 }
 
 function bulkReforgeFromOverflow(tier) {
@@ -366,6 +398,7 @@ function bulkReforgeFromOverflow(tier) {
     renderOverflowInventoryManager();
     renderInventory();
     updateUI();
+    saveGame();
 }
 
 function renderOverflowInventoryManager() {
@@ -377,7 +410,7 @@ function renderOverflowInventoryManager() {
     
     const claimBtn = document.getElementById('btn-overflow-claim');
     if (claimBtn) {
-        if (player.gearInventory.length < MAX_GEAR_LIMIT) {
+        if (pendingDroppedGear && getGearCountByRarity(pendingDroppedGear.rarity) < MAX_GEAR_PER_RARITY) {
             claimBtn.disabled = false;
             claimBtn.style.opacity = '1';
         } else {
@@ -482,11 +515,12 @@ function handlePulls(amount) {
     showGachaModal(results, "char");
     renderInventory();
     updateUI();
+    saveGame();
 }
 
 function rollGear(tier, mode) {
-    if (player.gearInventory.length >= MAX_GEAR_LIMIT) {
-        alert(`Ваша оружейная забита! Максимум экипировки: ${MAX_GEAR_LIMIT} шт.`);
+    if (getGearCountByRarity(tier) >= MAX_GEAR_PER_RARITY) {
+        alert(`Ваша оружейная для редкости ${tier.toUpperCase()} забита! Максимум: ${MAX_GEAR_PER_RARITY} шт.`);
         return;
     }
 
@@ -495,7 +529,7 @@ function rollGear(tier, mode) {
 
     if (mode === 'max') {
         const maxAffordable = Math.floor(player.tokens[tier] / singleCost);
-        const remainingSpace = MAX_GEAR_LIMIT - player.gearInventory.length;
+        const remainingSpace = MAX_GEAR_PER_RARITY - getGearCountByRarity(tier);
         rollsToPerform = Math.min(maxAffordable, remainingSpace);
     }
 
@@ -520,6 +554,7 @@ function rollGear(tier, mode) {
     
     renderInventory();
     updateUI();
+    saveGame();
 }
 
 function buyCharacterCopy(charId, stars) {
@@ -550,6 +585,7 @@ function buyCharacterCopy(charId, stars) {
 
         updateUI();
         renderInventory();
+        saveGame();
     }
 }
 
@@ -566,6 +602,7 @@ function sellGear(instanceId) {
     showToast(`💰 Реликвия продана за +${price} монет!`, '#4caf50');
     updateUI();
     renderInventory();
+    saveGame();
 }
 
 function bulkReforge(tier) {
@@ -600,6 +637,7 @@ function bulkReforge(tier) {
 
     renderInventory();
     updateUI();
+    saveGame();
 }
 
 setInterval(() => {
@@ -609,7 +647,6 @@ setInterval(() => {
     const maxSquadHp = calculateTotalHp();
     if (player.squadCurrentHp <= 0 || player.squadCurrentHp > maxSquadHp) {
         if (player.squadCurrentHp <= 0 && player.ownedCharacters.length > 0) {
-            // Ожидание обработки падения
         } else {
             player.squadCurrentHp = maxSquadHp;
         }
@@ -621,22 +658,24 @@ setInterval(() => {
         player.squadCurrentHp = maxSquadHp;
 
         if (campState.timeLeft % 5 === 0 && campState.timeLeft > 0) {
-            if (Math.random() < 0.15 && player.gearInventory.length < MAX_GEAR_LIMIT) {
-                const tier = getDynamicDropTier(player.battleStage);
+            const tier = getDynamicDropTier(player.battleStage);
+            if (Math.random() < 0.15 && getGearCountByRarity(tier) < MAX_GEAR_PER_RARITY) {
                 const gear = generateRandomGear(tier);
                 player.gearInventory.push(gear);
                 campState.hasDroppedGear = true;
                 showToast(`🔥 Костер согрел: найдена экипировка ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)})!`, rarityColors[tier]);
                 renderInventory(); 
+                saveGame();
             }
         }
 
         if (campState.timeLeft <= 0) {
-            if (!campState.hasDroppedGear && player.gearInventory.length < MAX_GEAR_LIMIT) {
-                const tier = getDynamicDropTier(player.battleStage);
+            const tier = getDynamicDropTier(player.battleStage);
+            if (!campState.hasDroppedGear && getGearCountByRarity(tier) < MAX_GEAR_PER_RARITY) {
                 const gear = generateRandomGear(tier);
                 player.gearInventory.push(gear);
                 renderInventory(); 
+                saveGame();
             }
             player.battleStage++;
             spawnEnemy();
@@ -668,6 +707,13 @@ setInterval(() => {
             spawnEnemy();
         }
     }
+    
+    saveTimerCounter++;
+    if (saveTimerCounter >= 30) {
+        saveTimerCounter = 0;
+        saveGame();
+    }
+
     updateUI();
 }, 1000);
 
@@ -691,9 +737,9 @@ function changeEquipment(charId, selectElement) {
 
     renderInventory();
     updateUI();
+    saveGame();
 }
 
-// Изменения внесены сюда: добавлено обновление характеристик карточки врага
 function updateUI() {
     document.getElementById('gold-display').innerText = Math.floor(player.gold).toLocaleString('ru-RU');
     const pGold = calculateTotalGoldIncome();
@@ -710,7 +756,7 @@ function updateUI() {
     
     document.getElementById('unique-display').innerText = `${player.ownedCharacters.length} / ${TOTAL_CHARACTERS_COUNT}`;
     document.getElementById('warehouse-summary').innerText = 
-        `Древняя Кузня Реликвий (Загрузка оружейной: ${player.gearInventory.length} / ${MAX_GEAR_LIMIT})`;
+        `Древняя Кузня Реликвий (C: ${getGearCountByRarity('common')}/50 | R: ${getGearCountByRarity('rare')}/50 | E: ${getGearCountByRarity('epic')}/50 | L: ${getGearCountByRarity('legendary')}/50)`;
 
     const maxSquadHp = calculateTotalHp();
     const totalAtk = calculateTotalAtk();
@@ -893,5 +939,7 @@ function closeModal() {
     document.getElementById('gacha-modal').style.display = 'none';
 }
 
+loadGame();
 spawnEnemy();
 updateUI();
+renderInventory();
