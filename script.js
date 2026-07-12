@@ -29,10 +29,18 @@ const CHARACTER_DATABASE = {
     5: [
         { id: "freya", name: "👑 Королева Воинов Фрейя", stars: 5, baseAtk: 3.80, baseHp: 22.00, baseGold: 10.0, passive: "god_blessing", passiveDesc: "+12% к АТК всего отряда" },
         { id: "kaneka", name: "🗡️ Теневой Клинок Канека", stars: 5, baseAtk: 5.20, baseHp: 18.00, baseGold: 8.0, passive: "overdrive", passiveDesc: "+18% к АТК всего отряда" },
-        { id: "esdeath", name: "❄️ General Генерал Льда Эсдес", stars: 5, baseAtk: 4.10, baseHp: 26.00, baseGold: 15.0, passive: "imperial_tax", passiveDesc: "+25% к золоту из всех источников" },
+        { id: "esdeath", name: "❄️ Генерал Льда Эсдес", stars: 5, baseAtk: 4.10, baseHp: 26.00, baseGold: 15.0, passive: "imperial_tax", passiveDesc: "+25% к золоту из всех источников" },
         { id: "tiamat", name: "🌋 Дракон Хаоса Тиамат", stars: 5, baseAtk: 6.50, baseHp: 31.00, baseGold: 6.0, passive: "dragon_rage", passiveDesc: "+25% к АТК всего отряда" }
     ]
 };
+
+const MYTHIC_HEROES_POOL = [
+    { id: "mythic_oneclick", name: "🌌 Пустотная Клинок Син", stars: 6, baseAtk: 15.0, baseHp: 80.0, baseGold: 50.0, passive: "m_active", passiveDesc: "Активка: Ваншот моба (КД 5 мин)" },
+    { id: "mythic_loot", name: "🎰 Богиня Фортуны Люксия", stars: 6, baseAtk: 12.0, baseHp: 90.0, baseGold: 60.0, passive: "m_active", passiveDesc: "Активка: Гарантирован гир 4★+ (КД 5 мин)" },
+    { id: "mythic_autoheal", name: "💖 Бессмертная Феникс Риас", stars: 6, baseAtk: 10.0, baseHp: 150.0, baseGold: 40.0, passive: "m_auto", passiveDesc: "Авто-хилл отряда на 100% при <10% ХП (КД 10 мин)" },
+    { id: "mythic_shop_bag", name: "🏪 Пространственная Вельзевул", stars: 6, baseAtk: 14.0, baseHp: 70.0, baseGold: 100.0, passive: "m_shop", passiveDesc: "Лавка мификов артефактов, рюкзак х5" },
+    { id: "mythic_cdr_buff", name: "⏳ Хранительница Времени Кронос", stars: 6, baseAtk: 18.0, baseHp: 100.0, baseGold: 50.0, passive: "m_buff", passiveDesc: "-10% КД мификов, +10% статы остальных рангов" }
+];
 
 const MAX_UPGRADE_PASSIVES = {
     1: { desc: "Прорыв I: +20% к статам", mult: 0.20 },
@@ -62,11 +70,15 @@ const GEAR_POOLS = {
         { id: "gear_l1", name: "🔱 Святой Экскалибур", type: "atk", minBonus: 2.20, maxBonus: 5.50 },
         { id: "gear_l2", name: "💎 Сердце Прародителя", type: "hp", minBonus: 5.00, maxBonus: 14.00 },
         { id: "gear_l3", name: "🏆 Кубок Бесконечного Богатства", type: "gold", minBonus: 1.00, maxBonus: 3.00 }
+    ],
+    mythic: [
+        { id: "gear_m1", name: "🌌 Клеймор Первородного Хаоса", type: "atk", minBonus: 12.0, maxBonus: 28.0, pct: 25 },
+        { id: "gear_m2", name: "👑 Эгида Абсолютного Бессмертия", type: "hp", minBonus: 30.0, maxBonus: 75.0, pct: 30 },
+        { id: "gear_m3", name: "💎 Рог Изобилия Вселенной", type: "gold", minBonus: 6.0, maxBonus: 15.0, pct: 20 }
     ]
 };
 
-const MAX_GEAR_PER_RARITY = 50;
-const TOTAL_CHARACTERS_COUNT = Object.values(CHARACTER_DATABASE).flat().length;
+const TOTAL_CHARACTERS_COUNT = Object.values(CHARACTER_DATABASE).flat().length + MYTHIC_HEROES_POOL.length;
 
 const TOKEN_MAP = { 1: 'common', 2: 'common', 3: 'rare', 4: 'epic', 5: 'legendary' };
 const CHAR_TOKEN_COST = { 1: 15, 2: 30, 3: 15, 4: 10, 5: 5 };
@@ -74,11 +86,11 @@ const TOKEN_EMOJIS = { common: '🟢', rare: '🔵', epic: '🟣', legendary: '�
 const GEAR_FORGE_COST = { common: 10, rare: 10, epic: 10, legendary: 5 };
 
 const DROP_RATES = { 5: 0.6, 4: 5.4, 3: 15, 2: 39, 1: 40 };
-const GEAR_SELL_PRICES = { common: 100, rare: 400, epic: 1500, legendary: 7000 };
+const GEAR_SELL_PRICES = { common: 100, rare: 400, epic: 1500, legendary: 7000, mythic: 25000 };
 
 const rarityColors = { 
-    1: '#757575', 2: '#388e3c', 3: '#0288d1', 4: '#a124c7', 5: '#ff8f00',
-    'common': '#4caf50', 'rare': '#2196f3', 'epic': '#e040fb', 'legendary': '#ff8f00'
+    1: '#757575', 2: '#388e3c', 3: '#0288d1', 4: '#a124c7', 5: '#ff8f00', 6: '#ff3366',
+    'common': '#4caf50', 'rare': '#2196f3', 'epic': '#e040fb', 'legendary': '#ff8f00', 'mythic': '#ff3366'
 };
 
 function getGearLabel(type) {
@@ -97,7 +109,13 @@ let player = {
     ownedCharacters: [],
     gearInventory: [],
     battleStage: 1,
-    squadCurrentHp: 0  
+    squadCurrentHp: 0,
+    bossWinStreak: 0,
+    timeAlive: 0,
+    totalTimeAlive: 0,
+    savedCampState: null,
+    mythicTimer: 0,
+    mythicCooldowns: { mythic_oneclick: 0, mythic_loot: 0, mythic_autoheal: 0 }
 };
 
 let currentEnemy = { name: "", hp: 0, maxHp: 0, atk: 0, reward: 0 };
@@ -111,9 +129,27 @@ let campState = {
     hasDroppedGear: false
 };
 
+function getMaxGearLimit() {
+    return player.ownedCharacters.some(c => c.id === "mythic_shop_bag") ? 250 : 50;
+}
+
+function formatTime(seconds) {
+    if (seconds <= 0) return "0 сек";
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = seconds % 60;
+    
+    let result = "";
+    if (h > 0) result += `${h} ч `;
+    if (m > 0) result += `${m} мин `;
+    if (s > 0 || result === "") result += `${s} сек`;
+    return result.trim();
+}
+
 function saveGame() {
     try {
-        localStorage.setItem('waifu_idle_save_v1', JSON.stringify(player));
+        player.savedCampState = campState.isActive ? { timeLeft: campState.timeLeft, hasDroppedGear: campState.hasDroppedGear } : null;
+        localStorage.setItem('waifu_idle_save_v2', JSON.stringify(player));
     } catch (e) {
         console.error(e);
     }
@@ -121,16 +157,33 @@ function saveGame() {
 
 function loadGame() {
     try {
-        const saved = localStorage.getItem('waifu_idle_save_v1');
+        const saved = localStorage.getItem('waifu_idle_save_v2');
         if (saved) {
             const parsed = JSON.parse(saved);
             if (parsed) {
                 player = Object.assign({}, player, parsed);
-                gearCounter = player.gearInventory.length;
             }
         }
     } catch (e) {
         console.error(e);
+    }
+
+    if (!player.tokens) player.tokens = { common: 0, rare: 0, epic: 0, legendary: 0 };
+    if (!player.gearInventory) player.gearInventory = [];
+    if (!player.ownedCharacters) player.ownedCharacters = [];
+    if (!player.mythicCooldowns) player.mythicCooldowns = { mythic_oneclick: 0, mythic_loot: 0, mythic_autoheal: 0 };
+    if (player.gold === undefined || isNaN(player.gold)) player.gold = 1000;
+    if (player.battleStage === undefined || isNaN(player.battleStage)) player.battleStage = 1;
+    if (player.bossWinStreak === undefined) player.bossWinStreak = 0;
+    if (player.timeAlive === undefined) player.timeAlive = 0;
+    if (player.totalTimeAlive === undefined) player.totalTimeAlive = 0;
+    if (player.mythicTimer === undefined) player.mythicTimer = 0;
+
+    gearCounter = player.gearInventory.length;
+
+    const maxHp = calculateTotalHp();
+    if (player.squadCurrentHp === undefined || player.squadCurrentHp <= 0 || isNaN(player.squadCurrentHp)) {
+        player.squadCurrentHp = maxHp;
     }
 }
 
@@ -152,15 +205,21 @@ function getGearCountByRarity(rarity) {
 function calculateTotalAtk() {
     let total = 0;
     let globalMultiplier = 1;
+    const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
 
     player.ownedCharacters.forEach(char => {
         let charAtk = char.baseAtk * (1 + (char.count - 1) * 0.5);
+        if (char.stars < 6 && hasCdrChronos) charAtk *= 1.10; 
+
         const equipped = player.gearInventory.find(g => g.equippedTo === char.id);
-        
         if (equipped && equipped.type === "atk") {
-            charAtk += equipped.bonus;
+            if (equipped.rarity === "mythic") {
+                charAtk = (charAtk + equipped.bonus) * (1 + (equipped.pct || 0) / 100);
+            } else {
+                charAtk += equipped.bonus;
+            }
         }
-        if (char.count >= 10) charAtk *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
+        if (char.count >= 10 && char.stars <= 5) charAtk *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
         
         if (char.passive === "double_bm") charAtk *= 2;
         if (char.passive === "god_blessing") globalMultiplier += 0.12;
@@ -176,14 +235,21 @@ function calculateTotalAtk() {
 
 function calculateTotalHp() {
     let total = 0;
+    const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
+
     player.ownedCharacters.forEach(char => {
         let charHp = char.baseHp * (1 + (char.count - 1) * 0.5);
+        if (char.stars < 6 && hasCdrChronos) charHp *= 1.10;
+
         const equipped = player.gearInventory.find(g => g.equippedTo === char.id);
-        
         if (equipped && equipped.type === "hp") {
-            charHp += equipped.bonus; 
+            if (equipped.rarity === "mythic") {
+                charHp = (charHp + equipped.bonus) * (1 + (equipped.pct || 0) / 100);
+            } else {
+                charHp += equipped.bonus; 
+            }
         }
-        if (char.count >= 10) charHp *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
+        if (char.count >= 10 && char.stars <= 5) charHp *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
         total += charHp;
     });
     return total === 0 ? 0.4 : total; 
@@ -196,16 +262,22 @@ function calculateTotalBM() {
 function calculateTotalGoldIncome() {
     let totalGold = 0;
     let globalGoldMultiplier = 1;
+    const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
 
     player.ownedCharacters.forEach(char => {
         let charGold = char.baseGold * (1 + (char.count - 1) * 0.5);
+        if (char.stars < 6 && hasCdrChronos) charGold *= 1.10;
+
         const equipped = player.gearInventory.find(g => g.equippedTo === char.id);
-        
         if (equipped && equipped.type === "gold") {
-            charGold += equipped.bonus;
+            if (equipped.rarity === "mythic") {
+                charGold = (charGold + equipped.bonus) * (1 + (equipped.pct || 0) / 100);
+            } else {
+                charGold += equipped.bonus;
+            }
         }
 
-        if (char.count >= 10) charGold *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
+        if (char.count >= 10 && char.stars <= 5) charGold *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
         
         if (char.passive === "gold_fever") globalGoldMultiplier += 0.10;
         if (char.passive === "ocean_wealth") globalGoldMultiplier += 0.15;
@@ -217,8 +289,50 @@ function calculateTotalGoldIncome() {
     return totalGold * globalGoldMultiplier;
 }
 
+const ENEMY_SOFTCAP_STAGE = 200;
+const ENEMY_SAFETY_MARGIN = 1.3;
+const ENEMY_MAX_ATK_SHARE = 0.30;
+
+function getEnemyStats(stage, isBoss) {
+    const hpMod = isBoss ? 2.5 : 1.0;
+    const atkMod = isBoss ? 1.8 : 1.0;
+
+    const classicHp = (12.0 * Math.pow(1.2, stage - 1) + (stage * 0.5)) * hpMod;
+    const classicAtk = (0.05 * Math.pow(1.12, stage - 1) + (stage * 0.005)) * atkMod;
+
+    if (stage <= ENEMY_SOFTCAP_STAGE) {
+        return { hp: classicHp, atk: classicAtk };
+    }
+
+    const squadAtk = Math.max(calculateTotalAtk(), 0.01);
+    const squadHp = Math.max(calculateTotalHp(), 0.01);
+    const atkCeiling = squadHp * ENEMY_MAX_ATK_SHARE * atkMod;
+    const atk = Math.min(classicAtk, atkCeiling);
+    const powerBudget = (squadAtk * squadHp) / ENEMY_SAFETY_MARGIN;
+    const hpCeiling = powerBudget / atk;
+    const hp = Math.min(classicHp, hpCeiling);
+
+    return { hp, atk };
+}
+
 function spawnEnemy() {
     const bZone = document.getElementById('battle-zone-container');
+    
+    if (player.savedCampState) {
+        campState.isActive = true;
+        campState.timeLeft = player.savedCampState.timeLeft;
+        campState.hasDroppedGear = player.savedCampState.hasDroppedGear;
+        player.savedCampState = null;
+        
+        bZone.classList.add('camp-mode');
+        currentEnemy.name = "⛺ Привал у костра (Зона отдыха)";
+        currentEnemy.maxHp = 30;
+        currentEnemy.hp = campState.timeLeft;
+        currentEnemy.atk = 0;
+        currentEnemy.reward = 0;
+        player.squadCurrentHp = calculateTotalHp();
+        return;
+    }
     
     if (player.battleStage % 5 === 0) {
         campState.isActive = true;
@@ -241,13 +355,18 @@ function spawnEnemy() {
 
     const pIndex = (player.battleStage - 1) % MONSTER_PREFIXES.length;
     const tIndex = (player.battleStage - 1) % MONSTER_TYPES.length;
+    const isBoss = (player.battleStage >= 34 && player.battleStage % 5 === 4);
+    const prefix = isBoss ? "👹 [БОСС]" : MONSTER_PREFIXES[pIndex];
     
-    currentEnemy.name = `${MONSTER_PREFIXES[pIndex]} ${MONSTER_TYPES[tIndex]} [Ур. ${player.battleStage}]`;
-    currentEnemy.maxHp = 12.0 * Math.pow(1.2, player.battleStage - 1) + (player.battleStage * 0.5);
-    currentEnemy.hp = currentEnemy.maxHp;
+    currentEnemy.name = `${prefix} ${MONSTER_TYPES[tIndex]} [Ур. ${player.battleStage}]`;
     
-    currentEnemy.atk = 0.05 * Math.pow(1.12, player.battleStage - 1) + (player.battleStage * 0.005);
-    currentEnemy.reward = Math.floor(15 * Math.pow(1.12, player.battleStage - 1)) + 2;
+    let hpMod = isBoss ? 2.5 : 1.0;
+
+    const stats = getEnemyStats(player.battleStage, isBoss);
+    currentEnemy.maxHp = stats.hp;
+    currentEnemy.hp = stats.hp;
+    currentEnemy.atk = stats.atk;
+    currentEnemy.reward = Math.floor((15 * Math.pow(1.12, player.battleStage - 1)) * hpMod) + 2;
 }
 
 function generateRandomGear(tier) {
@@ -263,7 +382,8 @@ function generateRandomGear(tier) {
         bonus: parseFloat(randomBonus.toFixed(4)),
         rarity: tier,
         type: template.type, 
-        equippedTo: null
+        equippedTo: null,
+        pct: template.pct || 0
     };
 }
 
@@ -286,7 +406,7 @@ function executeMonsterDrop() {
     const tier = getDynamicDropTier(player.battleStage);
     const newGear = generateRandomGear(tier);
     
-    if (getGearCountByRarity(tier) >= MAX_GEAR_PER_RARITY) {
+    if (getGearCountByRarity(tier) >= getMaxGearLimit()) {
         pendingDroppedGear = newGear;
         openOverflowModal();
         return;
@@ -303,7 +423,6 @@ function openOverflowModal() {
     if (!modal) return;
     
     modal.style.display = 'flex';
-    
     const infoDiv = document.getElementById('overflow-gear-info');
     const price = GEAR_SELL_PRICES[pendingDroppedGear.rarity] || 50;
     infoDiv.innerHTML = `
@@ -336,7 +455,7 @@ function sellPendingGearImmediate() {
 
 function claimPendingGear() {
     if (!pendingDroppedGear) return;
-    if (getGearCountByRarity(pendingDroppedGear.rarity) >= MAX_GEAR_PER_RARITY) {
+    if (getGearCountByRarity(pendingDroppedGear.rarity) >= getMaxGearLimit()) {
         alert("Склад этой редкости всё ещё полон!");
         return;
     }
@@ -410,7 +529,7 @@ function renderOverflowInventoryManager() {
     
     const claimBtn = document.getElementById('btn-overflow-claim');
     if (claimBtn) {
-        if (pendingDroppedGear && getGearCountByRarity(pendingDroppedGear.rarity) < MAX_GEAR_PER_RARITY) {
+        if (pendingDroppedGear && getGearCountByRarity(pendingDroppedGear.rarity) < getMaxGearLimit()) {
             claimBtn.disabled = false;
             claimBtn.style.opacity = '1';
         } else {
@@ -425,7 +544,7 @@ function renderOverflowInventoryManager() {
     }
 
     const reforgeContainer = document.createElement('div');
-    reforgeContainer.style.cssText = "display:flex; gap:5px; margin-bottom:10px; flex-wrap:wrap; background:rgba(0,0,0,0.3); padding:8px; border-radius:4px;";
+    reforgeContainer.className = "overflow-reforge-group";
     
     const tiers = ['common', 'rare', 'epic', 'legendary'];
     tiers.forEach(t => {
@@ -433,7 +552,7 @@ function renderOverflowInventoryManager() {
         if (count >= 3) {
             const btn = document.createElement('button');
             btn.className = "btn-reforge-quick";
-            btn.style.cssText = `background:${rarityColors[t]}; color:#fff; border:none; padding:4px 8px; border-radius:3px; cursor:pointer; font-size:11px;`;
+            btn.style.background = rarityColors[t];
             btn.innerText = `🔨 Сжать 3 ${t.toUpperCase()} (-2 слота)`;
             btn.onclick = () => bulkReforgeFromOverflow(t);
             reforgeContainer.appendChild(btn);
@@ -519,8 +638,8 @@ function handlePulls(amount) {
 }
 
 function rollGear(tier, mode) {
-    if (getGearCountByRarity(tier) >= MAX_GEAR_PER_RARITY) {
-        alert(`Ваша оружейная для редкости ${tier.toUpperCase()} забита! Максимум: ${MAX_GEAR_PER_RARITY} шт.`);
+    if (getGearCountByRarity(tier) >= getMaxGearLimit()) {
+        alert(`Ваша оружейная для редкости ${tier.toUpperCase()} забита! Максимум: ${getMaxGearLimit()} шт.`);
         return;
     }
 
@@ -529,7 +648,7 @@ function rollGear(tier, mode) {
 
     if (mode === 'max') {
         const maxAffordable = Math.floor(player.tokens[tier] / singleCost);
-        const remainingSpace = MAX_GEAR_PER_RARITY - getGearCountByRarity(tier);
+        const remainingSpace = getMaxGearLimit() - getGearCountByRarity(tier);
         rollsToPerform = Math.min(maxAffordable, remainingSpace);
     }
 
@@ -640,86 +759,153 @@ function bulkReforge(tier) {
     saveGame();
 }
 
-setInterval(() => {
-    const goldSec = calculateTotalGoldIncome();
-    player.gold += goldSec;
+function toggleWiki() {
+    const drawer = document.getElementById('wiki-drawer');
+    const overlay = document.getElementById('wiki-overlay');
+    if (!drawer || !overlay) return;
 
-    const maxSquadHp = calculateTotalHp();
-    if (player.squadCurrentHp <= 0 || player.squadCurrentHp > maxSquadHp) {
-        if (player.squadCurrentHp <= 0 && player.ownedCharacters.length > 0) {
-        } else {
-            player.squadCurrentHp = maxSquadHp;
-        }
-    }
-
-    if (campState.isActive) {
-        campState.timeLeft--;
-        currentEnemy.hp = campState.timeLeft;
-        player.squadCurrentHp = maxSquadHp;
-
-        if (campState.timeLeft % 5 === 0 && campState.timeLeft > 0) {
-            const tier = getDynamicDropTier(player.battleStage);
-            if (Math.random() < 0.15 && getGearCountByRarity(tier) < MAX_GEAR_PER_RARITY) {
-                const gear = generateRandomGear(tier);
-                player.gearInventory.push(gear);
-                campState.hasDroppedGear = true;
-                showToast(`🔥 Костер согрел: найдена экипировка ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)})!`, rarityColors[tier]);
-                renderInventory(); 
-                saveGame();
-            }
-        }
-
-        if (campState.timeLeft <= 0) {
-            const tier = getDynamicDropTier(player.battleStage);
-            if (!campState.hasDroppedGear && getGearCountByRarity(tier) < MAX_GEAR_PER_RARITY) {
-                const gear = generateRandomGear(tier);
-                player.gearInventory.push(gear);
-                renderInventory(); 
-                saveGame();
-            }
-            player.battleStage++;
-            spawnEnemy();
-        }
+    const isOpen = drawer.classList.contains('open');
+    if (isOpen) {
+        drawer.classList.remove('open');
+        overlay.classList.remove('open');
     } else {
-        let squadAtk = calculateTotalAtk();
-        
-        if (squadAtk > 0) {
-            currentEnemy.hp -= squadAtk;
-        }
-
-        if (currentEnemy.hp > 0 && player.ownedCharacters.length > 0) {
-            player.squadCurrentHp -= currentEnemy.atk;
-
-            if (player.squadCurrentHp <= 0) {
-                showToast("💀 Отряд повержен! Отступление на 1 этап назад для перегруппировки.", "#ff3333");
-                player.battleStage = Math.max(1, player.battleStage - 1);
-                player.squadCurrentHp = calculateTotalHp(); 
-                spawnEnemy();
-                updateUI();
-                return; 
-            }
-        }
-
-        if (currentEnemy.hp <= 0) {
-            player.gold += currentEnemy.reward;
-            executeMonsterDrop(); 
-            player.battleStage++;
-            spawnEnemy();
-        }
+        renderWikiList();
+        drawer.classList.add('open');
+        overlay.classList.add('open');
     }
+}
+
+function renderWikiList() {
+    const listContainer = document.getElementById('wiki-content-list');
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+
+    Object.keys(CHARACTER_DATABASE).forEach(rarity => {
+        renderWikiBlock(rarity, CHARACTER_DATABASE[rarity], "★".repeat(rarity) + " Ранг", listContainer);
+    });
+    renderWikiBlock(6, MYTHIC_HEROES_POOL, "👑 МИФИЧЕСКИЙ РАНГ", listContainer);
+}
+
+function renderWikiBlock(rarityKey, pool, headTitle, container) {
+    const rarityBlock = document.createElement('div');
+    rarityBlock.className = 'wiki-rarity-block';
+    rarityBlock.innerHTML = `<div class="wiki-rarity-head" style="color: ${rarityColors[rarityKey]};">${headTitle}</div>`;
     
-    saveTimerCounter++;
-    if (saveTimerCounter >= 30) {
-        saveTimerCounter = 0;
-        saveGame();
-    }
+    const list = document.createElement('div');
+    list.className = 'wiki-list';
 
+    pool.forEach(char => {
+        const isOwned = player.ownedCharacters.some(c => c.id === char.id);
+        const row = document.createElement('div');
+        row.className = `wiki-row ${isOwned ? 'owned' : 'unowned'}`;
+        
+        row.innerHTML = `
+            <div class="wiki-row-top">
+                <span>${char.name}</span>
+                <span>${isOwned ? '✅ Открыта' : '🔒 Закрыта'}</span>
+            </div>
+            <div class="wiki-row-stats">
+                Базовые: АТК ${char.baseAtk.toFixed(2)} | HP ${char.baseHp.toFixed(2)} | ЗОЛ +${char.baseGold.toFixed(2)}/с
+            </div>
+            ${char.passiveDesc ? `<div class="wiki-row-passive">Эффект: ${char.passiveDesc}</div>` : ''}
+        `;
+        list.appendChild(row);
+    });
+
+    rarityBlock.appendChild(list);
+    container.appendChild(rarityBlock);
+}
+
+function grantMythicHeroChance() {
+    const unowned = MYTHIC_HEROES_POOL.filter(mh => !player.ownedCharacters.some(c => c.id === mh.id));
+    if (unowned.length > 0) {
+        const selected = unowned[Math.floor(Math.random() * unowned.length)];
+        player.ownedCharacters.push({ ...selected, count: 1 });
+        showToast(`👑 В отряд снизошла МИФИЧЕСКАЯ богиня: ${selected.name}!`, '#ff3366');
+        renderInventory();
+    } else {
+        showToast(`✨ Все мифические богини собраны! Выдано утешение: +500,000 золота!`, '#ffd700');
+        player.gold += 500000;
+    }
     updateUI();
-}, 1000);
+}
+
+function rollMythicArtifactChance() {
+    if (Math.random() <= 0.5) {
+        const mythicGear = generateRandomGear('mythic');
+        if (getGearCountByRarity('mythic') >= getMaxGearLimit()) {
+            pendingDroppedGear = mythicGear;
+            openOverflowModal();
+        } else {
+            player.gearInventory.push(mythicGear);
+            showToast(`✨ Абсолютный резонанс! Найден МИФИЧЕСКИЙ артефакт: ${mythicGear.name}!`, '#ff3366');
+            renderInventory();
+        }
+    }
+}
+
+function useMythicAbility(heroId) {
+    if (player.mythicCooldowns[heroId] > 0) return;
+    const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
+    const cdrMult = hasCdrChronos ? 0.9 : 1.0;
+
+    if (heroId === "mythic_oneclick") {
+        if (campState.isActive) {
+            showToast("Нельзя истреблять костры!", "#ff3333");
+            return;
+        }
+        currentEnemy.hp = 0;
+        player.mythicCooldowns[heroId] = Math.round(300 * cdrMult);
+        showToast("🌌 Пространство разорвано! Враг моментально аннигилирован!", "#ff3366");
+        rollMythicArtifactChance();
+    } else if (heroId === "mythic_loot") {
+        const tr = Math.random();
+        let selectedTier = 'epic';
+        if (tr > 0.6) selectedTier = 'legendary';
+        if (tr > 0.93) selectedTier = 'mythic';
+        
+        const gear = generateRandomGear(selectedTier);
+        if (getGearCountByRarity(selectedTier) >= getMaxGearLimit()) {
+            pendingDroppedGear = gear;
+            openOverflowModal();
+        } else {
+            player.gearInventory.push(gear);
+            showToast(`🎰 Удача улыбнулась: выдан предмет ${gear.name}!`, rarityColors[selectedTier]);
+            renderInventory();
+        }
+        player.mythicCooldowns[heroId] = Math.round(300 * cdrMult);
+        rollMythicArtifactChance();
+    }
+    updateUI();
+    saveGame();
+}
+
+function buyMythicArtifact(type) {
+    if (player.gold < 1000000) {
+        showToast("Недостаточно кредитов! Лавка требует 1,000,000 монет.", "#ff3333");
+        return;
+    }
+    if (getGearCountByRarity('mythic') >= getMaxGearLimit()) {
+        alert("Оружейная мификов переполнена!");
+        return;
+    }
+    player.gold -= 1000000;
+    const pool = GEAR_POOLS.mythic.filter(g => g.type === type);
+    const item = generateRandomGear('mythic');
+    item.type = type;
+    item.name = pool[0].name;
+    item.id = pool[0].id;
+    item.pct = pool[0].pct;
+
+    player.gearInventory.push(item);
+    showToast(`🏪 Куплено из лавки Вельзевул: ${item.name}!`, '#ff3366');
+    renderInventory();
+    updateUI();
+    saveGame();
+}
 
 function changeEquipment(charId, selectElement) {
     const selectedInstanceId = selectElement.value;
-    
     const oldMaxHp = calculateTotalHp();
     const hpRatio = oldMaxHp > 0 ? (player.squadCurrentHp / oldMaxHp) : 1;
 
@@ -755,8 +941,10 @@ function updateUI() {
     document.getElementById('tok-l').innerText = `🟡 ${player.tokens.legendary}`;
     
     document.getElementById('unique-display').innerText = `${player.ownedCharacters.length} / ${TOTAL_CHARACTERS_COUNT}`;
+    
+    const limit = getMaxGearLimit();
     document.getElementById('warehouse-summary').innerText = 
-        `Древняя Кузня Реликвий (C: ${getGearCountByRarity('common')}/50 | R: ${getGearCountByRarity('rare')}/50 | E: ${getGearCountByRarity('epic')}/50 | L: ${getGearCountByRarity('legendary')}/50)`;
+        `Древняя Кузня Реликвий (C: ${getGearCountByRarity('common')}/${limit} | R: ${getGearCountByRarity('rare')}/${limit} | E: ${getGearCountByRarity('epic')}/${limit} | L: ${getGearCountByRarity('legendary')}/${limit} | M: ${getGearCountByRarity('mythic')}/${limit})`;
 
     const maxSquadHp = calculateTotalHp();
     const totalAtk = calculateTotalAtk();
@@ -769,6 +957,50 @@ function updateUI() {
         document.getElementById('squad-info-atk').innerText = `${totalAtk.toFixed(2)} АТК/с`;
         document.getElementById('squad-info-count').innerText = `В строю: ${player.ownedCharacters.length} тян`;
         document.getElementById('squad-info-bm').innerText = `Общая БМ: ${calculateTotalBM().toFixed(2)}`;
+        document.getElementById('boss-streak-display').innerText = player.bossWinStreak;
+        document.getElementById('time-alive-display').innerText = formatTime(player.timeAlive);
+        document.getElementById('total-time-display').innerText = formatTime(player.totalTimeAlive);
+    }
+
+    const mythicPanel = document.getElementById('mythic-panel');
+    if (mythicPanel) {
+        if (player.ownedCharacters.length > 0) {
+            mythicPanel.style.display = 'block';
+            const diff = 1800 - player.mythicTimer;
+            document.getElementById('mythic-timer-display').innerText = `До прихода следующей мифической сущности: ${Math.floor(diff/60)} мин ${diff%60} сек`;
+            
+            const skillsContainer = document.getElementById('mythic-skills-container');
+            skillsContainer.innerHTML = '';
+            
+            const actives = [
+                { id: "mythic_oneclick", label: "🌌 Аннигиляция Врага" },
+                { id: "mythic_loot", label: "🎰 Призыв Сокровища" }
+            ];
+            
+            actives.forEach(act => {
+                if (player.ownedCharacters.some(c => c.id === act.id)) {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-wiki-toggle';
+                    const cd = player.mythicCooldowns[act.id] || 0;
+                    if (cd > 0) {
+                        btn.innerText = `${act.label} (${cd}с)`;
+                        btn.style.background = '#4a5568';
+                        btn.disabled = true;
+                    } else {
+                        btn.innerText = act.label;
+                        btn.style.background = 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)';
+                        btn.disabled = false;
+                        btn.onclick = () => useMythicAbility(act.id);
+                    }
+                    skillsContainer.appendChild(btn);
+                }
+            });
+            
+            const hasShop = player.ownedCharacters.some(c => c.id === "mythic_shop_bag");
+            document.getElementById('mythic-shop-container').style.display = hasShop ? 'block' : 'none';
+        } else {
+            mythicPanel.style.display = 'none';
+        }
     }
 
     const enemyAtkEl = document.getElementById('enemy-info-atk');
@@ -808,14 +1040,16 @@ function renderInventory() {
     grid.innerHTML = '';
     player.ownedCharacters.sort((a, b) => b.stars - a.stars);
 
+    const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
+
     player.ownedCharacters.forEach(char => {
         const card = document.createElement('div');
         card.className = `char-card ${char.stars >= 4 ? 'glow-' + char.stars : ''}`;
         card.style.setProperty('--rarity-color', rarityColors[char.stars]);
 
-        let starsStr = "★".repeat(char.stars);
+        let starsStr = char.stars === 6 ? "👑 МИФИК" : "★".repeat(char.stars);
         let passiveHTML = char.passiveDesc ? `<div class="char-passive">${char.passiveDesc}</div>` : '';
-        if (char.count >= 10) {
+        if (char.count >= 10 && char.stars <= 5) {
             passiveHTML += `<div class="char-passive awaken">${MAX_UPGRADE_PASSIVES[char.stars].desc}</div>`;
         }
         
@@ -823,23 +1057,37 @@ function renderInventory() {
         let currentCharHp = char.baseHp * (1 + (char.count - 1) * 0.5);
         let currentCharGold = char.baseGold * (1 + (char.count - 1) * 0.5);
         
+        if (char.stars < 6 && hasCdrChronos) {
+            currentCharAtk *= 1.10;
+            currentCharHp *= 1.10;
+            currentCharGold *= 1.10;
+        }
+
         const currentlyEquipped = player.gearInventory.find(g => g.equippedTo === char.id);
-        
         if (currentlyEquipped) {
-            if (currentlyEquipped.type === "atk") currentCharAtk += currentlyEquipped.bonus;
-            if (currentlyEquipped.type === "hp") currentCharHp += currentlyEquipped.bonus;
-            if (currentlyEquipped.type === "gold") currentCharGold += currentlyEquipped.bonus;
+            if (currentlyEquipped.type === "atk") {
+                if (currentlyEquipped.rarity === 'mythic') currentCharAtk = (currentCharAtk + currentlyEquipped.bonus) * (1 + currentlyEquipped.pct / 100);
+                else currentCharAtk += currentlyEquipped.bonus;
+            }
+            if (currentlyEquipped.type === "hp") {
+                if (currentlyEquipped.rarity === 'mythic') currentCharHp = (currentCharHp + currentlyEquipped.bonus) * (1 + currentlyEquipped.pct / 100);
+                else currentCharHp += currentlyEquipped.bonus;
+            }
+            if (currentlyEquipped.type === "gold") {
+                if (currentlyEquipped.rarity === 'mythic') currentCharGold = (currentCharGold + currentlyEquipped.bonus) * (1 + currentlyEquipped.pct / 100);
+                else currentCharGold += currentlyEquipped.bonus;
+            }
         }
         
-        if (char.count >= 10) {
+        if (char.count >= 10 && char.stars <= 5) {
             currentCharAtk *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
             currentCharHp *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
             currentCharGold *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
         }
         if (char.passive === "double_bm") currentCharAtk *= 2;
 
-        let isMax = char.count >= 10;
-        let countText = isMax ? "MAX" : `x${char.count}`;
+        let isMax = char.count >= 10 || char.stars === 6;
+        let countText = char.stars === 6 ? "UNIQUE" : (isMax ? "MAX" : `x${char.count}`);
 
         let selectHTML = `<select class="gear-selector" onchange="changeEquipment('${char.id}', this)">`;
         selectHTML += `<option value="none" ${!currentlyEquipped ? 'selected' : ''}>[Без реликвии]</option>`;
@@ -847,8 +1095,9 @@ function renderInventory() {
         player.gearInventory.forEach(gear => {
             if (gear.equippedTo === null || gear.equippedTo === char.id) {
                 const isSelected = gear.equippedTo === char.id ? 'selected' : '';
+                const pctTag = gear.pct ? ` (+${gear.pct}%)` : '';
                 selectHTML += `<option value="${gear.instanceId}" style="color: ${rarityColors[gear.rarity]};" ${isSelected}>
-                    [${gear.rarity.toUpperCase()}] ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)})
+                    [${gear.rarity.toUpperCase()}] ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag})
                 </option>`;
             }
         });
@@ -860,86 +1109,195 @@ function renderInventory() {
 
         card.innerHTML = `
             <div class="char-count" ${isMax ? 'style="background:#ff8f00;"' : ''}>${countText}</div>
-            <div class="char-stars">${starsStr}</div>
+            <div class="char-stars" style="color:${rarityColors[char.stars]}">${starsStr}</div>
             <div class="char-name">${char.name}</div>
             <div class="char-income">${currentCharAtk.toFixed(2)} АТК</div>
             <div class="char-hp-stat">${currentCharHp.toFixed(2)} HP</div>
-            <div class="char-gold-income">+${currentCharGold.toFixed(2)} зл/с</div>
+            <div class="char-gold-income">${currentCharGold.toFixed(2)} ЗОЛ/с</div>
             ${passiveHTML}
-            <div style="margin-top:8px;">${selectHTML}</div>
+            ${selectHTML}
             ${buyBtnHTML}
         `;
         grid.appendChild(card);
     });
 
-    const tiers = ['common', 'rare', 'epic', 'legendary'];
-    tiers.forEach(tier => {
-        const subGrid = document.getElementById(`gear-grid-${tier}`);
-        if (!subGrid) return;
-        subGrid.innerHTML = '';
-        
-        const filteredGear = player.gearInventory.filter(g => g.rarity === tier && g.equippedTo === null);
-        if (filteredGear.length === 0) {
-            subGrid.innerHTML = '<div style="font-size:10px; color:var(--text-muted); padding:5px;">Пусто</div>';
+    const warehouseRarities = ['common', 'rare', 'epic', 'legendary', 'mythic'];
+    warehouseRarities.forEach(rarity => {
+        const rGrid = document.getElementById(`gear-grid-${rarity}`);
+        if (!rGrid) return;
+        rGrid.innerHTML = '';
+
+        const freeItems = player.gearInventory.filter(g => g.rarity === rarity && g.equippedTo === null);
+
+        if (freeItems.length === 0) {
+            rGrid.innerHTML = `<div style="font-size:11px; color: var(--text-muted); text-align:center; padding:10px 0;">Пусто</div>`;
             return;
         }
-        
-        filteredGear.forEach(gear => {
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'unassigned-item';
-            itemDiv.style.borderLeftColor = rarityColors[gear.rarity];
-            const price = GEAR_SELL_PRICES[gear.rarity] || 50;
-            
-            itemDiv.innerHTML = `
-                <div>${gear.name} <span style="color:#00e5ff;">(+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)})</span></div>
-                <button class="btn-sell-gear" onclick="sellGear('${gear.instanceId}')">+${price} 💰</button>
+
+        freeItems.forEach(gear => {
+            const row = document.createElement('div');
+            row.className = 'unassigned-item';
+            row.style.borderLeftColor = rarityColors[gear.rarity];
+            const pctTag = gear.pct ? ` (+${gear.pct}%)` : '';
+            row.innerHTML = `
+                <span>${gear.name}<br>+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag}</span>
+                <button class="btn-sell-gear" onclick="sellGear('${gear.instanceId}')">Продать</button>
             `;
-            subGrid.appendChild(itemDiv);
+            rGrid.appendChild(row);
         });
     });
 }
 
 function showGachaModal(items, type) {
-    const modalGrid = document.getElementById('modal-results-grid');
-    if (!modalGrid) return;
-    modalGrid.innerHTML = '';
+    const modal = document.getElementById('gacha-modal');
+    const grid = document.getElementById('modal-results-grid');
+    if (!modal || !grid) return;
 
-    if (type === "char") {
-        items.forEach(char => {
-            const card = document.createElement('div');
-            card.className = `char-card ${char.stars >= 4 ? 'glow-' + char.stars : ''}`;
-            card.style.setProperty('--rarity-color', rarityColors[char.stars]);
-            card.innerHTML = `
-                <div class="char-stars">${"★".repeat(char.stars)}</div>
-                <div class="char-name">${char.name}</div>
-                <div class="char-income">${char.baseAtk.toFixed(2)} АТК</div>
-                <div class="char-hp-stat">${char.baseHp.toFixed(2)} HP</div>
+    grid.innerHTML = '';
+    modal.style.display = 'flex';
+
+    items.forEach(item => {
+        const el = document.createElement('div');
+        if (type === "char") {
+            el.className = 'char-card';
+            el.style.setProperty('--rarity-color', rarityColors[item.stars]);
+            let starsStr = item.stars === 6 ? "👑 МИФИК" : "★".repeat(item.stars);
+            el.innerHTML = `
+                <div class="char-stars" style="color:${rarityColors[item.stars]}">${starsStr}</div>
+                <div class="char-name" style="white-space:normal;">${item.name}</div>
             `;
-            modalGrid.appendChild(card);
-        });
-    } else if (type === "gear") {
-        items.forEach(gear => {
-            const card = document.createElement('div');
-            card.className = `gear-card-anim ${gear.rarity === 'legendary' ? 'glow-legendary' : ''}`;
-            card.style.setProperty('--rarity-color', rarityColors[gear.rarity]);
-            card.innerHTML = `
-                <div style="color: var(--rarity-color); font-size: 11px; font-weight: bold; text-transform: uppercase; margin-bottom: 5px;">
-                    ● ${gear.rarity}
-                </div>
-                <div class="gear-title-anim">${gear.name}</div>
-                <div class="gear-bonus-anim">+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}</div>
+        } else {
+            el.className = 'gear-card-anim';
+            el.style.setProperty('--rarity-color', rarityColors[item.rarity]);
+            el.innerHTML = `
+                <div class="gear-title-anim">${item.name}</div>
+                <div class="gear-bonus-anim">+${item.bonus.toFixed(2)} ${getGearLabel(item.type)}</div>
             `;
-            modalGrid.appendChild(card);
-        });
-    }
-    document.getElementById('gacha-modal').style.display = 'flex';
+        }
+        grid.appendChild(el);
+    });
 }
 
 function closeModal() {
-    document.getElementById('gacha-modal').style.display = 'none';
+    const modal = document.getElementById('gacha-modal');
+    if (modal) modal.style.display = 'none';
 }
+
+setInterval(() => {
+    if (pendingDroppedGear !== null || document.getElementById('overflow-modal').style.display === 'flex') {
+        return; 
+    }
+
+    const goldSec = calculateTotalGoldIncome();
+    player.gold += goldSec;
+
+    if (player.ownedCharacters.length > 0 && player.squadCurrentHp > 0) {
+        player.timeAlive++;
+        player.totalTimeAlive++;
+        
+        player.mythicTimer++;
+        if (player.mythicTimer >= 1800) {
+            player.mythicTimer = 0;
+            grantMythicHeroChance();
+        }
+    }
+
+    if (player.mythicCooldowns) {
+        for (let k in player.mythicCooldowns) {
+            if (player.mythicCooldowns[k] > 0) player.mythicCooldowns[k]--;
+        }
+    }
+
+    const maxSquadHp = calculateTotalHp();
+
+    if (player.ownedCharacters.some(c => c.id === "mythic_autoheal")) {
+        if (!player.mythicCooldowns.mythic_autoheal) player.mythicCooldowns.mythic_autoheal = 0;
+        if (player.squadCurrentHp > 0 && player.squadCurrentHp <= maxSquadHp * 0.10 && player.mythicCooldowns.mythic_autoheal <= 0) {
+            player.squadCurrentHp = maxSquadHp;
+            const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
+            player.mythicCooldowns.mythic_autoheal = Math.round(600 * (hasCdrChronos ? 0.9 : 1.0));
+            showToast("💖 Феникс восстал из пепла! ХП отряда полностью восстановлено!", "#ff3366");
+            rollMythicArtifactChance();
+        }
+    }
+
+    if (player.squadCurrentHp > maxSquadHp) {
+        player.squadCurrentHp = maxSquadHp;
+    }
+
+    if (campState.isActive) {
+        campState.timeLeft--;
+        currentEnemy.hp = Math.max(0, campState.timeLeft);
+        player.squadCurrentHp = maxSquadHp;
+
+        if (campState.timeLeft % 5 === 0 && campState.timeLeft > 0) {
+            const tier = getDynamicDropTier(player.battleStage);
+            if (Math.random() < 0.15 && getGearCountByRarity(tier) < getMaxGearLimit()) {
+                const gear = generateRandomGear(tier);
+                player.gearInventory.push(gear);
+                campState.hasDroppedGear = true;
+                showToast(`🔥 Костер согрел: найдена экипировка ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)})!`, rarityColors[tier]);
+                renderInventory(); 
+                saveGame();
+            }
+        }
+
+        if (campState.timeLeft <= 0) {
+            campState.isActive = false; 
+            campState.timeLeft = 0;
+            const tier = getDynamicDropTier(player.battleStage);
+            if (!campState.hasDroppedGear && getGearCountByRarity(tier) < getMaxGearLimit()) {
+                const gear = generateRandomGear(tier);
+                player.gearInventory.push(gear);
+                renderInventory(); 
+                saveGame();
+            }
+            player.battleStage++;
+            spawnEnemy();
+        }
+    } else {
+        let squadAtk = calculateTotalAtk();
+        if (squadAtk > 0) currentEnemy.hp -= squadAtk;
+
+        if (currentEnemy.hp > 0 && player.ownedCharacters.length > 0) {
+            player.squadCurrentHp -= currentEnemy.atk;
+
+            if (player.squadCurrentHp <= 0) {
+                showToast("💀 Отряд повержен! Серия побед обнулена. Отступление на 1 этап назад.", "#ff3333");
+                player.bossWinStreak = 0;
+                player.timeAlive = 0;
+                player.battleStage = Math.max(1, player.battleStage - 1);
+                player.squadCurrentHp = calculateTotalHp(); 
+                spawnEnemy();
+                updateUI();
+                return; 
+            }
+        }
+
+        if (currentEnemy.hp <= 0) {
+            player.gold += currentEnemy.reward;
+            player.bossWinStreak++; 
+            if (player.battleStage >= 34 && player.battleStage % 5 === 4) {
+                showToast(`🏆 БОСС побежден! Серия побед подряд: ${player.bossWinStreak}`, '#ffd700');
+            } else {
+                showToast(`⚔️ Враг повержен! Серия побед подряд: ${player.bossWinStreak}`, '#4caf50');
+            }
+            executeMonsterDrop(); 
+            player.battleStage++;
+            spawnEnemy();
+        }
+    }
+    
+    saveTimerCounter++;
+    if (saveTimerCounter >= 30) {
+        saveTimerCounter = 0;
+        saveGame();
+    }
+
+    updateUI();
+}, 1000);
 
 loadGame();
 spawnEnemy();
-updateUI();
 renderInventory();
+updateUI();

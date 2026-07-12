@@ -10,6 +10,7 @@
     --rarity-4: #a124c7;
     --rarity-5: #ff8f00;
     --rarity-legendary: #ff8f00;
+    --rarity-mythic: #ff3366;
 }
 
 * {
@@ -80,6 +81,7 @@ body {
     align-items: center;
     box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     border: 1px solid #222232;
+    position: relative;
 }
 
 .stat-box { text-align: center; }
@@ -88,6 +90,20 @@ body {
 .stat-value.gold { color: #ffd700; text-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
 .bm-value { color: #ffaa00; }
 .gold-speed-display { font-size: 11px; color: #4caf50; font-weight: bold; margin-top: 2px; }
+
+.btn-wiki-toggle {
+    background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+    color: #fff;
+    border: none;
+    padding: 10px 16px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.2s;
+}
+.btn-wiki-toggle:hover { transform: translateY(-1px); filter: brightness(1.1); }
 
 .battle-section {
     background: linear-gradient(180deg, #1c1313 0%, #13131a 100%);
@@ -173,12 +189,14 @@ body {
 .squad-title {
     margin-top: 0; 
     color: #ffd700;
+    margin-bottom: 10px;
 }
 .squad-subinfo {
     display: flex; 
     gap: 15px; 
     font-size: 13px; 
     margin-bottom: 10px;
+    flex-wrap: wrap;
 }
 .squad-hp-container {
     background: #222; 
@@ -186,6 +204,7 @@ body {
     height: 16px; 
     overflow: hidden; 
     position: relative;
+    margin-bottom: 10px;
 }
 .squad-hp-bar-fill {
     background: linear-gradient(90deg, #4caf50, #81c784); 
@@ -201,6 +220,19 @@ body {
     font-size: 11px; 
     font-weight: bold; 
     line-height: 16px; 
+    color: #fff;
+}
+.squad-timers-block {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--text-muted);
+    border-top: 1px solid #2d2d2d;
+    padding-top: 8px;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.squad-timers-block span strong {
     color: #fff;
 }
 
@@ -234,7 +266,7 @@ body {
 .btn-summon { color: white; border: none; padding: 12px 26px; font-size: 14px; font-weight: bold; border-radius: 50px; cursor: pointer; transition: all 0.2s ease; }
 .btn-x1 { background: #4a5568; }
 .btn-x10 { background: linear-gradient(135deg, #6200ea 0%, #4a00e0 100%); }
-.btn-xmax { background: linear-gradient(135deg, #e65100 0%, #ff8f00 100%); box-shadow: 0 0 10px rgba(255,143,0,0.4); }
+.btn-xmax { background: linear-gradient(135deg, #ea7100 0%, #e0ca00 100%); }
 .btn-summon:hover { transform: translateY(-2px); filter: brightness(1.2); }
 
 .shop-section, .reforge-section, .inventory-section {
@@ -258,7 +290,7 @@ body {
 
 .unassigned-split-container {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
     gap: 15px;
 }
 
@@ -411,10 +443,28 @@ body {
 }
 
 .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(3, 3, 5, 0.97); display: none; justify-content: center; align-items: center; z-index: 100; }
-.modal-content { width: 90%; max-width: 850px; text-align: center; background: var(--container-bg); padding: 30px; border-radius: 20px; border: 1px solid #2d2d3d; box-shadow: 0 0 30px rgba(0,0,0,0.7); }
-.modal-results-title { font-size: 24px; margin-bottom: 25px; color: #fff; }
-.gacha-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; max-height: 55vh; overflow-y: auto; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.3); }
-.btn-close-modal { background: #f5f5f7; color: #121214; border: none; padding: 12px 35px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; }
+.modal-content { width: 90%; max-width: 850px; text-align: center; background: var(--container-bg); padding: 30px; border-radius: 20px; border: 1px solid #2d2d3d; box-shadow: 0 0 30px rgba(0,0,0,0.7); display: flex; flex-direction: column; max-height: 90vh; }
+.modal-results-title { font-size: 24px; margin-bottom: 25px; color: #fff; flex-shrink: 0; }
+.gacha-results { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; margin-bottom: 25px; overflow-y: auto; padding: 10px; border-radius: 8px; background: rgba(0,0,0,0.3); flex-grow: 1; min-height: 0; }
+.btn-close-modal { background: #f5f5f7; color: #121214; border: none; padding: 12px 35px; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; flex-shrink: 0; width: fit-content; align-self: center; }
+
+.gacha-results .gear-card-anim {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    min-width: 0; 
+    max-width: 100%;
+    box-sizing: border-box;
+}
+.gacha-results .char-card {
+    white-space: normal !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 120px;
+    box-sizing: border-box;
+}
 
 .overflow-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
 .overflow-modal-content { background: #252525; border: 2px solid #ff3333; border-radius: 8px; width: 95%; max-width: 500px; padding: 20px; color: #fff; box-shadow: 0 0 20px rgba(255,51,51,0.3); }
@@ -430,37 +480,119 @@ body {
 .overflow-manage-title { margin: 0 0 8px 0; color:#00e5ff; font-size: 14px; }
 .overflow-list-container { max-height: 200px; overflow-y: auto; background:#1a1a1a; padding:5px; border-radius:4px; }
 
+.overflow-reforge-group {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+    margin-bottom: 10px;
+    background: rgba(0,0,0,0.3);
+    padding: 8px;
+    border-radius: 4px;
+}
+.btn-reforge-quick {
+    border: none;
+    color: #fff;
+    padding: 6px 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 11px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 1.3;
+    min-width: 0;
+    transition: filter 0.2s;
+}
+.btn-reforge-quick:hover { filter: brightness(1.15); }
+
 .gear-card-anim {
     background: #191922;
     border-radius: 12px;
-    padding: 20px;
+    padding: 15px;
     border: 2px solid var(--rarity-color);
     text-align: center;
-    min-width: 180px;
-    margin: 5px auto;
+    margin: 0 auto;
+    width: 100%;
 }
-.gear-title-anim { font-size: 16px; font-weight: bold; margin-bottom: 10px; color: #fff; }
-.gear-bonus-anim { font-size: 14px; color: #00e5ff; font-weight: 600; }
+.gear-title-anim { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #fff; text-overflow: ellipsis; overflow: hidden; }
+.gear-bonus-anim { font-size: 12px; color: #00e5ff; font-weight: 600; }
 
 .glow-5 { box-shadow: 0 0 15px var(--rarity-5); animation: pulse-glow-5 2s infinite alternate; }
 .glow-4 { box-shadow: 0 0 10px var(--rarity-4); }
+.glow-6 { box-shadow: 0 0 20px var(--rarity-mythic); animation: pulse-glow-m 1.5s infinite alternate; }
 .glow-legendary { box-shadow: 0 0 25px var(--rarity-legendary); animation: pulse-glow-l 1.5s infinite alternate; }
 
 @keyframes pulse-glow-5 { 0% { box-shadow: 0 0 10px var(--rarity-5); } 100% { box-shadow: 0 0 20px #ffea00; } }
 @keyframes pulse-glow-l { 0% { box-shadow: 0 0 12px var(--rarity-legendary); } 100% { box-shadow: 0 0 30px #ffd700; } }
+@keyframes pulse-glow-m { 0% { box-shadow: 0 0 12px var(--rarity-mythic); } 100% { box-shadow: 0 0 25px #ff3399; } }
+
+.wiki-drawer {
+    position: fixed;
+    top: 0;
+    right: -100%;
+    width: 100%;
+    max-width: 450px;
+    height: 100%;
+    background: #111116;
+    border-left: 2px solid #222232;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.8);
+    z-index: 10000;
+    transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+}
+.wiki-drawer.open { right: 0; }
+.wiki-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    z-index: 9999;
+    display: none;
+}
+.wiki-overlay.open { display: block; }
+.wiki-drawer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #222232;
+    padding-bottom: 12px;
+    margin-bottom: 15px;
+    flex-shrink: 0;
+}
+.wiki-drawer-title { font-size: 18px; color: #ffd700; font-weight: bold; }
+.btn-wiki-close { background: none; border: none; color: var(--text-muted); font-size: 22px; cursor: pointer; font-weight: bold; }
+.btn-wiki-close:hover { color: #fff; }
+.wiki-content { flex-grow: 1; overflow-y: auto; padding-right: 5px; }
+
+.wiki-rarity-block { margin-bottom: 15px; }
+.wiki-rarity-head { font-size: 12px; font-weight: bold; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+.wiki-list { display: flex; flex-direction: column; gap: 6px; }
+.wiki-row {
+    background: #181822;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    border-left: 3px solid #555;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+}
+.wiki-row.owned { border-left-color: #4caf50; filter: none; opacity: 1; }
+.wiki-row.unowned { border-left-color: #333; opacity: 0.4; filter: grayscale(1); background: #121217; }
+.wiki-row-top { display: flex; justify-content: space-between; font-weight: bold; color: #fff; }
+.wiki-row-stats { font-size: 11px; color: var(--text-muted); }
+.wiki-row-passive { font-size: 10px; color: #ffaa00; font-style: italic; }
 
 ::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: rgba(0,0,0,0.1); }
 ::-webkit-scrollbar-thumb { background: #2d2d3d; border-radius: 3px; }
 
 @media (max-width: 600px) {
-    body {
-        padding: 8px;
-    }
-
-    .game-container {
-        gap: 12px;
-    }
+    body { padding: 8px; }
+    .game-container { gap: 12px; }
 
     .header-panel {
         display: grid;
@@ -474,137 +606,49 @@ body {
         padding: 8px;
         border-radius: 8px;
     }
-    .stat-box:nth-child(3) {
-        grid-column: span 2;
-    }
-    .stat-value {
-        font-size: 15px;
-    }
-    .tokens-display {
-        justify-content: space-between;
-        font-size: 12px;
-        gap: 4px;
-    }
+    .stat-box:nth-child(3) { grid-column: span 2; }
+    .stat-box:nth-child(4) { grid-column: span 1; }
+    .btn-wiki-toggle { grid-column: span 1; width: 100%; text-align: center; height: fit-content; align-self: center; padding: 8px; }
+    
+    .stat-value { font-size: 15px; }
+    .tokens-display { justify-content: space-between; font-size: 12px; gap: 4px; }
 
-    .battle-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 5px;
-    }
-    .battle-subinfo, .squad-subinfo {
-        flex-wrap: wrap;
-        gap: 4px 8px;
-        font-size: 11px;
-    }
+    .battle-header { flex-direction: column; align-items: flex-start; gap: 5px; }
+    .battle-subinfo, .squad-subinfo { flex-wrap: wrap; gap: 4px 8px; font-size: 11px; }
 
-    .banner-section {
-        padding: 20px 12px;
-    }
-    .banner-title {
-        font-size: 18px;
-        letter-spacing: 1px;
-    }
-    .btn-group {
-        flex-direction: column;
-        width: 100%;
-        gap: 8px;
-    }
-    .btn-summon {
-        width: 100%;
-        padding: 10px;
-        font-size: 13px;
-        border-radius: 8px;
-    }
+    .banner-section { padding: 20px 12px; }
+    .banner-title { font-size: 18px; letter-spacing: 1px; }
+    .btn-group { flex-direction: column; width: 100%; gap: 8px; }
+    .btn-summon { width: 100%; padding: 10px; font-size: 13px; border-radius: 8px; }
 
-    .gear-gacha-grid {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
-    .gear-box {
-        padding: 12px;
-    }
+    .gear-gacha-grid { grid-template-columns: 1fr; gap: 10px; }
+    .gear-box { padding: 12px; }
 
-    .reforge-controls {
-        flex-direction: column;
-        gap: 8px;
-    }
-    .btn-action-reforge {
-        font-size: 12px;
-        padding: 8px;
-    }
-    .unassigned-split-container {
-        grid-template-columns: 1fr;
-        gap: 10px;
-    }
+    .reforge-controls { flex-direction: column; gap: 8px; }
+    .btn-action-reforge { font-size: 12px; padding: 8px; }
+    .unassigned-split-container { grid-template-columns: 1fr; gap: 10px; }
 
-    .section-title {
-        font-size: 15px;
-    }
-    .flex-title {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 4px;
-    }
+    .section-title { font-size: 15px; }
+    .flex-title { flex-direction: column; align-items: flex-start; gap: 4px; }
 
-    .grid-container {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 8px;
-        max-height: none; 
-    }
-    .char-card {
-        padding: 8px;
-        border-width: 1px;
-    }
-    .char-name {
-        font-size: 11px;
-        margin-bottom: 4px;
-    }
-    .char-stars {
-        font-size: 9px;
-        margin-bottom: 4px;
-    }
-    .char-income, .char-hp-stat, .char-gold-income {
-        font-size: 10px;
-        margin-bottom: 2px;
-    }
-    .char-passive {
-        font-size: 9px;
-        padding: 1px 2px;
-    }
-    .gear-selector {
-        font-size: 10px;
-        padding: 4px;
-    }
-    .btn-buy-copy {
-        font-size: 9px;
-        padding: 4px;
-    }
-    .char-count {
-        top: 4px;
-        right: 4px;
-        font-size: 8px;
-        padding: 1px 4px;
-    }
+    .grid-container { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; max-height: none; }
+    .char-card { padding: 8px; border-width: 1px; min-width: 0; overflow: hidden; }
+    .char-name { font-size: 11px; margin-bottom: 4px; }
+    .char-stars { font-size: 9px; margin-bottom: 4px; }
+    .char-income, .char-hp-stat, .char-gold-income { font-size: 10px; margin-bottom: 2px; }
+    .char-passive { font-size: 9px; padding: 1px 2px; }
+    .gear-selector { font-size: 10px; padding: 4px; }
+    .btn-buy-copy { font-size: 9px; padding: 4px; }
+    .char-count { top: 4px; right: 4px; font-size: 8px; padding: 1px 4px; }
 
-    .modal-content {
-        padding: 15px 10px;
-    }
-    .modal-results-title {
-        font-size: 18px;
-        margin-bottom: 15px;
-    }
     .gacha-results {
         grid-template-columns: repeat(2, 1fr);
         gap: 8px;
+        padding: 5px;
     }
-    .gear-card-anim {
-        padding: 10px;
-        min-width: unset;
-    }
-    .gear-title-anim {
-        font-size: 13px;
-    }
-    .gear-bonus-anim {
-        font-size: 11px;
-    }
+    .modal-content { padding: 15px 10px; width: 95%; }
+    .modal-results-title { font-size: 16px; margin-bottom: 12px; }
+    .gear-card-anim { padding: 10px; }
+    .gear-title-anim { font-size: 11px; }
+    .gear-bonus-anim { font-size: 10px; }
 }
