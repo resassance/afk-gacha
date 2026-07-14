@@ -100,6 +100,104 @@ function getGearLabel(type) {
     return '';
 }
 
+function getEmojiFromName(name) {
+    if (!name) return '❔';
+    const idx = name.indexOf(' ');
+    return idx > -1 ? name.substring(0, idx) : name;
+}
+
+function buildCharPortraitHTML(char, sizeClass) {
+    const emoji = getEmojiFromName(char.name);
+    return `
+        <div class="char-portrait ${sizeClass || ''}">
+            <div class="portrait-fallback">${emoji}</div>
+            <img class="portrait-img" src="assets/characters/${char.id}.png" alt=""
+                 onload="this.previousElementSibling.style.display='none';"
+                 onerror="this.style.display='none';">
+        </div>
+    `;
+}
+
+function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold, passiveHTML, isMax, countText) {
+    const starsStr = char.stars === 6 ? "👑" : "★".repeat(char.stars);
+    const emoji = getEmojiFromName(char.name);
+    const currentlyEquipped = player.gearInventory.find(g => g.equippedTo === char.id);
+
+    const tType = TOKEN_MAP[char.stars];
+    const tCost = CHAR_TOKEN_COST[char.stars];
+    const buyBtnHTML = (isMax || char.stars === 6) ? '' :
+        `<button class="btn-buy-copy" onclick="buyCharacterCopy('${char.id}', ${char.stars})">🧬 Копия за ${tCost} ${TOKEN_EMOJIS[tType]}</button>`;
+    const candidates = player.gearInventory.filter(g => g.equippedTo === null || g.equippedTo === char.id);
+    const sortedGear = sortGearForPicker(candidates);
+    let pickerHTML = `
+        <div class="gear-picker-label">⚔️ Снаряжение</div>
+        <div class="gear-picker-list">
+            <div class="gear-picker-item none-option ${!currentlyEquipped ? 'equipped' : ''}" onclick="changeEquipmentFromPicker('${char.id}','none')">Без реликвии</div>
+    `;
+    sortedGear.forEach(gear => {
+        const isEq = gear.equippedTo === char.id;
+        const pctTag = gear.pct ? ` (+${gear.pct}%)` : '';
+        pickerHTML += `
+            <div class="gear-picker-item ${isEq ? 'equipped' : ''}" style="border-left-color:${rarityColors[gear.rarity]}" onclick="changeEquipmentFromPicker('${char.id}','${gear.instanceId}')">
+                ${buildGearPortraitHTML(gear, 'gear-portrait-sm')}
+                <span class="gpi-text">[${gear.rarity.toUpperCase()}] ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag})</span>
+                ${isEq ? '<span class="gpi-check">✓</span>' : ''}
+            </div>
+        `;
+    });
+    pickerHTML += `</div>`;
+
+    let mythicAbilityHTML = '';
+    if (char.passive === 'm_active') {
+        const cd = player.mythicCooldowns[char.id] || 0;
+        mythicAbilityHTML = `
+            <button class="btn-mythic-ability-card" data-hero-id="${char.id}" ${cd > 0 ? 'disabled' : ''} onclick="useMythicAbility('${char.id}')">
+                ${cd > 0 ? `⏳ Перезарядка: ${cd}с` : '✨ Использовать способность'}
+            </button>
+            <div class="mythic-ability-desc">${char.passiveDesc}</div>
+        `;
+    }
+
+    return `
+        <div class="char-stars-badge" style="color:${rarityColors[char.stars]}">${starsStr}</div>
+        <div class="char-count" ${isMax ? 'style="background:#ff8f00;"' : ''}>${countText}</div>
+        <div class="char-portrait-full">
+            <div class="portrait-fallback">${emoji}</div>
+            <img class="portrait-img" src="assets/characters/${char.id}.png" alt=""
+                 onload="this.previousElementSibling.style.display='none';"
+                 onerror="this.style.display='none';">
+            <div class="char-portrait-namebar">
+                <div class="char-portrait-name">${char.name}</div>
+                <button class="char-expand-btn" onclick="toggleCharExpand('${char.id}')" title="Подробнее">▼</button>
+            </div>
+        </div>
+        <div class="char-card-details">
+            <div class="char-stat-row">
+                <span class="char-income">${currentCharAtk.toFixed(2)} АТК</span>
+                <span class="char-hp-stat">${currentCharHp.toFixed(2)} HP</span>
+            </div>
+            <div class="char-stat-row"><span class="char-gold-income">+${currentCharGold.toFixed(2)} ЗОЛ/с</span></div>
+            ${passiveHTML}
+            ${mythicAbilityHTML}
+            <button class="btn-equip-recommended" onclick="equipRecommendedGear('${char.id}')">🎯 Экипировать рекомендуемое</button>
+            ${pickerHTML}
+            ${buyBtnHTML}
+        </div>
+    `;
+}
+
+function buildGearPortraitHTML(gearLike, sizeClass) {
+    const emoji = getEmojiFromName(gearLike.name);
+    return `
+        <div class="gear-portrait ${sizeClass || ''}">
+            <div class="portrait-fallback">${emoji}</div>
+            <img class="portrait-img" src="assets/gears/${gearLike.id}.png" alt=""
+                 onload="this.previousElementSibling.style.display='none';"
+                 onerror="this.style.display='none';">
+        </div>
+    `;
+}
+
 const MONSTER_PREFIXES = ["Дикий", "Проклятый", "Пещерный", "Кровавый", "Элитный", "Адский", "Древний"];
 const MONSTER_TYPES = ["Слайм", "Гоблин", "Орк-Налётчик", "Скелет-Воин", "Гарпия", "Каменный Голем", "Химера", "Дракон Бездны"];
 
@@ -115,7 +213,8 @@ let player = {
     totalTimeAlive: 0,
     savedCampState: null,
     mythicTimer: 0,
-    mythicCooldowns: { mythic_oneclick: 0, mythic_loot: 0, mythic_autoheal: 0 }
+    mythicCooldowns: { mythic_oneclick: 0, mythic_loot: 0, mythic_autoheal: 0 },
+    settings: { autoMythicAbilities: false }
 };
 
 let currentEnemy = { name: "", hp: 0, maxHp: 0, atk: 0, reward: 0 };
@@ -178,6 +277,8 @@ function loadGame() {
     if (player.timeAlive === undefined) player.timeAlive = 0;
     if (player.totalTimeAlive === undefined) player.totalTimeAlive = 0;
     if (player.mythicTimer === undefined) player.mythicTimer = 0;
+    if (!player.settings) player.settings = { autoMythicAbilities: false };
+    if (player.settings.autoMythicAbilities === undefined) player.settings.autoMythicAbilities = false;
 
     gearCounter = player.gearInventory.length;
 
@@ -289,50 +390,50 @@ function calculateTotalGoldIncome() {
     return totalGold * globalGoldMultiplier;
 }
 
-const ENEMY_SOFTCAP_STAGE = 200;
-const ENEMY_SAFETY_MARGIN = 1.3;
-const ENEMY_MAX_ATK_SHARE = 0.30;
+const REFERENCE_STAGE = 200;
+const PROGRESS_EXPONENT = 0.5;
+
+const MOB_ATK_SHARE = 0.22;
+const MOB_SAFETY_MARGIN = 1.3;
+const BOSS_ATK_SHARE = 0.38;
+const BOSS_SAFETY_MARGIN = 1.15;
+const COMBAT_SPEED_DIVISOR = 3;
+
+function getCombatSquadAtk() {
+    return calculateTotalAtk() / COMBAT_SPEED_DIVISOR;
+}
 
 function getEnemyStats(stage, isBoss) {
-    const hpMod = isBoss ? 2.5 : 1.0;
-    const atkMod = isBoss ? 1.8 : 1.0;
-
-    const classicHp = (12.0 * Math.pow(1.2, stage - 1) + (stage * 0.5)) * hpMod;
-    const classicAtk = (0.05 * Math.pow(1.12, stage - 1) + (stage * 0.005)) * atkMod;
-
-    if (stage <= ENEMY_SOFTCAP_STAGE) {
-        return { hp: classicHp, atk: classicAtk };
-    }
-
     const squadAtk = Math.max(calculateTotalAtk(), 0.01);
     const squadHp = Math.max(calculateTotalHp(), 0.01);
-    const atkCeiling = squadHp * ENEMY_MAX_ATK_SHARE * atkMod;
-    const atk = Math.min(classicAtk, atkCeiling);
-    const powerBudget = (squadAtk * squadHp) / ENEMY_SAFETY_MARGIN;
-    const hpCeiling = powerBudget / atk;
-    const hp = Math.min(classicHp, hpCeiling);
+    const progress = Math.pow(Math.min(stage, REFERENCE_STAGE) / REFERENCE_STAGE, PROGRESS_EXPONENT);
+    const atkShare = isBoss ? BOSS_ATK_SHARE : MOB_ATK_SHARE;
+    const margin = isBoss ? BOSS_SAFETY_MARGIN : MOB_SAFETY_MARGIN;
+    const rawAtk = Math.max(squadHp * atkShare * progress, 0.001);
+    const powerBudget = (squadAtk * squadHp * progress) / margin;
+    const hp = Math.max(powerBudget / rawAtk, 0.01);
+    const atk = rawAtk / COMBAT_SPEED_DIVISOR;
 
     return { hp, atk };
 }
 
+const REWARD_BASE = 15;
+const REWARD_MAX_MULT = 800;
+const REWARD_PROGRESS_EXPONENT = 2;
+
+function getGoldReward(stage, hpMod) {
+    const progress = Math.pow(Math.min(stage, REFERENCE_STAGE) / REFERENCE_STAGE, REWARD_PROGRESS_EXPONENT);
+    let reward = REWARD_BASE * (1 + progress * (REWARD_MAX_MULT - 1)) * hpMod;
+
+    if (stage > REFERENCE_STAGE) {
+        reward += calculateTotalGoldIncome() * 5 * hpMod;
+    }
+
+    return Math.floor(reward) + 2;
+}
+
 function spawnEnemy() {
     const bZone = document.getElementById('battle-zone-container');
-    
-    if (player.savedCampState) {
-        campState.isActive = true;
-        campState.timeLeft = player.savedCampState.timeLeft;
-        campState.hasDroppedGear = player.savedCampState.hasDroppedGear;
-        player.savedCampState = null;
-        
-        bZone.classList.add('camp-mode');
-        currentEnemy.name = "⛺ Привал у костра (Зона отдыха)";
-        currentEnemy.maxHp = 30;
-        currentEnemy.hp = campState.timeLeft;
-        currentEnemy.atk = 0;
-        currentEnemy.reward = 0;
-        player.squadCurrentHp = calculateTotalHp();
-        return;
-    }
     
     if (player.battleStage % 5 === 0) {
         campState.isActive = true;
@@ -366,7 +467,7 @@ function spawnEnemy() {
     currentEnemy.maxHp = stats.hp;
     currentEnemy.hp = stats.hp;
     currentEnemy.atk = stats.atk;
-    currentEnemy.reward = Math.floor((15 * Math.pow(1.12, player.battleStage - 1)) * hpMod) + 2;
+    currentEnemy.reward = getGoldReward(player.battleStage, hpMod);
 }
 
 function generateRandomGear(tier) {
@@ -589,9 +690,11 @@ function pullCharacter() {
     return pool[Math.floor(Math.random() * pool.length)];
 }
 
+const MAX_PULLS_PER_ACTION = 300;
+
 function handlePulls(amount) {
     let pullsToPerform = amount;
-    if (amount === 'max') pullsToPerform = Math.floor(player.gold / 100);
+    if (amount === 'max') pullsToPerform = Math.min(Math.floor(player.gold / 100), MAX_PULLS_PER_ACTION);
 
     if (typeof amount === 'number' && player.gold < amount * 100) {
         pullsToPerform = Math.floor(player.gold / 100);
@@ -759,6 +862,95 @@ function bulkReforge(tier) {
     saveGame();
 }
 
+function bulkReforgeAll(tier) {
+    const countFree = () => player.gearInventory.filter(g => g.rarity === tier && g.equippedTo === null).length;
+
+    if (countFree() < 3) {
+        alert(`Необходимо минимум 3 свободных реликвии редкости ${tier.toUpperCase()} для перековки!`);
+        return;
+    }
+
+    const tiersOrder = ['common', 'rare', 'epic', 'legendary'];
+    const currentIndex = tiersOrder.indexOf(tier);
+
+    let reforges = 0;
+    let evolutions = 0;
+
+    while (countFree() >= 3) {
+        let removedCount = 0;
+        for (let i = player.gearInventory.length - 1; i >= 0 && removedCount < 3; i--) {
+            const g = player.gearInventory[i];
+            if (g.rarity === tier && g.equippedTo === null) {
+                player.gearInventory.splice(i, 1);
+                removedCount++;
+            }
+        }
+
+        let finalTier = tier;
+        if (currentIndex < tiersOrder.length - 1 && Math.random() <= 0.25) {
+            finalTier = tiersOrder[currentIndex + 1];
+            evolutions++;
+        }
+
+        player.gearInventory.push(generateRandomGear(finalTier));
+        reforges++;
+    }
+
+    showToast(`🔨 Массовая перековка ${tier.toUpperCase()}: ${reforges}x, эволюций в след. тир: ${evolutions}`, rarityColors[tier] || '#ffffff');
+
+    renderInventory();
+    updateUI();
+    saveGame();
+}
+
+let currentWikiTab = 'heroes';
+let expandedCharIds = new Set();
+
+function toggleCharExpand(charId) {
+    if (expandedCharIds.has(charId)) {
+        expandedCharIds.delete(charId);
+    } else {
+        expandedCharIds.add(charId);
+    }
+    renderInventory();
+}
+
+function toggleAutoMythic(checked) {
+    player.settings.autoMythicAbilities = checked;
+    saveGame();
+}
+
+function autoUseMythicAbilities() {
+    if (!player.settings.autoMythicAbilities) return;
+    ['mythic_oneclick', 'mythic_loot'].forEach(heroId => {
+        if (!player.ownedCharacters.some(c => c.id === heroId)) return;
+        if ((player.mythicCooldowns[heroId] || 0) > 0) return;
+        if (heroId === 'mythic_oneclick' && campState.isActive) return;
+        useMythicAbility(heroId);
+    });
+}
+
+function toggleSettings() {
+    const modal = document.getElementById('settings-modal');
+    if (!modal) return;
+    modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
+}
+
+function resetProgress() {
+    const firstConfirm = confirm(
+        "Вы уверены? Это НАВСЕГДА удалит весь прогресс: героинь, снаряжение, золото, жетоны и этаж. Отменить будет нельзя."
+    );
+    if (!firstConfirm) return;
+
+    const secondConfirm = confirm(
+        "Точно-точно? Это последнее предупреждение - прогресс будет стёрт безвозвратно."
+    );
+    if (!secondConfirm) return;
+
+    localStorage.removeItem('waifu_idle_save_v2');
+    location.reload();
+}
+
 function toggleWiki() {
     const drawer = document.getElementById('wiki-drawer');
     const overlay = document.getElementById('wiki-overlay');
@@ -769,9 +961,21 @@ function toggleWiki() {
         drawer.classList.remove('open');
         overlay.classList.remove('open');
     } else {
-        renderWikiList();
+        switchWikiTab(currentWikiTab);
         drawer.classList.add('open');
         overlay.classList.add('open');
+    }
+}
+
+function switchWikiTab(tab) {
+    currentWikiTab = tab;
+    document.getElementById('wiki-tab-heroes').classList.toggle('active', tab === 'heroes');
+    document.getElementById('wiki-tab-gear').classList.toggle('active', tab === 'gear');
+
+    if (tab === 'heroes') {
+        renderWikiList();
+    } else {
+        renderWikiGearList();
     }
 }
 
@@ -786,6 +990,74 @@ function renderWikiList() {
     renderWikiBlock(6, MYTHIC_HEROES_POOL, "👑 МИФИЧЕСКИЙ РАНГ", listContainer);
 }
 
+function buildCopyStatsTable(char, currentCount) {
+    let rows = '';
+    for (let n = 1; n <= 10; n++) {
+        let mult = 1 + (n - 1) * 0.5;
+        let atk = char.baseAtk * mult;
+        let hp = char.baseHp * mult;
+        let gold = char.baseGold * mult;
+
+        if (n >= 10 && char.stars <= 5) {
+            const breakMult = 1 + MAX_UPGRADE_PASSIVES[char.stars].mult;
+            atk *= breakMult;
+            hp *= breakMult;
+            gold *= breakMult;
+        }
+
+        const isCurrent = n === currentCount;
+        rows += `<tr class="${isCurrent ? 'current-copy-row' : ''}">
+            <td>${n}${n === 10 ? ' 💥' : ''}</td>
+            <td>${atk.toFixed(2)}</td>
+            <td>${hp.toFixed(2)}</td>
+            <td>${gold.toFixed(2)}</td>
+        </tr>`;
+    }
+    return `
+        <table class="wiki-copy-table">
+            <thead><tr><th>Копий</th><th>АТК</th><th>HP</th><th>ЗОЛ/с</th></tr></thead>
+            <tbody>${rows}</tbody>
+        </table>
+        ${char.stars <= 5 ? `<div style="font-size:9px; color:var(--text-muted); margin-top:4px;">💥 на 10 копии срабатывает "${MAX_UPGRADE_PASSIVES[char.stars].desc}"</div>` : ''}
+    `;
+}
+
+function getRosterStatAverages() {
+    const allChars = [...Object.values(CHARACTER_DATABASE).flat(), ...MYTHIC_HEROES_POOL];
+    const sum = allChars.reduce((acc, c) => {
+        acc.atk += c.baseAtk; acc.hp += c.baseHp; acc.gold += c.baseGold;
+        return acc;
+    }, { atk: 0, hp: 0, gold: 0 });
+    const n = allChars.length;
+    return { atk: sum.atk / n, hp: sum.hp / n, gold: sum.gold / n };
+}
+const ROSTER_STAT_AVG = getRosterStatAverages();
+
+const GOLD_PASSIVES = ['gold_fever', 'ocean_wealth', 'imperial_tax'];
+const ATK_PASSIVES = ['double_bm', 'god_blessing', 'overdrive', 'dragon_rage', 'fortress'];
+
+function recommendMythicGear(char) {
+    const mAtk = GEAR_POOLS.mythic.find(g => g.type === 'atk');
+    const mHp = GEAR_POOLS.mythic.find(g => g.type === 'hp');
+    const mGold = GEAR_POOLS.mythic.find(g => g.type === 'gold');
+
+    if (char.passive && GOLD_PASSIVES.includes(char.passive)) {
+        return { type: 'gold', item: mGold, reason: 'синергия с золотой пассивкой' };
+    }
+    if (char.passive && ATK_PASSIVES.includes(char.passive)) {
+        return { type: 'atk', item: mAtk, reason: 'синергия с атакующей пассивкой' };
+    }
+
+    const relAtk = char.baseAtk / ROSTER_STAT_AVG.atk;
+    const relHp = char.baseHp / ROSTER_STAT_AVG.hp;
+    const relGold = char.baseGold / ROSTER_STAT_AVG.gold;
+
+    const best = Math.max(relAtk, relHp, relGold);
+    if (best === relGold) return { type: 'gold', item: mGold, reason: 'сильнейшая сторона героини' };
+    if (best === relAtk) return { type: 'atk', item: mAtk, reason: 'сильнейшая сторона героини' };
+    return { type: 'hp', item: mHp, reason: 'сильнейшая сторона героини' };
+}
+
 function renderWikiBlock(rarityKey, pool, headTitle, container) {
     const rarityBlock = document.createElement('div');
     rarityBlock.className = 'wiki-rarity-block';
@@ -795,25 +1067,83 @@ function renderWikiBlock(rarityKey, pool, headTitle, container) {
     list.className = 'wiki-list';
 
     pool.forEach(char => {
-        const isOwned = player.ownedCharacters.some(c => c.id === char.id);
+        const ownedChar = player.ownedCharacters.find(c => c.id === char.id);
+        const isOwned = !!ownedChar;
         const row = document.createElement('div');
         row.className = `wiki-row ${isOwned ? 'owned' : 'unowned'}`;
-        
+
+        const isMythicHero = char.stars === 6;
+        const ownedStatus = isOwned
+            ? (isMythicHero ? '✅ Получена' : `✅ Открыта (копий: ${ownedChar.count}/10)`)
+            : '🔒 Закрыта';
+        const rec = recommendMythicGear(char);
+
         row.innerHTML = `
             <div class="wiki-row-top">
-                <span>${char.name}</span>
-                <span>${isOwned ? '✅ Открыта' : '🔒 Закрыта'}</span>
+                <div class="wiki-row-name">${buildCharPortraitHTML(char, 'char-portrait-sm')}<span>${char.name}</span></div>
+                <span>${ownedStatus}</span>
             </div>
             <div class="wiki-row-stats">
-                Базовые: АТК ${char.baseAtk.toFixed(2)} | HP ${char.baseHp.toFixed(2)} | ЗОЛ +${char.baseGold.toFixed(2)}/с
+                Базовые${isMythicHero ? '' : ' (1 копия)'}: АТК ${char.baseAtk.toFixed(2)} | HP ${char.baseHp.toFixed(2)} | ЗОЛ +${char.baseGold.toFixed(2)}/с
             </div>
             ${char.passiveDesc ? `<div class="wiki-row-passive">Эффект: ${char.passiveDesc}</div>` : ''}
+            <div class="wiki-row-mythic-rec">💠 Лучший мифик-артефакт: ${rec.item.name} (${getGearLabel(rec.type)}, +${rec.item.pct}% к итогу) — ${rec.reason}</div>
+            ${isMythicHero ? '' : `
+            <details class="wiki-copy-details">
+                <summary>📊 Статы по количеству копий</summary>
+                ${buildCopyStatsTable(char, isOwned ? ownedChar.count : 0)}
+            </details>`}
         `;
         list.appendChild(row);
     });
 
     rarityBlock.appendChild(list);
     container.appendChild(rarityBlock);
+}
+
+function renderWikiGearList() {
+    const listContainer = document.getElementById('wiki-content-list');
+    if (!listContainer) return;
+    listContainer.innerHTML = '';
+
+    const tierTitles = {
+        common: '🟢 ОБЫЧНОЕ',
+        rare: '🔵 РЕДКОЕ',
+        epic: '🟣 ЭПИЧЕСКОЕ',
+        legendary: '🟡 ЛЕГЕНДАРНОЕ',
+        mythic: '👑 МИФИЧЕСКОЕ'
+    };
+
+    Object.keys(GEAR_POOLS).forEach(tier => {
+        const block = document.createElement('div');
+        block.className = 'wiki-rarity-block';
+        block.innerHTML = `<div class="wiki-rarity-head" style="color: ${rarityColors[tier]};">${tierTitles[tier]}</div>`;
+
+        const list = document.createElement('div');
+        list.className = 'wiki-list';
+
+        GEAR_POOLS[tier].forEach(g => {
+            const owned = player.gearInventory.some(inst => inst.id === g.id);
+            const row = document.createElement('div');
+            row.className = `wiki-row ${owned ? 'owned' : 'unowned'}`;
+
+            const pctLine = g.pct ? ` (плюс фикс. +${g.pct}% к итоговому стату персонажа)` : '';
+
+            row.innerHTML = `
+                <div class="wiki-row-top">
+                    <div class="wiki-row-name">${buildGearPortraitHTML(g, 'gear-portrait-sm')}<span>${g.name}</span></div>
+                    <span>${getGearLabel(g.type)}</span>
+                </div>
+                <div class="wiki-row-stats">
+                    Диапазон бонуса: от ${g.minBonus.toFixed(2)} до ${g.maxBonus.toFixed(2)} ${getGearLabel(g.type)}${pctLine}
+                </div>
+            `;
+            list.appendChild(row);
+        });
+
+        block.appendChild(list);
+        listContainer.appendChild(block);
+    });
 }
 
 function grantMythicHeroChance() {
@@ -904,8 +1234,7 @@ function buyMythicArtifact(type) {
     saveGame();
 }
 
-function changeEquipment(charId, selectElement) {
-    const selectedInstanceId = selectElement.value;
+function changeEquipmentFromPicker(charId, instanceId) {
     const oldMaxHp = calculateTotalHp();
     const hpRatio = oldMaxHp > 0 ? (player.squadCurrentHp / oldMaxHp) : 1;
 
@@ -913,8 +1242,8 @@ function changeEquipment(charId, selectElement) {
         if (g.equippedTo === charId) g.equippedTo = null;
     });
 
-    if (selectedInstanceId !== "none") {
-        const gear = player.gearInventory.find(g => g.instanceId === selectedInstanceId);
+    if (instanceId !== "none") {
+        const gear = player.gearInventory.find(g => g.instanceId === instanceId);
         if (gear) gear.equippedTo = charId;
     }
 
@@ -926,13 +1255,84 @@ function changeEquipment(charId, selectElement) {
     saveGame();
 }
 
+const RARITY_RANK = { mythic: 5, legendary: 4, epic: 3, rare: 2, common: 1 };
+
+function sortGearForPicker(list) {
+    return [...list].sort((a, b) => {
+        const r = RARITY_RANK[b.rarity] - RARITY_RANK[a.rarity];
+        if (r !== 0) return r;
+        return b.bonus - a.bonus;
+    });
+}
+
+function getBestAvailableGearForChar(char) {
+    const available = player.gearInventory.filter(g => g.equippedTo === null);
+    if (available.length === 0) return null;
+
+    const recType = recommendMythicGear(char).type;
+    const scored = available.map(g => {
+        let score = RARITY_RANK[g.rarity] * 1000 + g.bonus;
+        if (g.type === recType) score += 500;
+        return { g, score };
+    });
+    scored.sort((a, b) => b.score - a.score);
+    return scored[0].g;
+}
+
+function equipRecommendedGear(charId) {
+    const char = player.ownedCharacters.find(c => c.id === charId);
+    if (!char) return;
+
+    const oldMaxHp = calculateTotalHp();
+    const hpRatio = oldMaxHp > 0 ? (player.squadCurrentHp / oldMaxHp) : 1;
+
+    player.gearInventory.forEach(g => { if (g.equippedTo === charId) g.equippedTo = null; });
+    const best = getBestAvailableGearForChar(char);
+
+    if (!best) {
+        showToast('Нет доступного снаряжения для экипировки', '#ff9800');
+    } else {
+        best.equippedTo = charId;
+        showToast(`✅ Экипировано: ${best.name}`, rarityColors[best.rarity]);
+    }
+
+    const newMaxHp = calculateTotalHp();
+    player.squadCurrentHp = Math.min(hpRatio * newMaxHp, newMaxHp);
+
+    renderInventory();
+    updateUI();
+    saveGame();
+}
+
+function equipRecommendedGearAll() {
+    if (player.ownedCharacters.length === 0) return;
+
+    const oldMaxHp = calculateTotalHp();
+    const hpRatio = oldMaxHp > 0 ? (player.squadCurrentHp / oldMaxHp) : 1;
+
+    const sortedChars = [...player.ownedCharacters].sort((a, b) => b.stars - a.stars);
+    sortedChars.forEach(char => {
+        player.gearInventory.forEach(g => { if (g.equippedTo === char.id) g.equippedTo = null; });
+        const best = getBestAvailableGearForChar(char);
+        if (best) best.equippedTo = char.id;
+    });
+
+    const newMaxHp = calculateTotalHp();
+    player.squadCurrentHp = Math.min(hpRatio * newMaxHp, newMaxHp);
+
+    showToast('🎯 Рекомендованное снаряжение экипировано всему отряду!', '#ffd700');
+    renderInventory();
+    updateUI();
+    saveGame();
+}
+
 function updateUI() {
     document.getElementById('gold-display').innerText = Math.floor(player.gold).toLocaleString('ru-RU');
     const pGold = calculateTotalGoldIncome();
     document.getElementById('gold-speed-display').innerText = `+${pGold.toFixed(2)}/сек`;
     document.getElementById('income-display').innerText = calculateTotalBM().toFixed(2) + " БМ";
     
-    const maxPullsCount = Math.floor(player.gold / 100);
+    const maxPullsCount = Math.min(Math.floor(player.gold / 100), MAX_PULLS_PER_ACTION);
     document.getElementById('btn-summon-max').innerText = `Призыв МАКС (${maxPullsCount})`;
 
     document.getElementById('tok-c').innerText = `🟢 ${player.tokens.common}`;
@@ -954,7 +1354,7 @@ function updateUI() {
     if (squadTextEl) {
         squadTextEl.innerText = `${player.squadCurrentHp.toFixed(2)} / ${maxSquadHp.toFixed(2)} HP`;
         document.getElementById('squad-hp-bar').style.width = `${squadHpPercent}%`;
-        document.getElementById('squad-info-atk').innerText = `${totalAtk.toFixed(2)} АТК/с`;
+        document.getElementById('squad-info-atk').innerText = `${getCombatSquadAtk().toFixed(2)} АТК/с`;
         document.getElementById('squad-info-count').innerText = `В строю: ${player.ownedCharacters.length} тян`;
         document.getElementById('squad-info-bm').innerText = `Общая БМ: ${calculateTotalBM().toFixed(2)}`;
         document.getElementById('boss-streak-display').innerText = player.bossWinStreak;
@@ -968,7 +1368,16 @@ function updateUI() {
             mythicPanel.style.display = 'block';
             const diff = 1800 - player.mythicTimer;
             document.getElementById('mythic-timer-display').innerText = `До прихода следующей мифической сущности: ${Math.floor(diff/60)} мин ${diff%60} сек`;
-            
+
+            const autoToggle = document.getElementById('auto-mythic-toggle');
+            if (autoToggle) autoToggle.checked = !!player.settings.autoMythicAbilities;
+            document.querySelectorAll('.btn-mythic-ability-card').forEach(btn => {
+                const heroId = btn.dataset.heroId;
+                const cd = player.mythicCooldowns[heroId] || 0;
+                btn.disabled = cd > 0;
+                btn.innerText = cd > 0 ? `⏳ Перезарядка: ${cd}с` : '✨ Использовать способность';
+            });
+
             const skillsContainer = document.getElementById('mythic-skills-container');
             skillsContainer.innerHTML = '';
             
@@ -978,16 +1387,18 @@ function updateUI() {
             ];
             
             actives.forEach(act => {
+                const heroChar = MYTHIC_HEROES_POOL.find(c => c.id === act.id);
                 if (player.ownedCharacters.some(c => c.id === act.id)) {
                     const btn = document.createElement('button');
                     btn.className = 'btn-wiki-toggle';
                     const cd = player.mythicCooldowns[act.id] || 0;
+                    const fullLabel = `${act.label} (${heroChar ? heroChar.name : ''})`;
                     if (cd > 0) {
-                        btn.innerText = `${act.label} (${cd}с)`;
+                        btn.innerText = `${fullLabel} (${cd}с)`;
                         btn.style.background = '#4a5568';
                         btn.disabled = true;
                     } else {
-                        btn.innerText = act.label;
+                        btn.innerText = fullLabel;
                         btn.style.background = 'linear-gradient(135deg, #ff3366 0%, #ff5e62 100%)';
                         btn.disabled = false;
                         btn.onclick = () => useMythicAbility(act.id);
@@ -1024,7 +1435,7 @@ function updateUI() {
         document.getElementById('hp-bar').style.width = `${hpPercent}%`;
         
         document.getElementById('battle-info').innerText = 
-            `Атака отряда: ${totalAtk.toFixed(2)} АТК/сек | Сила монстра: ${currentEnemy.atk.toFixed(2)} АТК/сек | +${pGold.toFixed(2)} золото/с`;
+            `Атака отряда: ${getCombatSquadAtk().toFixed(2)} АТК/сек | Сила монстра: ${currentEnemy.atk.toFixed(2)} АТК/сек | +${pGold.toFixed(2)} золото/с`;
 
         if (enemyAtkEl) enemyAtkEl.innerText = `${currentEnemy.atk.toFixed(2)} АТК/с`;
         if (enemyBmEl) {
@@ -1036,27 +1447,25 @@ function updateUI() {
 
 function renderInventory() {
     const grid = document.getElementById('inventory-grid');
+    const mythicGrid = document.getElementById('mythic-squad-grid');
     if (!grid) return;
     grid.innerHTML = '';
+    if (mythicGrid) mythicGrid.innerHTML = '';
+
     player.ownedCharacters.sort((a, b) => b.stars - a.stars);
 
     const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
 
     player.ownedCharacters.forEach(char => {
-        const card = document.createElement('div');
-        card.className = `char-card ${char.stars >= 4 ? 'glow-' + char.stars : ''}`;
-        card.style.setProperty('--rarity-color', rarityColors[char.stars]);
-
-        let starsStr = char.stars === 6 ? "👑 МИФИК" : "★".repeat(char.stars);
-        let passiveHTML = char.passiveDesc ? `<div class="char-passive">${char.passiveDesc}</div>` : '';
+        let passiveHTML = char.passiveDesc && char.passive !== 'm_active' ? `<div class="char-passive">${char.passiveDesc}</div>` : '';
         if (char.count >= 10 && char.stars <= 5) {
             passiveHTML += `<div class="char-passive awaken">${MAX_UPGRADE_PASSIVES[char.stars].desc}</div>`;
         }
-        
+
         let currentCharAtk = char.baseAtk * (1 + (char.count - 1) * 0.5);
         let currentCharHp = char.baseHp * (1 + (char.count - 1) * 0.5);
         let currentCharGold = char.baseGold * (1 + (char.count - 1) * 0.5);
-        
+
         if (char.stars < 6 && hasCdrChronos) {
             currentCharAtk *= 1.10;
             currentCharHp *= 1.10;
@@ -1078,7 +1487,7 @@ function renderInventory() {
                 else currentCharGold += currentlyEquipped.bonus;
             }
         }
-        
+
         if (char.count >= 10 && char.stars <= 5) {
             currentCharAtk *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
             currentCharHp *= (1 + MAX_UPGRADE_PASSIVES[char.stars].mult);
@@ -1089,36 +1498,17 @@ function renderInventory() {
         let isMax = char.count >= 10 || char.stars === 6;
         let countText = char.stars === 6 ? "UNIQUE" : (isMax ? "MAX" : `x${char.count}`);
 
-        let selectHTML = `<select class="gear-selector" onchange="changeEquipment('${char.id}', this)">`;
-        selectHTML += `<option value="none" ${!currentlyEquipped ? 'selected' : ''}>[Без реликвии]</option>`;
-        
-        player.gearInventory.forEach(gear => {
-            if (gear.equippedTo === null || gear.equippedTo === char.id) {
-                const isSelected = gear.equippedTo === char.id ? 'selected' : '';
-                const pctTag = gear.pct ? ` (+${gear.pct}%)` : '';
-                selectHTML += `<option value="${gear.instanceId}" style="color: ${rarityColors[gear.rarity]};" ${isSelected}>
-                    [${gear.rarity.toUpperCase()}] ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag})
-                </option>`;
-            }
-        });
-        selectHTML += `</select>`;
+        const isExpanded = expandedCharIds.has(char.id);
+        const card = document.createElement('div');
+        card.className = `char-card ${char.stars >= 4 ? 'glow-' + char.stars : ''} ${isExpanded ? 'expanded' : ''}`;
+        card.style.setProperty('--rarity-color', rarityColors[char.stars]);
+        card.innerHTML = buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold, passiveHTML, isMax, countText);
 
-        const tType = TOKEN_MAP[char.stars];
-        const tCost = CHAR_TOKEN_COST[char.stars];
-        const buyBtnHTML = isMax ? '' : `<button class="btn-buy-copy" onclick="buyCharacterCopy('${char.id}', ${char.stars})">🧬 Копия за ${tCost} ${TOKEN_EMOJIS[tType]}</button>`;
-
-        card.innerHTML = `
-            <div class="char-count" ${isMax ? 'style="background:#ff8f00;"' : ''}>${countText}</div>
-            <div class="char-stars" style="color:${rarityColors[char.stars]}">${starsStr}</div>
-            <div class="char-name">${char.name}</div>
-            <div class="char-income">${currentCharAtk.toFixed(2)} АТК</div>
-            <div class="char-hp-stat">${currentCharHp.toFixed(2)} HP</div>
-            <div class="char-gold-income">${currentCharGold.toFixed(2)} ЗОЛ/с</div>
-            ${passiveHTML}
-            ${selectHTML}
-            ${buyBtnHTML}
-        `;
-        grid.appendChild(card);
+        if (char.stars === 6 && mythicGrid) {
+            mythicGrid.appendChild(card);
+        } else {
+            grid.appendChild(card);
+        }
     });
 
     const warehouseRarities = ['common', 'rare', 'epic', 'legendary', 'mythic'];
@@ -1140,8 +1530,11 @@ function renderInventory() {
             row.style.borderLeftColor = rarityColors[gear.rarity];
             const pctTag = gear.pct ? ` (+${gear.pct}%)` : '';
             row.innerHTML = `
-                <span>${gear.name}<br>+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag}</span>
-                <button class="btn-sell-gear" onclick="sellGear('${gear.instanceId}')">Продать</button>
+                <div class="unassigned-item-left">
+                    ${buildGearPortraitHTML(gear, 'gear-portrait-sm')}
+                    <span>${gear.name}<br>+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag}</span>
+                </div>
+                <button class="btn-sell-gear" onclick="sellGear('${gear.instanceId}')" title="Продать за ${GEAR_SELL_PRICES[gear.rarity] || 50} 💰">💰</button>
             `;
             rGrid.appendChild(row);
         });
@@ -1163,6 +1556,7 @@ function showGachaModal(items, type) {
             el.style.setProperty('--rarity-color', rarityColors[item.stars]);
             let starsStr = item.stars === 6 ? "👑 МИФИК" : "★".repeat(item.stars);
             el.innerHTML = `
+                ${buildCharPortraitHTML(item)}
                 <div class="char-stars" style="color:${rarityColors[item.stars]}">${starsStr}</div>
                 <div class="char-name" style="white-space:normal;">${item.name}</div>
             `;
@@ -1170,6 +1564,7 @@ function showGachaModal(items, type) {
             el.className = 'gear-card-anim';
             el.style.setProperty('--rarity-color', rarityColors[item.rarity]);
             el.innerHTML = `
+                ${buildGearPortraitHTML(item, 'gear-portrait-lg')}
                 <div class="gear-title-anim">${item.name}</div>
                 <div class="gear-bonus-anim">+${item.bonus.toFixed(2)} ${getGearLabel(item.type)}</div>
             `;
@@ -1207,6 +1602,8 @@ setInterval(() => {
             if (player.mythicCooldowns[k] > 0) player.mythicCooldowns[k]--;
         }
     }
+
+    autoUseMythicAbilities();
 
     const maxSquadHp = calculateTotalHp();
 
@@ -1256,7 +1653,7 @@ setInterval(() => {
             spawnEnemy();
         }
     } else {
-        let squadAtk = calculateTotalAtk();
+        let squadAtk = getCombatSquadAtk();
         if (squadAtk > 0) currentEnemy.hp -= squadAtk;
 
         if (currentEnemy.hp > 0 && player.ownedCharacters.length > 0) {
@@ -1276,7 +1673,7 @@ setInterval(() => {
 
         if (currentEnemy.hp <= 0) {
             player.gold += currentEnemy.reward;
-            player.bossWinStreak++; 
+            player.bossWinStreak++;
             if (player.battleStage >= 34 && player.battleStage % 5 === 4) {
                 showToast(`🏆 БОСС побежден! Серия побед подряд: ${player.bossWinStreak}`, '#ffd700');
             } else {
@@ -1297,7 +1694,28 @@ setInterval(() => {
     updateUI();
 }, 1000);
 
+function resumeCampFromSave() {
+    if (!player.savedCampState) return false;
+
+    campState.isActive = true;
+    campState.timeLeft = player.savedCampState.timeLeft;
+    campState.hasDroppedGear = player.savedCampState.hasDroppedGear;
+    player.savedCampState = null;
+
+    const bZone = document.getElementById('battle-zone-container');
+    bZone.classList.add('camp-mode');
+    currentEnemy.name = "⛺ Привал у костра (Зона отдыха)";
+    currentEnemy.maxHp = 30;
+    currentEnemy.hp = campState.timeLeft;
+    currentEnemy.atk = 0;
+    currentEnemy.reward = 0;
+    player.squadCurrentHp = calculateTotalHp();
+    return true;
+}
+
 loadGame();
-spawnEnemy();
+if (!resumeCampFromSave()) {
+    spawnEnemy();
+}
 renderInventory();
 updateUI();

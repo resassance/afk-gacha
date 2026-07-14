@@ -17,6 +17,10 @@
         <span class="wiki-drawer-title">📖 Книга Воительниц</span>
         <button class="btn-wiki-close" onclick="toggleWiki()">×</button>
     </div>
+    <div class="wiki-tabs">
+        <button class="wiki-tab-btn active" id="wiki-tab-heroes" onclick="switchWikiTab('heroes')">👸 Героини</button>
+        <button class="wiki-tab-btn" id="wiki-tab-gear" onclick="switchWikiTab('gear')">⚔️ Снаряжение</button>
+    </div>
     <div class="wiki-content" id="wiki-content-list">
     </div>
 </div>
@@ -47,6 +51,7 @@
         </div>
         
         <button class="btn-wiki-toggle" onclick="toggleWiki()">📖 Справочник</button>
+        <button class="btn-wiki-toggle btn-settings-toggle" onclick="toggleSettings()">⚙️ Настройки</button>
     </div>
 
     <div class="battle-section" id="battle-zone-container">
@@ -87,9 +92,17 @@
         </div>
     </div>
 
-    <!-- Мифическая Панель Управления -->
     <div id="mythic-panel" class="squad-panel" style="display: none; border-color: #ff3366; background: linear-gradient(180deg, #1a0f13 0%, #13131a 100%);">
         <h3 class="squad-title" style="color: #ff3366;">👑 Обитель Мифических Богинь</h3>
+
+        <label class="auto-mythic-toggle-row">
+            <span>⚙️ Автоприменение активных способностей</span>
+            <span class="toggle-switch">
+                <input type="checkbox" id="auto-mythic-toggle" onchange="toggleAutoMythic(this.checked)">
+                <span class="toggle-slider"></span>
+            </span>
+        </label>
+
         <div id="mythic-skills-container" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;"></div>
         <div id="mythic-shop-container" style="display: none; border-top: 1px dashed #ff3366; padding-top: 10px;">
             <h4 style="color: #ffaa00; margin-bottom: 8px; font-size: 14px;">🏪 Измерительная Лавка Артефактов</h4>
@@ -99,7 +112,10 @@
                 <button class="btn-wiki-toggle" style="background: linear-gradient(135deg, #e65100 0%, #ff3366 100%);" onclick="buyMythicArtifact('gold')">💎 Рог Изобилия (1,000,000 Золота)</button>
             </div>
         </div>
-        <div style="font-size: 11px; color: var(--text-muted); margin-top: 8px;" id="mythic-timer-display">До прихода мифической сущности: 30 мин 0 сек</div>
+        <div style="font-size: 11px; color: var(--text-muted); margin: 8px 0;" id="mythic-timer-display">До прихода мифической сущности: 30 мин 0 сек</div>
+
+        <div class="section-title" style="font-size:13px; margin-top:10px;">Мифический отряд</div>
+        <div id="mythic-squad-grid" class="grid-container mythic-squad-grid"></div>
     </div>
 
     <div class="banner-section">
@@ -153,9 +169,18 @@
     <div class="reforge-section">
         <div class="section-title">Мастерская утилизации и Сортировки реликвий</div>
         <div class="reforge-controls">
-            <button class="btn-action-reforge reforge-c" onclick="bulkReforge('common')">Скрестить 3x Common</button>
-            <button class="btn-action-reforge reforge-r" onclick="bulkReforge('rare')">Скрестить 3x Rare</button>
-            <button class="btn-action-reforge reforge-e" onclick="bulkReforge('epic')">Скрестить 3x Epic</button>
+            <div class="reforge-group">
+                <button class="btn-action-reforge reforge-c" onclick="bulkReforge('common')">Скрестить 3x Common</button>
+                <button class="btn-action-reforge reforge-c btn-reforge-max" onclick="bulkReforgeAll('common')">MAX</button>
+            </div>
+            <div class="reforge-group">
+                <button class="btn-action-reforge reforge-r" onclick="bulkReforge('rare')">Скрестить 3x Rare</button>
+                <button class="btn-action-reforge reforge-r btn-reforge-max" onclick="bulkReforgeAll('rare')">MAX</button>
+            </div>
+            <div class="reforge-group">
+                <button class="btn-action-reforge reforge-e" onclick="bulkReforge('epic')">Скрестить 3x Epic</button>
+                <button class="btn-action-reforge reforge-e btn-reforge-max" onclick="bulkReforgeAll('epic')">MAX</button>
+            </div>
         </div>
         
         <div class="unassigned-gear-title">Свободный склад по разрядам редкости:</div>
@@ -188,6 +213,7 @@
             <span>Ваш Боевой Отряд Тян</span>
             <span class="subtitle-notice">Прямой выкуп дубликатов доступен за Жетоны!</span>
         </div>
+        <button class="btn-equip-recommended-all" onclick="equipRecommendedGearAll()">🎯 Экипировать всем лучшее доступное снаряжение</button>
         <div class="grid-container" id="inventory-grid"></div>
     </div>
 </div>
@@ -216,6 +242,20 @@
         <h4 class="overflow-manage-title">Управление инвентарем (Освободите место):</h4>
         
         <div id="overflow-inventory-list" class="overflow-list-container"></div>
+    </div>
+</div>
+
+<div id="settings-modal" class="modal-overlay">
+    <div class="modal-content settings-modal-content">
+        <h2 class="modal-results-title">⚙️ Настройки</h2>
+        <div class="settings-body">
+            <div class="settings-row">
+                <div class="settings-row-title">Сброс прогресса</div>
+                <div class="settings-row-desc">Полностью удаляет всех героинь, снаряжение, золото и прогресс по этажам. Действие необратимо.</div>
+                <button class="btn-settings-reset" onclick="resetProgress()">🗑️ Полный сброс прогресса</button>
+            </div>
+        </div>
+        <button class="btn-close-modal" onclick="toggleSettings()">Закрыть</button>
     </div>
 </div>
 
