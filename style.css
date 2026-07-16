@@ -132,11 +132,11 @@ body {
 .enemy-name { font-weight: bold; font-size: 16px; color: #fff; }
 
 .battle-subinfo {
-    display: flex; 
-    justify-content: flex-start; 
-    gap: 15px; 
-    font-size: 13px; 
-    margin-bottom: 10px; 
+    display: flex;
+    justify-content: flex-start;
+    gap: 15px;
+    font-size: 13px;
+    margin-bottom: 10px;
     color: var(--text-main);
 }
 
@@ -180,30 +180,46 @@ body {
 }
 
 .arena-container {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
     align-items: center;
     justify-content: space-between;
-    gap: 10px;
+    gap: 20px;
     background: linear-gradient(180deg, #14141c 0%, #0f0f15 100%);
     border: 1px solid #2a2a3a;
-    border-radius: 10px;
-    padding: 10px 16px;
+    border-radius: 12px;
+    padding: 20px 24px;
     margin-bottom: 20px;
-    min-height: 76px;
+    min-height: 170px;
     overflow: hidden;
-    transition: opacity 0.3s;
+    transition: opacity 0.4s ease;
 }
 .arena-container.resting { opacity: 0.35; }
-.arena-side { display: flex; align-items: center; gap: 8px; flex: 1; min-width: 0; }
-.arena-squad-side { justify-content: flex-start; }
-.arena-enemy-side { justify-content: flex-end; }
-.arena-vs { font-size: 18px; opacity: 0.5; flex-shrink: 0; }
+.arena-side { display: flex; align-items: center; min-width: 0; }
+.arena-vs { justify-self: center; font-size: 26px; opacity: 0.5; flex-shrink: 0; }
+
+.arena-squad-side {
+    display: grid;
+    grid-template-columns: repeat(3, 64px);
+    grid-template-rows: repeat(2, 64px);
+    gap: 10px;
+    flex: 0 0 auto;
+    justify-content: flex-start;
+}
+.arena-enemy-side { flex: 0 0 auto; justify-content: flex-end; }
+
+.arena-slot {
+    position: relative;
+    width: 64px;
+    height: 64px;
+}
 
 .arena-sprite {
-    position: relative;
-    width: 44px;
-    height: 44px;
-    border-radius: 8px;
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 10px;
     background: rgba(255,255,255,0.04);
     display: flex;
     align-items: center;
@@ -211,10 +227,10 @@ body {
     flex-shrink: 0;
     animation: arena-idle-bob 1.6s ease-in-out infinite;
 }
-.arena-sprite:nth-child(2n) { animation-delay: -0.3s; }
-.arena-sprite:nth-child(3n) { animation-delay: -0.7s; }
-.arena-sprite:nth-child(4n) { animation-delay: -1.1s; }
-.arena-sprite .portrait-fallback { font-size: 24px; line-height: 1; }
+.arena-slot:nth-child(2n) .arena-sprite { animation-delay: -0.3s; }
+.arena-slot:nth-child(3n) .arena-sprite { animation-delay: -0.7s; }
+.arena-slot:nth-child(4n) .arena-sprite { animation-delay: -1.1s; }
+.arena-sprite .portrait-fallback { font-size: 34px; line-height: 1; }
 .arena-sprite .portrait-img {
     position: absolute;
     inset: 0;
@@ -225,20 +241,38 @@ body {
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
 }
-.arena-sprite.arena-enemy-sprite { width: 54px; height: 54px; }
-.arena-sprite.arena-enemy-sprite .portrait-fallback { font-size: 30px; }
+.arena-enemy-side .arena-sprite.arena-enemy-sprite {
+    position: relative;
+    width: 140px;
+    height: 140px;
+}
+.arena-sprite.arena-enemy-sprite .portrait-fallback { font-size: 76px; }
 
-.arena-squad-side .arena-sprite.attacking { animation: arena-lunge-right 0.4s ease; }
-.arena-enemy-side .arena-sprite.attacking { animation: arena-lunge-left 0.4s ease; }
-.arena-sprite.hit { animation: arena-hit-shake 0.35s ease; }
+.arena-squad-side .arena-sprite.attacking { animation: arena-lunge-right 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.arena-enemy-side .arena-sprite.attacking { animation: arena-lunge-left 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+.arena-sprite.hit { animation: arena-hit-shake 0.4s ease-out; }
 .arena-sprite.hit::after {
     content: '';
     position: absolute;
     inset: 0;
-    background: rgba(255, 51, 51, 0.45);
-    border-radius: 8px;
-    animation: arena-hit-flash 0.35s ease;
+    background: rgba(255, 51, 51, 0.4);
+    border-radius: 10px;
+    animation: arena-hit-flash 0.4s ease-out;
 }
+
+.arena-sprite.leaving {
+    animation: arena-sprite-leave 0.45s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+    pointer-events: none;
+}
+.arena-sprite.leaving-up {
+    animation: arena-sprite-leave-up 0.5s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+    pointer-events: none;
+}
+.arena-sprite.leaving-down {
+    animation: arena-sprite-leave-down 0.5s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+    pointer-events: none;
+}
+.arena-sprite.entering { animation: arena-sprite-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1); }
 
 @keyframes arena-idle-bob {
     0%, 100% { transform: translateY(0); }
@@ -246,12 +280,12 @@ body {
 }
 @keyframes arena-lunge-right {
     0% { transform: translateX(0); }
-    40% { transform: translateX(10px) scale(1.05); }
+    45% { transform: translateX(9px) scale(1.05); }
     100% { transform: translateX(0); }
 }
 @keyframes arena-lunge-left {
     0% { transform: translateX(0); }
-    40% { transform: translateX(-10px) scale(1.05); }
+    45% { transform: translateX(-9px) scale(1.05); }
     100% { transform: translateX(0); }
 }
 @keyframes arena-hit-shake {
@@ -262,51 +296,67 @@ body {
 }
 @keyframes arena-hit-flash {
     0% { opacity: 0; }
-    30% { opacity: 1; }
+    35% { opacity: 1; }
     100% { opacity: 0; }
+}
+@keyframes arena-sprite-leave {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(14px) scale(0.5); }
+}
+@keyframes arena-sprite-leave-up {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-70px) scale(0.5); }
+}
+@keyframes arena-sprite-leave-down {
+    0% { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(70px) scale(0.5); }
+}
+@keyframes arena-sprite-enter {
+    0% { opacity: 0; transform: translateY(-14px) scale(0.5); }
+    100% { opacity: 1; transform: translateY(0) scale(1); }
 }
 
 .squad-panel {
-    background: #1e1e1e; 
-    padding: 15px; 
-    border-radius: 8px; 
-    border: 1px solid #333; 
+    background: #1e1e1e;
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid #333;
     margin-bottom: 15px;
 }
 .squad-title {
-    margin-top: 0; 
+    margin-top: 0;
     color: #ffd700;
     margin-bottom: 10px;
 }
 .squad-subinfo {
-    display: flex; 
-    gap: 15px; 
-    font-size: 13px; 
+    display: flex;
+    gap: 15px;
+    font-size: 13px;
     margin-bottom: 10px;
     flex-wrap: wrap;
 }
 .squad-hp-container {
-    background: #222; 
-    border-radius: 4px; 
-    height: 16px; 
-    overflow: hidden; 
+    background: #222;
+    border-radius: 4px;
+    height: 16px;
+    overflow: hidden;
     position: relative;
     margin-bottom: 10px;
 }
 .squad-hp-bar-fill {
-    background: linear-gradient(90deg, #4caf50, #81c784); 
-    height: 100%; 
+    background: linear-gradient(90deg, #4caf50, #81c784);
+    height: 100%;
     transition: width 0.2s;
 }
 .squad-hp-text-display {
-    position: absolute; 
-    width: 100%; 
-    text-align: center; 
-    top: 0; 
-    left: 0; 
-    font-size: 11px; 
-    font-weight: bold; 
-    line-height: 16px; 
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    top: 0;
+    left: 0;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 16px;
     color: #fff;
 }
 .squad-timers-block {
@@ -513,6 +563,7 @@ body {
     width: 100%;
     height: 100%;
     object-fit: contain;
+
     image-rendering: pixelated;
     image-rendering: -moz-crisp-edges;
     image-rendering: crisp-edges;
@@ -585,16 +636,22 @@ body {
     z-index: 3;
 }
 .char-card.expanded .char-portrait-full {
-    flex: 0 0 44%;
-    width: 44%;
+    flex: 0 0 50%;
+    width: 50%;
     aspect-ratio: 1 / 1;
     height: auto;
     align-self: flex-start;
+    transition: flex-basis 0.35s ease;
 }
 .char-card.expanded .char-card-details {
     flex: 1;
     min-width: 0;
     overflow-y: auto;
+    animation: char-details-fade-in 0.3s ease 0.1s both;
+}
+@keyframes char-details-fade-in {
+    from { opacity: 0; transform: translateX(6px); }
+    to { opacity: 1; transform: none; }
 }
 .char-card.expanded .gear-picker-list { max-height: 260px; }
 
@@ -634,6 +691,7 @@ body {
     transition: all 0.2s;
 }
 .btn-buy-copy:hover { background: #312e54; color: #fff; }
+
 .gear-picker-label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; margin: 8px 0 4px; font-weight: bold; }
 .gear-picker-list { display: flex; flex-direction: column; gap: 4px; max-height: 150px; overflow-y: auto; margin-bottom: 6px; }
 .gear-picker-item {
@@ -868,7 +926,7 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    min-width: 0; 
+    min-width: 0;
     max-width: 100%;
     box-sizing: border-box;
 }
@@ -881,6 +939,14 @@ body {
     min-height: 120px;
     box-sizing: border-box;
     padding: 10px;
+}
+
+.gacha-results .char-name {
+    min-height: 2.6em;
+    line-height: 1.3em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .overflow-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: center; }
@@ -1051,12 +1117,14 @@ body {
     body { padding: 8px; }
     .game-container { gap: 12px; }
 
-    .arena-container { padding: 8px 10px; min-height: 60px; gap: 6px; }
-    .arena-sprite { width: 32px; height: 32px; border-radius: 6px; }
-    .arena-sprite .portrait-fallback { font-size: 18px; }
-    .arena-sprite.arena-enemy-sprite { width: 40px; height: 40px; }
-    .arena-sprite.arena-enemy-sprite .portrait-fallback { font-size: 22px; }
-    .arena-vs { font-size: 14px; }
+    .arena-container { padding: 12px 14px; min-height: 118px; gap: 10px; }
+    .arena-squad-side { grid-template-columns: repeat(3, 44px); grid-template-rows: repeat(2, 44px); gap: 6px; }
+    .arena-slot { width: 44px; height: 44px; }
+    .arena-sprite { border-radius: 8px; }
+    .arena-sprite .portrait-fallback { font-size: 24px; }
+    .arena-enemy-side .arena-sprite.arena-enemy-sprite { width: 90px; height: 90px; }
+    .arena-sprite.arena-enemy-sprite .portrait-fallback { font-size: 48px; }
+    .arena-vs { font-size: 18px; }
 
     .header-panel {
         display: grid;
@@ -1073,7 +1141,7 @@ body {
     .stat-box:nth-child(3) { grid-column: span 2; }
     .stat-box:nth-child(4) { grid-column: span 1; }
     .btn-wiki-toggle { grid-column: span 1; width: 100%; text-align: center; height: fit-content; align-self: center; padding: 8px; }
-    
+
     .stat-value { font-size: 15px; }
     .tokens-display { justify-content: space-between; font-size: 12px; gap: 4px; }
 

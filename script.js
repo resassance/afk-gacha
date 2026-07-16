@@ -52,29 +52,29 @@ const MAX_UPGRADE_PASSIVES = {
 
 const GEAR_POOLS = {
     common: [
-        { id: "gear_c1", name: "🗡️ Стальной Меч Новичка", type: "atk", minBonus: 0.02, maxBonus: 0.06 },
-        { id: "gear_c2", name: "🛡️ Крепкий Щит Стажёра", type: "hp", minBonus: 0.05, maxBonus: 0.15 },
-        { id: "gear_c3", name: "🪙 Старая Монета Удачи", type: "gold", minBonus: 0.01, maxBonus: 0.03 }
+        { id: "gear_c1", name: "Стальной Меч Новичка", type: "atk", minBonus: 0.02, maxBonus: 0.06 },
+        { id: "gear_c2", name: "Крепкий Щит Стажёра", type: "hp", minBonus: 0.05, maxBonus: 0.15 },
+        { id: "gear_c3", name: "Старая Монета Удачи", type: "gold", minBonus: 0.01, maxBonus: 0.03 }
     ],
     rare: [
-        { id: "gear_r1", name: "⚔️ Рунический Меч Власти", type: "atk", minBonus: 0.08, maxBonus: 0.20 },
-        { id: "gear_r2", name: "🍃 Амулет Живой Души", type: "hp", minBonus: 0.20, maxBonus: 0.50 },
-        { id: "gear_r3", name: "💰 Кошель Торговца", type: "gold", minBonus: 0.04, maxBonus: 0.10 }
+        { id: "gear_r1", name: "Рунический Меч Власти", type: "atk", minBonus: 0.08, maxBonus: 0.20 },
+        { id: "gear_r2", name: "Амулет Живой Души", type: "hp", minBonus: 0.20, maxBonus: 0.50 },
+        { id: "gear_r3", name: "Кошель Торговца", type: "gold", minBonus: 0.04, maxBonus: 0.10 }
     ],
     epic: [
-        { id: "gear_e1", name: "🏹 Лук Звездного Разлома", type: "atk", minBonus: 0.40, maxBonus: 1.10 },
-        { id: "gear_e2", name: "🧥 Плотная Мантия Титана", type: "hp", minBonus: 1.00, maxBonus: 2.80 },
-        { id: "gear_e3", name: "👑 Золотая Корона Мидаса", type: "gold", minBonus: 0.20, maxBonus: 0.60 }
+        { id: "gear_e1", name: "Лук Звездного Разлома", type: "atk", minBonus: 0.40, maxBonus: 1.10 },
+        { id: "gear_e2", name: "Плотная Мантия Титана", type: "hp", minBonus: 1.00, maxBonus: 2.80 },
+        { id: "gear_e3", name: "Золотая Корона Мидаса", type: "gold", minBonus: 0.20, maxBonus: 0.60 }
     ],
     legendary: [
-        { id: "gear_l1", name: "🔱 Святой Экскалибур", type: "atk", minBonus: 2.20, maxBonus: 5.50 },
-        { id: "gear_l2", name: "💎 Сердце Прародителя", type: "hp", minBonus: 5.00, maxBonus: 14.00 },
-        { id: "gear_l3", name: "🏆 Кубок Бесконечного Богатства", type: "gold", minBonus: 1.00, maxBonus: 3.00 }
+        { id: "gear_l1", name: "Святой Экскалибур", type: "atk", minBonus: 2.20, maxBonus: 5.50 },
+        { id: "gear_l2", name: "Сердце Прародителя", type: "hp", minBonus: 5.00, maxBonus: 14.00 },
+        { id: "gear_l3", name: "Кубок Бесконечного Богатства", type: "gold", minBonus: 1.00, maxBonus: 3.00 }
     ],
     mythic: [
-        { id: "gear_m1", name: "🌌 Клеймор Первородного Хаоса", type: "atk", minBonus: 12.0, maxBonus: 28.0, pct: 25 },
-        { id: "gear_m2", name: "👑 Эгида Абсолютного Бессмертия", type: "hp", minBonus: 30.0, maxBonus: 75.0, pct: 30 },
-        { id: "gear_m3", name: "💎 Рог Изобилия Вселенной", type: "gold", minBonus: 6.0, maxBonus: 15.0, pct: 20 }
+        { id: "gear_m1", name: "Клеймор Первородного Хаоса", type: "atk", minBonus: 12.0, maxBonus: 28.0, pct: 25 },
+        { id: "gear_m2", name: "Эгида Абсолютного Бессмертия", type: "hp", minBonus: 30.0, maxBonus: 75.0, pct: 30 },
+        { id: "gear_m3", name: "Рог Изобилия Вселенной", type: "gold", minBonus: 6.0, maxBonus: 15.0, pct: 20 }
     ]
 };
 
@@ -139,6 +139,7 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
     const tCost = CHAR_TOKEN_COST[char.stars];
     const buyBtnHTML = (isMax || char.stars === 6) ? '' :
         `<button class="btn-buy-copy" onclick="buyCharacterCopy('${char.id}', ${char.stars})">🧬 Копия за ${tCost} ${TOKEN_EMOJIS[tType]}</button>`;
+
     const candidates = player.gearInventory.filter(g => g.equippedTo === null || g.equippedTo === char.id);
     const sortedGear = sortGearForPicker(candidates);
     let pickerHTML = `
@@ -171,9 +172,9 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
     }
 
     return `
-        <div class="char-stars-badge" style="color:${rarityColors[char.stars]}">${starsStr}</div>
-        <div class="char-count" ${isMax ? 'style="background:#ff8f00;"' : ''}>${countText}</div>
         <div class="char-portrait-full">
+            <div class="char-stars-badge" style="color:${rarityColors[char.stars]}">${starsStr}</div>
+            <div class="char-count" ${isMax ? 'style="background:#ff8f00;"' : ''}>${countText}</div>
             <div class="portrait-fallback">${emoji}</div>
             <img class="portrait-img" src="assets/characters/${char.id}.png" alt=""
                  onload="this.previousElementSibling.style.display='none';"
@@ -212,16 +213,20 @@ function buildGearPortraitHTML(gearLike, sizeClass) {
 
 const ARENA_MAX_SPRITES = 6;
 const ARENA_ROTATE_EVERY_TICKS = 8;
+const ARENA_LEAVE_MS = 300;
+const ARENA_WIPE_STAGGER_MS = 110;
 let arenaRotationOffset = 0;
 let arenaRotationCounter = 0;
 
 function buildArenaSpriteHTML(entity, extraClass) {
-    const emoji = getEmojiFromName(entity.name || entity.emoji || '❔');
-    const isChar = !!entity.id && entity.isCharacter;
-    const imgSrc = isChar ? `assets/characters/${entity.id}.png` : null;
+    const emoji = entity.emoji || getEmojiFromName(entity.name || '❔');
+    let imgSrc = null;
+    if (entity.isCharacter && entity.id) imgSrc = `assets/characters/${entity.id}.png`;
+    else if (entity.spriteId) imgSrc = `assets/mobs/${entity.spriteId}.png`;
+
     return `
-        <div class="arena-sprite ${extraClass || ''}" data-entity-id="${entity.id || ''}">
-            <div class="portrait-fallback">${entity.emoji || emoji}</div>
+        <div class="arena-sprite ${extraClass || ''}" data-entity-id="${entity.id || entity.spriteId || ''}">
+            <div class="portrait-fallback">${emoji}</div>
             ${imgSrc ? `<img class="portrait-img" src="${imgSrc}" alt=""
                  onload="this.previousElementSibling.style.display='none';"
                  onerror="this.style.display='none';">` : ''}
@@ -241,17 +246,104 @@ function pickArenaSquadSubset() {
     return subset;
 }
 
-function renderArenaSquadSide() {
+let arenaSlotState = [];
+
+function ensureArenaSlots() {
     const side = document.getElementById('arena-squad-side');
+    if (!side) return null;
+    if (side.children.length !== ARENA_MAX_SPRITES) {
+        side.innerHTML = '';
+        arenaSlotState = [];
+        for (let i = 0; i < ARENA_MAX_SPRITES; i++) {
+            const slot = document.createElement('div');
+            slot.className = 'arena-slot';
+            side.appendChild(slot);
+            arenaSlotState.push({ id: null, removeTimeout: null, addTimeout: null });
+        }
+    }
+    return side;
+}
+
+function renderArenaSquadSide() {
+    const side = ensureArenaSlots();
     if (!side) return;
+
     const subset = pickArenaSquadSubset();
-    side.innerHTML = subset.map(c => buildArenaSpriteHTML({ ...c, isCharacter: true })).join('');
+    const slots = Array.from(side.children);
+
+    slots.forEach((slot, i) => {
+        const newChar = subset[i] || null;
+        const newId = newChar ? newChar.id : null;
+        const state = arenaSlotState[i];
+
+        if (state.id === newId) return;
+
+        if (state.removeTimeout) { clearTimeout(state.removeTimeout); state.removeTimeout = null; }
+        if (state.addTimeout) { clearTimeout(state.addTimeout); state.addTimeout = null; }
+
+        const existingSprite = slot.querySelector('.arena-sprite');
+        if (existingSprite) {
+            existingSprite.classList.remove('entering');
+            existingSprite.classList.add('leaving');
+            state.removeTimeout = setTimeout(() => {
+                existingSprite.remove();
+                state.removeTimeout = null;
+            }, ARENA_LEAVE_MS);
+        }
+
+        state.id = newId;
+
+        if (newChar) {
+            const delay = existingSprite ? ARENA_LEAVE_MS : 0;
+            state.addTimeout = setTimeout(() => {
+                const wrapper = document.createElement('div');
+                wrapper.innerHTML = buildArenaSpriteHTML({ ...newChar, isCharacter: true }, 'entering');
+                slot.appendChild(wrapper.firstElementChild);
+                state.addTimeout = null;
+            }, delay);
+        }
+    });
+}
+
+function playArenaSquadWipe() {
+    const side = ensureArenaSlots();
+    if (!side) return;
+    const slots = Array.from(side.children);
+
+    slots.forEach((slot, i) => {
+        const state = arenaSlotState[i];
+        const sprite = slot.querySelector('.arena-sprite');
+        if (!sprite) return;
+
+        if (state.removeTimeout) { clearTimeout(state.removeTimeout); state.removeTimeout = null; }
+        if (state.addTimeout) { clearTimeout(state.addTimeout); state.addTimeout = null; }
+        state.id = null;
+
+        const isTopRow = i < 3;
+        setTimeout(() => {
+            sprite.classList.add(isTopRow ? 'leaving-up' : 'leaving-down');
+            setTimeout(() => sprite.remove(), ARENA_LEAVE_MS);
+        }, i * ARENA_WIPE_STAGGER_MS);
+    });
+
+    setTimeout(() => {
+        renderArenaSquadSide();
+    }, slots.length * ARENA_WIPE_STAGGER_MS + ARENA_LEAVE_MS);
 }
 
 function renderArenaEnemySide() {
     const side = document.getElementById('arena-enemy-side');
     if (!side) return;
-    side.innerHTML = buildArenaSpriteHTML({ name: currentEnemy.name, emoji: currentEnemy.emoji }, 'arena-enemy-sprite');
+
+    const oldSprite = side.querySelector('.arena-sprite');
+    const newHTML = buildArenaSpriteHTML({ name: currentEnemy.name, emoji: currentEnemy.emoji, spriteId: currentEnemy.spriteId }, 'arena-enemy-sprite entering');
+
+    if (oldSprite) {
+        oldSprite.classList.add('leaving');
+        setTimeout(() => { side.innerHTML = newHTML; }, ARENA_LEAVE_MS);
+    } else {
+        side.innerHTML = newHTML;
+    }
 }
 
 function renderArena() {
@@ -272,16 +364,16 @@ function replayArenaAnimation(el, className) {
 }
 
 function triggerArenaSquadAttack() {
-    const squadSprites = document.querySelectorAll('#arena-squad-side .arena-sprite');
+    const squadSprites = document.querySelectorAll('#arena-squad-side .arena-sprite:not(.leaving)');
     squadSprites.forEach(el => replayArenaAnimation(el, 'attacking'));
-    const enemySprite = document.querySelector('#arena-enemy-side .arena-sprite');
+    const enemySprite = document.querySelector('#arena-enemy-side .arena-sprite:not(.leaving)');
     replayArenaAnimation(enemySprite, 'hit');
 }
 
 function triggerArenaEnemyAttack() {
-    const enemySprite = document.querySelector('#arena-enemy-side .arena-sprite');
+    const enemySprite = document.querySelector('#arena-enemy-side .arena-sprite:not(.leaving)');
     replayArenaAnimation(enemySprite, 'attacking');
-    const squadSprites = document.querySelectorAll('#arena-squad-side .arena-sprite');
+    const squadSprites = document.querySelectorAll('#arena-squad-side .arena-sprite:not(.leaving)');
     if (squadSprites.length > 0) {
         const randomOne = squadSprites[Math.floor(Math.random() * squadSprites.length)];
         replayArenaAnimation(randomOne, 'hit');
@@ -291,7 +383,9 @@ function triggerArenaEnemyAttack() {
 const MONSTER_PREFIXES = ["Дикий", "Проклятый", "Пещерный", "Кровавый", "Элитный", "Адский", "Древний"];
 const MONSTER_TYPES = ["Слайм", "Гоблин", "Орк-Налётчик", "Скелет-Воин", "Гарпия", "Каменный Голем", "Химера", "Дракон Бездны"];
 const MONSTER_TYPE_EMOJIS = ["🟢", "👺", "👹", "💀", "🦅", "🗿", "🐲", "🐉"];
+const MONSTER_TYPE_IDS = ["slime", "goblin", "orc_raider", "skeleton_warrior", "harpy", "stone_golem", "chimera", "abyss_dragon"];
 const BOSS_EMOJI = "👑";
+const BOSS_SPRITE_SUFFIX = "_boss";
 
 let player = {
     gold: 1000,
@@ -310,7 +404,7 @@ let player = {
     settings: { autoMythicAbilities: false }
 };
 
-let currentEnemy = { name: "", emoji: "👾", hp: 0, maxHp: 0, atk: 0, reward: 0 };
+let currentEnemy = { name: "", emoji: "👾", spriteId: "", hp: 0, maxHp: 0, atk: 0, reward: 0 };
 let gearCounter = 0;
 let pendingDroppedGear = null;
 let saveTimerCounter = 0;
@@ -491,7 +585,9 @@ const MOB_ATK_SHARE = 0.22;
 const MOB_SAFETY_MARGIN = 1.3;
 const BOSS_ATK_SHARE = 0.38;
 const BOSS_SAFETY_MARGIN = 1.15;
+
 const COMBAT_SPEED_DIVISOR = 3;
+
 function getCombatSquadAtk() {
     return calculateTotalAtk() / COMBAT_SPEED_DIVISOR;
 }
@@ -499,13 +595,17 @@ function getCombatSquadAtk() {
 function getEnemyStats(stage, isBoss) {
     const squadAtk = Math.max(calculateTotalAtk(), 0.01);
     const squadHp = Math.max(calculateTotalHp(), 0.01);
+
     const progress = Math.pow(Math.min(stage, REFERENCE_STAGE) / REFERENCE_STAGE, PROGRESS_EXPONENT);
 
     const atkShare = isBoss ? BOSS_ATK_SHARE : MOB_ATK_SHARE;
     const margin = isBoss ? BOSS_SAFETY_MARGIN : MOB_SAFETY_MARGIN;
+
     const rawAtk = Math.max(squadHp * atkShare * progress, 0.001);
+
     const powerBudget = (squadAtk * squadHp * progress) / margin;
     const hp = Math.max(powerBudget / rawAtk, 0.01);
+
     const atk = rawAtk / COMBAT_SPEED_DIVISOR;
 
     return { hp, atk };
@@ -537,6 +637,7 @@ function spawnEnemy() {
         bZone.classList.add('camp-mode');
         currentEnemy.name = "⛺ Привал у костра (Зона отдыха)";
         currentEnemy.emoji = "⛺";
+        currentEnemy.spriteId = "camp";
         currentEnemy.maxHp = 30;
         currentEnemy.hp = 30;
         currentEnemy.atk = 0;
@@ -553,11 +654,13 @@ function spawnEnemy() {
 
     const pIndex = (player.battleStage - 1) % MONSTER_PREFIXES.length;
     const tIndex = (player.battleStage - 1) % MONSTER_TYPES.length;
+    
     const isBoss = (player.battleStage >= 34 && player.battleStage % 5 === 4);
     const prefix = isBoss ? "👹 [БОСС]" : MONSTER_PREFIXES[pIndex];
     
     currentEnemy.name = `${prefix} ${MONSTER_TYPES[tIndex]} [Ур. ${player.battleStage}]`;
     currentEnemy.emoji = isBoss ? BOSS_EMOJI : MONSTER_TYPE_EMOJIS[tIndex];
+    currentEnemy.spriteId = MONSTER_TYPE_IDS[tIndex] + (isBoss ? BOSS_SPRITE_SUFFIX : '');
     
     let hpMod = isBoss ? 2.5 : 1.0;
 
@@ -565,6 +668,7 @@ function spawnEnemy() {
     currentEnemy.maxHp = stats.hp;
     currentEnemy.hp = stats.hp;
     currentEnemy.atk = stats.atk;
+
     currentEnemy.reward = getGoldReward(player.battleStage, hpMod);
     setArenaResting(false);
     renderArenaEnemySide();
@@ -1004,15 +1108,64 @@ function bulkReforgeAll(tier) {
 }
 
 let currentWikiTab = 'heroes';
+
 let expandedCharIds = new Set();
 
 function toggleCharExpand(charId) {
+    const grid = document.getElementById('inventory-grid');
+    const mythicGrid = document.getElementById('mythic-squad-grid');
+    const allCardsBefore = [
+        ...(grid ? Array.from(grid.children) : []),
+        ...(mythicGrid ? Array.from(mythicGrid.children) : [])
+    ];
+
+    const firstRects = new Map();
+    allCardsBefore.forEach(el => {
+        if (el.dataset.charId) firstRects.set(el.dataset.charId, el.getBoundingClientRect());
+    });
+
     if (expandedCharIds.has(charId)) {
         expandedCharIds.delete(charId);
     } else {
         expandedCharIds.add(charId);
     }
     renderInventory();
+
+    const gridAfter = document.getElementById('inventory-grid');
+    const mythicGridAfter = document.getElementById('mythic-squad-grid');
+    const allCardsAfter = [
+        ...(gridAfter ? Array.from(gridAfter.children) : []),
+        ...(mythicGridAfter ? Array.from(mythicGridAfter.children) : [])
+    ];
+
+    allCardsAfter.forEach(el => {
+        const id = el.dataset.charId;
+        const first = firstRects.get(id);
+        if (!first) return;
+        const last = el.getBoundingClientRect();
+
+        const dx = first.left - last.left;
+        const dy = first.top - last.top;
+        const sx = last.width ? first.width / last.width : 1;
+        const sy = last.height ? first.height / last.height : 1;
+
+        if (Math.abs(dx) < 1 && Math.abs(dy) < 1 && Math.abs(sx - 1) < 0.01 && Math.abs(sy - 1) < 0.01) return;
+
+        el.style.transformOrigin = 'top left';
+        el.style.transition = 'none';
+        el.style.transform = `translate(${dx}px, ${dy}px) scale(${sx}, ${sy})`;
+
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                el.style.transition = 'transform 0.35s cubic-bezier(0.22, 1, 0.36, 1)';
+                el.style.transform = '';
+            });
+        });
+        el.addEventListener('transitionend', () => {
+            el.style.transition = '';
+            el.style.transformOrigin = '';
+        }, { once: true });
+    });
 }
 
 function toggleAutoMythic(checked) {
@@ -1603,6 +1756,7 @@ function renderInventory() {
         const isExpanded = expandedCharIds.has(char.id);
         const card = document.createElement('div');
         card.className = `char-card ${char.stars >= 4 ? 'glow-' + char.stars : ''} ${isExpanded ? 'expanded' : ''}`;
+        card.dataset.charId = char.id;
         card.style.setProperty('--rarity-color', rarityColors[char.stars]);
         card.innerHTML = buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold, passiveHTML, isMax, countText);
 
@@ -1757,6 +1911,7 @@ setInterval(() => {
             spawnEnemy();
         }
     } else {
+
         arenaRotationCounter++;
         if (arenaRotationCounter >= ARENA_ROTATE_EVERY_TICKS) {
             arenaRotationCounter = 0;
@@ -1776,6 +1931,7 @@ setInterval(() => {
 
             if (player.squadCurrentHp <= 0) {
                 showToast("💀 Отряд повержен! Серия побед обнулена. Отступление на 1 этап назад.", "#ff3333");
+                playArenaSquadWipe();
                 player.bossWinStreak = 0;
                 player.timeAlive = 0;
                 player.battleStage = Math.max(1, player.battleStage - 1);
@@ -1788,8 +1944,10 @@ setInterval(() => {
 
         if (currentEnemy.hp <= 0) {
             player.gold += currentEnemy.reward;
+            
             player.bossWinStreak++;
             if (player.bossWinStreak > player.maxBossWinStreak) player.maxBossWinStreak = player.bossWinStreak;
+            
             if (player.battleStage >= 34 && player.battleStage % 5 === 4) {
                 showToast(`🏆 БОСС побежден! Серия побед подряд: ${player.bossWinStreak}`, '#ffd700');
             } else {
@@ -1822,6 +1980,7 @@ function resumeCampFromSave() {
     bZone.classList.add('camp-mode');
     currentEnemy.name = "⛺ Привал у костра (Зона отдыха)";
     currentEnemy.emoji = "⛺";
+    currentEnemy.spriteId = "camp";
     currentEnemy.maxHp = 30;
     currentEnemy.hp = campState.timeLeft;
     currentEnemy.atk = 0;
