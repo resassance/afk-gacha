@@ -2157,7 +2157,7 @@ function closeModal() {
 }
 
 setInterval(() => {
-    if (isAdFreeze) return;
+    if (isAdFreeze || isSdkPaused) return;
     if (pendingDroppedGear !== null || document.getElementById('overflow-modal').style.display === 'flex') {
         return; 
     }
@@ -2317,6 +2317,7 @@ let yaPlayer = null;
 let adTimerSec = 0;
 const AD_INTERVAL_SEC = 300;
 let isAdFreeze = false;
+let isSdkPaused = false;
 
 async function initYandexSDK() {
     try {
@@ -2326,6 +2327,15 @@ async function initYandexSDK() {
         }
         ysdk = await YaGames.init();
         window.ysdk = ysdk;
+        ysdk.on('game_api_pause', () => {
+            isSdkPaused = true;
+            document.body.classList.add('sdk-paused');
+            flushCloudSaveNow();
+        });
+        ysdk.on('game_api_resume', () => {
+            isSdkPaused = false;
+            document.body.classList.remove('sdk-paused');
+        });
 
         try {
             yaPlayer = await ysdk.getPlayer({ scopes: false });
@@ -2442,7 +2452,7 @@ function handleRewardedSummon() {
 }
 
 setInterval(() => {
-    if (isAdFreeze) return;
+    if (isAdFreeze || isSdkPaused) return;
     adTimerSec++;
     if (adTimerSec >= AD_INTERVAL_SEC) {
         adTimerSec = 0;
@@ -2478,7 +2488,7 @@ function flushCloudSaveNow() {
     try {
         const payload = JSON.parse(JSON.stringify(player));
         yaPlayer.setData(payload, true).catch(() => {});
-    } catch (e) { }
+    } catch (e) {  }
 }
 
 window.addEventListener('beforeunload', flushCloudSaveNow);
