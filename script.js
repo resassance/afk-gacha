@@ -1,3 +1,273 @@
+let currentLang = localStorage.getItem('waifu_idle_lang') || 'ru';
+
+const I18N = {
+    ru: {
+        wiki_title: "📖 Книга Воительниц", wiki_tab_heroes: "👸 Героини", wiki_tab_gear: "⚔️ Снаряжение",
+        stat_gold: "Золотые Кредиты", stat_bm: "Общая БМ Отряда (АТК + ХП)", stat_tokens: "Жетоны (Ковка и Выкуп Тян)", stat_unique: "Собрано Тян",
+        btn_wiki: "📖 Справочник", btn_fullscreen: "⛶ Полный экран", btn_settings: "⚙️ Настройки",
+        squad_title: "⚔️ Тактический статус отряда",
+        lbl_win_streak: "Побед подряд (мобы/боссы):", lbl_max_streak: "Рекорд серии:",
+        lbl_time_alive: "Живут без смертей:", lbl_total_time: "Общее время жизни:",
+        mythic_title: "👑 Обитель Мифических Богинь", mythic_auto: "⚙️ Автоприменение активных способностей",
+        mythic_shop_title: "🏪 Измерительная Лавка Артефактов",
+        mythic_buy_atk: "🌌 Меч Бездны (1,000,000 Золота)", mythic_buy_hp: "👑 Щит Этернала (1,000,000 Золота)", mythic_buy_gold: "💎 Рог Изобилия (1,000,000 Золота)",
+        mythic_squad: "Мифический отряд",
+        banner_title: "Молитва Прекрасных Воительниц",
+        banner_subtitle: "1 призыв = 100 Кредитов. Соберите сильнейший гарем для покорения подземелий.",
+        btn_summon_x1: "Призыв x1", btn_summon_x10: "Призыв x10",
+        forge_common: "🟢 Обычная Ковка", forge_rare: "🔵 Редкая Ковка", forge_epic: "🟣 Эпическая Ковка", forge_legendary: "🟡 Легендарная Ковка",
+        forge_cost_c: "Стоимость: 10 🟢", forge_cost_r: "Стоимость: 10 🔵", forge_cost_e: "Стоимость: 10 🟣", forge_cost_l: "Стоимость: 5 🟡",
+        reforge_title: "Мастерская утилизации и Сортировки реликвий",
+        reforge_c: "Скрестить 3x Common", reforge_r: "Скрестить 3x Rare", reforge_e: "Скрестить 3x Epic",
+        warehouse_free: "Свободный склад по разрядам редкости:",
+        inv_title: "Ваш Боевой Отряд Тян", inv_subtitle: "Прямой выкуп дубликатов доступен за Жетоны!",
+        btn_equip_all: "🎯 Экипировать всем лучшее доступное снаряжение",
+        btn_accept: "Принять",
+        overflow_title: "🚨 Оружейная переполнена!",
+        overflow_subtitle: "Вы выбили новый предмет, но в инвентаре нет свободного места. Выберите действие:",
+        overflow_sell: "💰 Продать этот трофей", overflow_claim: "📥 Забрать трофей",
+        overflow_manage: "Управление инвентарем (Освободите место):",
+        settings_title: "⚙️ Настройки", settings_lang_title: "Язык / Language", settings_lang_desc: "Переключить язык интерфейса игры.",
+        settings_reset_title: "Сброс прогресса",
+        settings_reset_desc: "Полностью удаляет всех героинь, снаряжение, золото и прогресс по этажам. Действие необратимо.",
+        settings_reset_btn: "🗑️ Полный сброс прогресса", btn_close: "Закрыть",
+        ad_freeze_title: "Показ рекламы...", ad_freeze_sub: "Игра возобновится сразу после закрытия рекламного блока",
+        gold_per_sec: "сек", stage_word: "ЭТАП", rest_word: "ОТДЫХ",
+        gacha_result_title: "Призыв воительниц (x{n})", forge_result_title: "Кузня: Выковано реликвий (x{n})",
+        no_gear_empty: "Пусто", none_gear_option: "Без реликвии",
+        btn_ability_ready: "✨ Использовать способность", btn_ability_cd: "⏳ Перезарядка: {n}с",
+        btn_copy: "🧬 Копия за {cost} {emoji}", btn_equip_rec: "🎯 Экипировать рекомендуемое",
+        squad_count: "В строю: {n} тян", squad_bm: "Общая БМ: {n}",
+        atk_per_sec: "АТК/с", enemy_bm: "БМ Врага: {n}",
+        camp_status: "Время стоянки: {n} сек", camp_info: "Зона отдыха. Здоровье отряда зафиксировано на 100%. Идет поиск вещей...",
+        battle_info: "Атака отряда: {atk} АТК/сек | Сила монстра: {matk} АТК/сек | +{gold} золото/с",
+        mythic_timer: "До прихода следующей мифической сущности: {m} мин {s} сек",
+        ad_summon_btn: "📺 Призыв за рекламу ({n})",
+        toast_not_enough_gold: "Недостаточно Кредитов для призыва!",
+        toast_gear_sold: "💰 Реликвия продана за +{price} монет!",
+        toast_gear_looted: "⚔️ Выбит трофей: {name} (+{bonus} {label})!",
+        toast_gear_added_inv: "⚔️ Предмет добавлен в арсенал (+{bonus} {label})!",
+        toast_gear_sold_immediate: "💰 Новый трофей сразу продан за +{price} монет!",
+        toast_old_gear_sold: "💰 Старая реликвия продана за +{price} монет!",
+        toast_reforge_evo: "✨ Успешная эволюция! Получен тир {tier}!",
+        toast_reforge_done: "🔨 Перековка завершена. Получен тир {tier}",
+        toast_reforge_evo2: "✨ Великолепный исход! Реликвия эволюционировала в {tier}!",
+        toast_reforge_done2: "🔨 Перековка завершена. Получен предмет тира {tier}",
+        toast_reforge_bulk: "🔨 Массовая перековка {tier}: {n}x, эволюций в след. тир: {evo}",
+        toast_not_enough_tokens: "Недостаточно жетонов! Требуется {cost} {emoji}",
+        toast_max_breakthrough: "Максимальный уровень прорыва!",
+        toast_copy_bought: "🧬 Успешно куплена копия персонажа! Прогресс: x{n}",
+        toast_no_gear_available: "Нет доступного снаряжения для экипировки",
+        toast_equipped: "✅ Экипировано: {name}",
+        toast_equipped_all: "🎯 Рекомендованное снаряжение экипировано всему отряду!",
+        toast_mythic_hero: "👑 В отряд снизошла МИФИЧЕСКАЯ богиня: {name}!",
+        toast_mythic_all_collected: "✨ Все мифические богини собраны! Выдано утешение: +500,000 золота!",
+        toast_mythic_artifact: "✨ Абсолютный резонанс! Найден МИФИЧЕСКИЙ артефакт: {name}!",
+        toast_no_camp_kill: "Нельзя истреблять костры!",
+        toast_annihilate: "🌌 Пространство разорвано! Враг моментально аннигилирован!",
+        toast_loot_luck: "🎰 Удача улыбнулась: выдан предмет {name}!",
+        toast_not_enough_gold_shop: "Недостаточно кредитов! Лавка требует 1,000,000 монет.",
+        toast_shop_bought: "🏪 Куплено из лавки Вельзевул: {name}!",
+        toast_defeat: "💀 Отряд повержен! Серия побед обнулена. Отступление на 1 этап назад.",
+        toast_boss_win: "🏆 БОСС побежден! Серия побед подряд: {n}",
+        toast_win: "⚔️ Враг повержен! Серия побед подряд: {n}",
+        toast_campfire_gear: "🔥 Костер согрел: найдена экипировка {name} (+{bonus} {label})!",
+        toast_phoenix: "💖 Феникс восстал из пепла! ХП отряда полностью восстановлено!",
+        toast_ad_reward: "📺 Реклама просмотрена! Начислен бонусный призыв x{n}!",
+        toast_ad_unavailable: "Реклама сейчас недоступна, попробуйте позже.",
+        confirm_reset1: "Вы уверены? Это НАВСЕГДА удалит весь прогресс: героинь, снаряжение, золото, жетоны и этаж. Отменить будет нельзя.",
+        confirm_reset2: "Точно-точно? Это последнее предупреждение - прогресс будет стёрт безвозвратно.",
+        alert_warehouse_full_rarity: "Склад этой редкости всё ещё полон!",
+        alert_forge_full: "Ваша оружейная для редкости {tier} забита! Максимум: {n} шт.",
+        alert_not_enough_tokens_or_space: "Недостаточно жетонов {tier} или нет свободного места!",
+        alert_need3_reforge: "Необходимо минимум 3 свободных реликвии редкости {tier} для перековки!",
+        alert_mythic_full: "Оружейная мификов переполнена!",
+        wiki_rank: "Ранг", wiki_mythic_rank: "👑 МИФИЧЕСКИЙ РАНГ",
+        wiki_owned: "✅ Открыта (копий: {n}/10)", wiki_owned_mythic: "✅ Получена", wiki_locked: "🔒 Закрыта",
+        wiki_base_stats: "Базовые (1 копия): АТК {atk} | HP {hp} | ЗОЛ +{gold}/с",
+        wiki_base_stats_m: "Базовые: АТК {atk} | HP {hp} | ЗОЛ +{gold}/с",
+        wiki_effect: "Эффект: {desc}",
+        wiki_best_mythic: "💠 Лучший мифик-артефакт: {name} ({label}, +{pct}% к итогу) — {reason}",
+        wiki_copy_stats: "📊 Статы по количеству копий", wiki_copies: "Копий",
+        wiki_range: "Диапазон бонуса: от {min} до {max} {label}{pct}",
+        reason_gold_synergy: "синергия с золотой пассивкой", reason_atk_synergy: "синергия с атакующей пассивкой", reason_best_stat: "сильнейшая сторона героини",
+        mythic_active_annihilate: "🌌 Аннигиляция Врага", mythic_active_loot: "🎰 Призыв Сокровища",
+        gear_picker_label: "⚔️ Снаряжение", stage_prefix: "ЭТАП 1"
+    },
+    en: {
+        wiki_title: "📖 Book of Warriors", wiki_tab_heroes: "👸 Heroines", wiki_tab_gear: "⚔️ Gear",
+        stat_gold: "Gold Credits", stat_bm: "Total Squad Power (ATK + HP)", stat_tokens: "Tokens (Forging & Duplicate Redemption)", stat_unique: "Heroines Collected",
+        btn_wiki: "📖 Codex", btn_fullscreen: "⛶ Fullscreen", btn_settings: "⚙️ Settings",
+        squad_title: "⚔️ Squad Tactical Status",
+        lbl_win_streak: "Wins in a row (mobs/bosses):", lbl_max_streak: "Best streak:",
+        lbl_time_alive: "Alive without deaths:", lbl_total_time: "Total time alive:",
+        mythic_title: "👑 Hall of Mythic Goddesses", mythic_auto: "⚙️ Auto-use active abilities",
+        mythic_shop_title: "🏪 Dimensional Artifact Shop",
+        mythic_buy_atk: "🌌 Blade of the Abyss (1,000,000 Gold)", mythic_buy_hp: "👑 Aegis of the Eternal (1,000,000 Gold)", mythic_buy_gold: "💎 Horn of Plenty (1,000,000 Gold)",
+        mythic_squad: "Mythic Squad",
+        banner_title: "Prayer of the Beautiful Warriors",
+        banner_subtitle: "1 summon = 100 Credits. Gather the strongest harem to conquer the dungeons.",
+        btn_summon_x1: "Summon x1", btn_summon_x10: "Summon x10",
+        forge_common: "🟢 Common Forging", forge_rare: "🔵 Rare Forging", forge_epic: "🟣 Epic Forging", forge_legendary: "🟡 Legendary Forging",
+        forge_cost_c: "Cost: 10 🟢", forge_cost_r: "Cost: 10 🔵", forge_cost_e: "Cost: 10 🟣", forge_cost_l: "Cost: 5 🟡",
+        reforge_title: "Relic Salvage & Sorting Workshop",
+        reforge_c: "Combine 3x Common", reforge_r: "Combine 3x Rare", reforge_e: "Combine 3x Epic",
+        warehouse_free: "Free storage by rarity tier:",
+        inv_title: "Your Heroine Squad", inv_subtitle: "Instant duplicate redemption available with Tokens!",
+        btn_equip_all: "🎯 Equip best available gear to everyone",
+        btn_accept: "Accept",
+        overflow_title: "🚨 Armory is full!",
+        overflow_subtitle: "You found a new item, but there's no free inventory space. Choose an action:",
+        overflow_sell: "💰 Sell this trophy", overflow_claim: "📥 Claim trophy",
+        overflow_manage: "Manage inventory (free up space):",
+        settings_title: "⚙️ Settings", settings_lang_title: "Язык / Language", settings_lang_desc: "Switch the game's interface language.",
+        settings_reset_title: "Reset Progress",
+        settings_reset_desc: "Permanently deletes all heroines, gear, gold and floor progress. This cannot be undone.",
+        settings_reset_btn: "🗑️ Full progress reset", btn_close: "Close",
+        ad_freeze_title: "Showing ad...", ad_freeze_sub: "The game will resume right after the ad closes",
+        gold_per_sec: "sec", stage_word: "STAGE", rest_word: "REST",
+        gacha_result_title: "Summon results (x{n})", forge_result_title: "Forge: Relics crafted (x{n})",
+        no_gear_empty: "Empty", none_gear_option: "No relic",
+        btn_ability_ready: "✨ Use ability", btn_ability_cd: "⏳ Cooldown: {n}s",
+        btn_copy: "🧬 Copy for {cost} {emoji}", btn_equip_rec: "🎯 Equip recommended",
+        squad_count: "In formation: {n}", squad_bm: "Total power: {n}",
+        atk_per_sec: "ATK/s", enemy_bm: "Enemy power: {n}",
+        camp_status: "Camp time: {n} sec", camp_info: "Resting zone. Squad HP locked at 100%. Searching for loot...",
+        battle_info: "Squad attack: {atk} ATK/sec | Monster power: {matk} ATK/sec | +{gold} gold/s",
+        mythic_timer: "Next mythic entity arrives in: {m} min {s} sec",
+        ad_summon_btn: "📺 Ad summon ({n})",
+        toast_not_enough_gold: "Not enough Credits to summon!",
+        toast_gear_sold: "💰 Relic sold for +{price} gold!",
+        toast_gear_looted: "⚔️ Trophy dropped: {name} (+{bonus} {label})!",
+        toast_gear_added_inv: "⚔️ Item added to armory (+{bonus} {label})!",
+        toast_gear_sold_immediate: "💰 New trophy sold instantly for +{price} gold!",
+        toast_old_gear_sold: "💰 Old relic sold for +{price} gold!",
+        toast_reforge_evo: "✨ Successful evolution! Got tier {tier}!",
+        toast_reforge_done: "🔨 Reforge complete. Got tier {tier}",
+        toast_reforge_evo2: "✨ Splendid outcome! Relic evolved into {tier}!",
+        toast_reforge_done2: "🔨 Reforge complete. Got a {tier} item",
+        toast_reforge_bulk: "🔨 Bulk reforge {tier}: {n}x, evolutions to next tier: {evo}",
+        toast_not_enough_tokens: "Not enough tokens! Requires {cost} {emoji}",
+        toast_max_breakthrough: "Maximum breakthrough level reached!",
+        toast_copy_bought: "🧬 Copy purchased successfully! Progress: x{n}",
+        toast_no_gear_available: "No available gear to equip",
+        toast_equipped: "✅ Equipped: {name}",
+        toast_equipped_all: "🎯 Recommended gear equipped to the whole squad!",
+        toast_mythic_hero: "👑 A MYTHIC goddess has joined the squad: {name}!",
+        toast_mythic_all_collected: "✨ All mythic goddesses collected! Consolation reward: +500,000 gold!",
+        toast_mythic_artifact: "✨ Absolute resonance! Found a MYTHIC artifact: {name}!",
+        toast_no_camp_kill: "You can't destroy campfires!",
+        toast_annihilate: "🌌 Space itself tears open! The enemy is instantly annihilated!",
+        toast_loot_luck: "🎰 Luck smiled upon you: received {name}!",
+        toast_not_enough_gold_shop: "Not enough credits! The shop requires 1,000,000 gold.",
+        toast_shop_bought: "🏪 Bought from Beelzebub's shop: {name}!",
+        toast_defeat: "💀 Squad defeated! Win streak reset. Retreating 1 stage back.",
+        toast_boss_win: "🏆 BOSS defeated! Win streak: {n}",
+        toast_win: "⚔️ Enemy defeated! Win streak: {n}",
+        toast_campfire_gear: "🔥 The campfire warmed you: found gear {name} (+{bonus} {label})!",
+        toast_phoenix: "💖 The Phoenix rose from the ashes! Squad HP fully restored!",
+        toast_ad_reward: "📺 Ad watched! Bonus summon x{n} granted!",
+        toast_ad_unavailable: "Ad is unavailable right now, please try again later.",
+        confirm_reset1: "Are you sure? This will PERMANENTLY delete all progress: heroines, gear, gold, tokens and floor. This cannot be undone.",
+        confirm_reset2: "Absolutely sure? This is the final warning - progress will be erased permanently.",
+        alert_warehouse_full_rarity: "This rarity's storage is still full!",
+        alert_forge_full: "Your armory for rarity {tier} is full! Maximum: {n} pcs.",
+        alert_not_enough_tokens_or_space: "Not enough {tier} tokens or no free space!",
+        alert_need3_reforge: "You need at least 3 free {tier} relics to reforge!",
+        alert_mythic_full: "The mythic armory is full!",
+        wiki_rank: "Rank", wiki_mythic_rank: "👑 MYTHIC RANK",
+        wiki_owned: "✅ Unlocked (copies: {n}/10)", wiki_owned_mythic: "✅ Obtained", wiki_locked: "🔒 Locked",
+        wiki_base_stats: "Base (1 copy): ATK {atk} | HP {hp} | GOLD +{gold}/s",
+        wiki_base_stats_m: "Base: ATK {atk} | HP {hp} | GOLD +{gold}/s",
+        wiki_effect: "Effect: {desc}",
+        wiki_best_mythic: "💠 Best mythic artifact: {name} ({label}, +{pct}% total) — {reason}",
+        wiki_copy_stats: "📊 Stats by copy count", wiki_copies: "Copies",
+        wiki_range: "Bonus range: from {min} to {max} {label}{pct}",
+        reason_gold_synergy: "synergy with gold passive", reason_atk_synergy: "synergy with attack passive", reason_best_stat: "heroine's strongest stat",
+        mythic_active_annihilate: "🌌 Annihilate Enemy", mythic_active_loot: "🎰 Summon Treasure",
+        gear_picker_label: "⚔️ Gear", stage_prefix: "STAGE 1"
+    }
+};
+
+function t(key, params) {
+    let str = (I18N[currentLang] && I18N[currentLang][key]) || I18N.ru[key] || key;
+    if (params) {
+        Object.keys(params).forEach(p => { str = str.replace(`{${p}}`, params[p]); });
+    }
+    return str;
+}
+
+function applyStaticTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+        el.textContent = t(el.dataset.i18n);
+    });
+    const langBtn = document.getElementById('btn-lang-toggle');
+    if (langBtn) langBtn.innerText = currentLang === 'ru' ? '🌐 RU (нажмите для EN)' : '🌐 EN (click for RU)';
+    document.documentElement.lang = currentLang;
+}
+
+function setLanguage(lang) {
+    currentLang = lang;
+    localStorage.setItem('waifu_idle_lang', lang);
+    applyStaticTranslations();
+    renderInventory();
+    updateUI();
+    if (document.getElementById('wiki-drawer').classList.contains('open')) {
+        switchWikiTab(currentWikiTab);
+    }
+}
+
+function toggleLanguage() {
+    setLanguage(currentLang === 'ru' ? 'en' : 'ru');
+}
+
+const NAME_EN = {
+    lily: "🧙‍♀️ Apprentice Mage Lily", aria: "🏹 Forest Archer Aria", mia: "🐱 Beastgirl Mia", nina: "⛪ Nun Nina", saya: "🥷 Ninja Saya",
+    rose: "⚔️ Swordswoman Rose", kira: "🗺️ Pathfinder Kira", rem: "🧹 Maid Rem", rin: "🦊 Trickster Fox Rin", noelle: "🛡️ Knight Noelle",
+    claudia: "⚜️ Paladin Claudia", elena: "📜 Inquisitor Elena", lucy: "💀 Necromancer Lucy", asuna: "⚡ Storm Swordswoman Asuna", morgana: "🔮 Shadow Witch Morgana",
+    valkyrie: "🐉 Dragon Rider Valkyrie", selina: "🔥 Fire Archmage Selina", aquella: "🌊 Ocean Priestess Aquella", yolanda: "⛓️ Iron Maiden Yolanda",
+    freya: "👑 Warrior Queen Freya", kaneka: "🗡️ Shadow Blade Kaneka", esdeath: "❄️ Ice General Esdeath", tiamat: "🌋 Chaos Dragon Tiamat",
+    mythic_oneclick: "🌌 Void Blade Shin", mythic_loot: "🎰 Goddess of Fortune Luxia", mythic_autoheal: "💖 Immortal Phoenix Rias",
+    mythic_shop_bag: "🏪 Spatial Beelzebub", mythic_cdr_buff: "⏳ Keeper of Time Chronos",
+    gear_c1: "Novice's Steel Sword", gear_c2: "Trainee's Sturdy Shield", gear_c3: "Old Lucky Coin",
+    gear_r1: "Runic Sword of Power", gear_r2: "Amulet of the Living Soul", gear_r3: "Merchant's Purse",
+    gear_e1: "Bow of the Starfall Rift", gear_e2: "Titan's Dense Mantle", gear_e3: "Midas' Golden Crown",
+    gear_l1: "Holy Excalibur", gear_l2: "Heart of the Progenitor", gear_l3: "Cup of Infinite Wealth",
+    gear_m1: "Claymore of Primordial Chaos", gear_m2: "Aegis of Absolute Immortality", gear_m3: "Universal Horn of Plenty"
+};
+
+const PASSIVE_DESC_EN = {
+    valkyrie: "×2 personal ATK", selina: "+10% to all gold in the world", aquella: "+15% to passive gold", yolanda: "+10% to squad ATK",
+    freya: "+12% to squad ATK", kaneka: "+18% to squad ATK", esdeath: "+25% gold from all sources", tiamat: "+25% to squad ATK",
+    mythic_oneclick: "Active: One-shot a monster (CD 5 min)", mythic_loot: "Active: Guaranteed 4★+ gear (CD 5 min)",
+    mythic_autoheal: "Auto-heals squad to 100% at <10% HP (CD 10 min)", mythic_shop_bag: "Mythic artifact shop, x5 backpack",
+    mythic_cdr_buff: "-10% mythic CD, +10% stats for other ranks"
+};
+
+const MAX_UPGRADE_PASSIVES_EN = {
+    1: "Breakthrough I: +20% to stats", 2: "Breakthrough II: +30% to stats", 3: "Breakthrough III: +40% to stats",
+    4: "Breakthrough IV: +50% to stats", 5: "Breakthrough V: +60% to stats"
+};
+
+function localizedName(obj) {
+    if (!obj || !obj.id) return obj ? obj.name : '';
+    if (currentLang === 'en' && NAME_EN[obj.id]) return NAME_EN[obj.id];
+    return obj.name;
+}
+
+function localizedPassiveDesc(char) {
+    if (!char) return '';
+    if (currentLang === 'en' && char.id && PASSIVE_DESC_EN[char.id]) return PASSIVE_DESC_EN[char.id];
+    return char.passiveDesc;
+}
+
+function localizedBreakthroughDesc(stars) {
+    if (currentLang === 'en') return MAX_UPGRADE_PASSIVES_EN[stars];
+    return MAX_UPGRADE_PASSIVES[stars].desc;
+}
+
+const MONSTER_PREFIXES_EN = ["Wild", "Cursed", "Cave", "Bloodied", "Elite", "Infernal", "Ancient"];
+const MONSTER_TYPES_EN = ["Slime", "Goblin", "Orc Raider", "Skeleton Warrior", "Harpy", "Stone Golem", "Chimera", "Abyss Dragon"];
 const CHARACTER_DATABASE = {
     1: [
         { id: "lily", name: "🧙‍♀️ Маг-Ученица Лили", stars: 1, baseAtk: 0.05, baseHp: 0.20, baseGold: 0.02 },
@@ -94,9 +364,9 @@ const rarityColors = {
 };
 
 function getGearLabel(type) {
-    if (type === 'atk') return 'АТК';
+    if (type === 'atk') return currentLang === 'en' ? 'ATK' : 'АТК';
     if (type === 'hp') return 'HP';
-    if (type === 'gold') return 'ЗОЛ';
+    if (type === 'gold') return currentLang === 'en' ? 'GOLD' : 'ЗОЛ';
     return '';
 }
 
@@ -138,14 +408,14 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
     const tType = TOKEN_MAP[char.stars];
     const tCost = CHAR_TOKEN_COST[char.stars];
     const buyBtnHTML = (isMax || char.stars === 6) ? '' :
-        `<button class="btn-buy-copy" onclick="buyCharacterCopy('${char.id}', ${char.stars})">🧬 Копия за ${tCost} ${TOKEN_EMOJIS[tType]}</button>`;
+        `<button class="btn-buy-copy" onclick="buyCharacterCopy('${char.id}', ${char.stars})">${t('btn_copy', { cost: tCost, emoji: TOKEN_EMOJIS[tType] })}</button>`;
 
     const candidates = player.gearInventory.filter(g => g.equippedTo === null || g.equippedTo === char.id);
     const sortedGear = sortGearForPicker(candidates);
     let pickerHTML = `
-        <div class="gear-picker-label">⚔️ Снаряжение</div>
+        <div class="gear-picker-label">${t('gear_picker_label')}</div>
         <div class="gear-picker-list">
-            <div class="gear-picker-item none-option ${!currentlyEquipped ? 'equipped' : ''}" onclick="changeEquipmentFromPicker('${char.id}','none')">Без реликвии</div>
+            <div class="gear-picker-item none-option ${!currentlyEquipped ? 'equipped' : ''}" onclick="changeEquipmentFromPicker('${char.id}','none')">${t('none_gear_option')}</div>
     `;
     sortedGear.forEach(gear => {
         const isEq = gear.equippedTo === char.id;
@@ -153,7 +423,7 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
         pickerHTML += `
             <div class="gear-picker-item ${isEq ? 'equipped' : ''}" style="border-left-color:${rarityColors[gear.rarity]}" onclick="changeEquipmentFromPicker('${char.id}','${gear.instanceId}')">
                 ${buildGearPortraitHTML(gear, 'gear-portrait-sm')}
-                <span class="gpi-text">[${gear.rarity.toUpperCase()}] ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag})</span>
+                <span class="gpi-text">[${gear.rarity.toUpperCase()}] ${localizedName(gear)} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag})</span>
                 ${isEq ? '<span class="gpi-check">✓</span>' : ''}
             </div>
         `;
@@ -165,9 +435,9 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
         const cd = player.mythicCooldowns[char.id] || 0;
         mythicAbilityHTML = `
             <button class="btn-mythic-ability-card" data-hero-id="${char.id}" ${cd > 0 ? 'disabled' : ''} onclick="useMythicAbility('${char.id}')">
-                ${cd > 0 ? `⏳ Перезарядка: ${cd}с` : '✨ Использовать способность'}
+                ${cd > 0 ? t('btn_ability_cd', { n: cd }) : t('btn_ability_ready')}
             </button>
-            <div class="mythic-ability-desc">${char.passiveDesc}</div>
+            <div class="mythic-ability-desc">${localizedPassiveDesc(char)}</div>
         `;
     }
 
@@ -180,19 +450,19 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
                  onload="this.previousElementSibling.style.display='none';"
                  onerror="this.style.display='none';">
             <div class="char-portrait-namebar">
-                <div class="char-portrait-name">${char.name}</div>
+                <div class="char-portrait-name">${localizedName(char)}</div>
                 <button class="char-expand-btn" onclick="toggleCharExpand('${char.id}')" title="Подробнее">▼</button>
             </div>
         </div>
         <div class="char-card-details">
             <div class="char-stat-row">
-                <span class="char-income">${currentCharAtk.toFixed(2)} АТК</span>
+                <span class="char-income">${currentCharAtk.toFixed(2)} ${currentLang === 'en' ? 'ATK' : 'АТК'}</span>
                 <span class="char-hp-stat">${currentCharHp.toFixed(2)} HP</span>
             </div>
-            <div class="char-stat-row"><span class="char-gold-income">+${currentCharGold.toFixed(2)} ЗОЛ/с</span></div>
+            <div class="char-stat-row"><span class="char-gold-income">+${currentCharGold.toFixed(2)} ${currentLang === 'en' ? 'GOLD/s' : 'ЗОЛ/с'}</span></div>
             ${passiveHTML}
             ${mythicAbilityHTML}
-            <button class="btn-equip-recommended" onclick="equipRecommendedGear('${char.id}')">🎯 Экипировать рекомендуемое</button>
+            <button class="btn-equip-recommended" onclick="equipRecommendedGear('${char.id}')">${t('btn_equip_rec')}</button>
             ${pickerHTML}
             ${buyBtnHTML}
         </div>
@@ -298,7 +568,9 @@ function renderArenaSquadSide() {
             state.addTimeout = setTimeout(() => {
                 const wrapper = document.createElement('div');
                 wrapper.innerHTML = buildArenaSpriteHTML({ ...newChar, isCharacter: true }, 'entering');
-                slot.appendChild(wrapper.firstElementChild);
+                const spriteEl = wrapper.firstElementChild;
+                slot.appendChild(spriteEl);
+                setTimeout(() => spriteEl.classList.remove('entering'), 550);
                 state.addTimeout = null;
             }, delay);
         }
@@ -338,11 +610,17 @@ function renderArenaEnemySide() {
     const oldSprite = side.querySelector('.arena-sprite');
     const newHTML = buildArenaSpriteHTML({ name: currentEnemy.name, emoji: currentEnemy.emoji, spriteId: currentEnemy.spriteId }, 'arena-enemy-sprite entering');
 
+    const stripEntering = () => {
+        const el = side.querySelector('.arena-sprite');
+        if (el) setTimeout(() => el.classList.remove('entering'), 550);
+    };
+
     if (oldSprite) {
         oldSprite.classList.add('leaving');
-        setTimeout(() => { side.innerHTML = newHTML; }, ARENA_LEAVE_MS);
+        setTimeout(() => { side.innerHTML = newHTML; stripEntering(); }, ARENA_LEAVE_MS);
     } else {
         side.innerHTML = newHTML;
+        stripEntering();
     }
 }
 
@@ -361,6 +639,11 @@ function replayArenaAnimation(el, className) {
     el.classList.remove(className);
     void el.offsetWidth;
     el.classList.add(className);
+    const duration = className === 'hit' ? 420 : 470;
+    clearTimeout(el[`_${className}Timeout`]);
+    el[`_${className}Timeout`] = setTimeout(() => {
+        el.classList.remove(className);
+    }, duration);
 }
 
 function triggerArenaSquadAttack() {
@@ -436,22 +719,39 @@ function saveGame() {
     try {
         player.savedCampState = campState.isActive ? { timeLeft: campState.timeLeft, hasDroppedGear: campState.hasDroppedGear } : null;
         localStorage.setItem('waifu_idle_save_v2', JSON.stringify(player));
+        scheduleCloudSave();
     } catch (e) {
         console.error(e);
     }
 }
 
-function loadGame() {
-    try {
-        const saved = localStorage.getItem('waifu_idle_save_v2');
-        if (saved) {
-            const parsed = JSON.parse(saved);
-            if (parsed) {
-                player = Object.assign({}, player, parsed);
+async function loadGame() {
+    let parsed = null;
+
+    if (yaPlayer) {
+        try {
+            const cloudData = await yaPlayer.getData();
+            if (cloudData && Object.keys(cloudData).length > 0) {
+                parsed = cloudData;
             }
+        } catch (e) {
+            console.warn('Облачное сохранение недоступно, используем локальное:', e);
         }
-    } catch (e) {
-        console.error(e);
+    }
+
+    if (!parsed) {
+        try {
+            const saved = localStorage.getItem('waifu_idle_save_v2');
+            if (saved) {
+                parsed = JSON.parse(saved);
+            }
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    if (parsed) {
+        player = Object.assign({}, player, parsed);
     }
 
     if (!player.tokens) player.tokens = { common: 0, rare: 0, epic: 0, legendary: 0 };
@@ -635,7 +935,7 @@ function spawnEnemy() {
         campState.hasDroppedGear = false;
         
         bZone.classList.add('camp-mode');
-        currentEnemy.name = "⛺ Привал у костра (Зона отдыха)";
+        currentEnemy.name = currentLang === 'en' ? "⛺ Campfire Rest (Resting Zone)" : "⛺ Привал у костра (Зона отдыха)";
         currentEnemy.emoji = "⛺";
         currentEnemy.spriteId = "camp";
         currentEnemy.maxHp = 30;
@@ -656,9 +956,13 @@ function spawnEnemy() {
     const tIndex = (player.battleStage - 1) % MONSTER_TYPES.length;
     
     const isBoss = (player.battleStage >= 34 && player.battleStage % 5 === 4);
-    const prefix = isBoss ? "👹 [БОСС]" : MONSTER_PREFIXES[pIndex];
+    const prefixes = currentLang === 'en' ? MONSTER_PREFIXES_EN : MONSTER_PREFIXES;
+    const types = currentLang === 'en' ? MONSTER_TYPES_EN : MONSTER_TYPES;
+    const bossTag = currentLang === 'en' ? "👹 [BOSS]" : "👹 [БОСС]";
+    const levelTag = currentLang === 'en' ? "Lvl" : "Ур.";
+    const prefix = isBoss ? bossTag : prefixes[pIndex];
     
-    currentEnemy.name = `${prefix} ${MONSTER_TYPES[tIndex]} [Ур. ${player.battleStage}]`;
+    currentEnemy.name = `${prefix} ${types[tIndex]} [${levelTag}. ${player.battleStage}]`;
     currentEnemy.emoji = isBoss ? BOSS_EMOJI : MONSTER_TYPE_EMOJIS[tIndex];
     currentEnemy.spriteId = MONSTER_TYPE_IDS[tIndex] + (isBoss ? BOSS_SPRITE_SUFFIX : '');
     
@@ -718,7 +1022,7 @@ function executeMonsterDrop() {
     }
 
     player.gearInventory.push(newGear);
-    showToast(`⚔️ Выбит трофей: ${newGear.name} (+${newGear.bonus.toFixed(2)} ${getGearLabel(newGear.type)})!`, rarityColors[tier]);
+    showToast(t('toast_gear_looted', { name: localizedName(newGear), bonus: newGear.bonus.toFixed(2), label: getGearLabel(newGear.type) }), rarityColors[tier]);
     renderInventory();
     saveGame();
 }
@@ -730,12 +1034,14 @@ function openOverflowModal() {
     modal.style.display = 'flex';
     const infoDiv = document.getElementById('overflow-gear-info');
     const price = GEAR_SELL_PRICES[pendingDroppedGear.rarity] || 50;
+    const trophyLabel = currentLang === 'en' ? 'TROPHY' : 'ТРОФЕЙ';
+    const sellCostLabel = currentLang === 'en' ? 'Immediate sale value:' : 'Стоимость немедленной продажи:';
     infoDiv.innerHTML = `
         <div style="color: ${rarityColors[pendingDroppedGear.rarity]}; font-weight: bold; font-size: 16px;">
-            ТРОФЕЙ: ${pendingDroppedGear.name} (+${pendingDroppedGear.bonus.toFixed(2)} ${getGearLabel(pendingDroppedGear.type)})
+            ${trophyLabel}: ${localizedName(pendingDroppedGear)} (+${pendingDroppedGear.bonus.toFixed(2)} ${getGearLabel(pendingDroppedGear.type)})
         </div>
         <div style="margin-top: 5px; font-size: 12px; color: var(--text-muted);">
-            Стоимость немедленной продажи: <span style="color: #ffd700;">${price} 💰</span>
+            ${sellCostLabel} <span style="color: #ffd700;">${price} 💰</span>
         </div>
     `;
     
@@ -752,7 +1058,7 @@ function sellPendingGearImmediate() {
     if (!pendingDroppedGear) return;
     const price = GEAR_SELL_PRICES[pendingDroppedGear.rarity] || 50;
     player.gold += price;
-    showToast(`💰 Новый трофей сразу продан за +${price} монет!`, '#4caf50');
+    showToast(t('toast_gear_sold_immediate', { price: price }), '#4caf50');
     closeOverflowModal();
     updateUI();
     saveGame();
@@ -761,11 +1067,11 @@ function sellPendingGearImmediate() {
 function claimPendingGear() {
     if (!pendingDroppedGear) return;
     if (getGearCountByRarity(pendingDroppedGear.rarity) >= getMaxGearLimit()) {
-        alert("Склад этой редкости всё ещё полон!");
+        alert(t('alert_warehouse_full_rarity'));
         return;
     }
     player.gearInventory.push(pendingDroppedGear);
-    showToast(`⚔️ Предмет добавлен в арсенал (+${pendingDroppedGear.bonus.toFixed(2)} ${getGearLabel(pendingDroppedGear.type)})!`, rarityColors[pendingDroppedGear.rarity]);
+    showToast(t('toast_gear_added_inv', { bonus: pendingDroppedGear.bonus.toFixed(2), label: getGearLabel(pendingDroppedGear.type) }), rarityColors[pendingDroppedGear.rarity]);
     closeOverflowModal();
     renderInventory();
     updateUI();
@@ -782,7 +1088,7 @@ function sellOldGearFromOverflow(instanceId) {
     player.gold += price;
     player.gearInventory.splice(itemIndex, 1);
     
-    showToast(`💰 Старая реликвия продана за +${price} монет!`, '#4caf50');
+    showToast(t('toast_old_gear_sold', { price: price }), '#4caf50');
     renderOverflowInventoryManager();
     renderInventory();
     updateUI();
@@ -792,7 +1098,7 @@ function sellOldGearFromOverflow(instanceId) {
 function bulkReforgeFromOverflow(tier) {
     const unequipped = player.gearInventory.filter(g => g.rarity === tier && g.equippedTo === null);
     if (unequipped.length < 3) {
-        alert(`Недостаточно свободных реликвий тира ${tier.toUpperCase()} для перековки (нужно 3 шт.)`);
+        alert(t('alert_need3_reforge', { tier: tier.toUpperCase() }));
         return;
     }
 
@@ -811,9 +1117,9 @@ function bulkReforgeFromOverflow(tier) {
     
     if (currentIndex < tiersOrder.length - 1 && Math.random() <= 0.25) {
         finalTier = tiersOrder[currentIndex + 1];
-        showToast(`✨ Успешная эволюция! Получен тир ${finalTier.toUpperCase()}!`, '#ffd700');
+        showToast(t('toast_reforge_evo', { tier: finalTier.toUpperCase() }), '#ffd700');
     } else {
-        showToast(`🔨 Перековка завершена. Получен тир ${finalTier.toUpperCase()}`, '#ffffff');
+        showToast(t('toast_reforge_done', { tier: finalTier.toUpperCase() }), '#ffffff');
     }
 
     const upgradeGear = generateRandomGear(finalTier);
@@ -844,7 +1150,8 @@ function renderOverflowInventoryManager() {
     }
 
     if (unequippedItems.length === 0) {
-        listDiv.innerHTML = '<div style="color:var(--text-muted); padding:10px; text-align:center;">Нет свободного снаряжения для продажи или перековки</div>';
+        const emptyMsg = currentLang === 'en' ? 'No free gear available to sell or reforge' : 'Нет свободного снаряжения для продажи или перековки';
+        listDiv.innerHTML = `<div style="color:var(--text-muted); padding:10px; text-align:center;">${emptyMsg}</div>`;
         return;
     }
 
@@ -852,14 +1159,14 @@ function renderOverflowInventoryManager() {
     reforgeContainer.className = "overflow-reforge-group";
     
     const tiers = ['common', 'rare', 'epic', 'legendary'];
-    tiers.forEach(t => {
-        const count = unequippedItems.filter(g => g.rarity === t).length;
+    tiers.forEach(t2 => {
+        const count = unequippedItems.filter(g => g.rarity === t2).length;
         if (count >= 3) {
             const btn = document.createElement('button');
             btn.className = "btn-reforge-quick";
-            btn.style.background = rarityColors[t];
-            btn.innerText = `🔨 Сжать 3 ${t.toUpperCase()} (-2 слота)`;
-            btn.onclick = () => bulkReforgeFromOverflow(t);
+            btn.style.background = rarityColors[t2];
+            btn.innerText = currentLang === 'en' ? `🔨 Combine 3 ${t2.toUpperCase()} (-2 slots)` : `🔨 Сжать 3 ${t2.toUpperCase()} (-2 слота)`;
+            btn.onclick = () => bulkReforgeFromOverflow(t2);
             reforgeContainer.appendChild(btn);
         }
     });
@@ -872,9 +1179,10 @@ function renderOverflowInventoryManager() {
         row.style.cssText = `display:flex; justify-content:space-between; align-items:center; padding:6px; margin-bottom:4px; background:rgba(255,255,255,0.05); border-left:3px solid ${rarityColors[item.rarity]}; font-size:12px;`;
         
         const price = GEAR_SELL_PRICES[item.rarity] || 50;
+        const sellBtnLabel = currentLang === 'en' ? `Sell for +${price}💰` : `Продать за +${price}💰`;
         row.innerHTML = `
-            <div>${item.name} <span style="color:#00e5ff;">(+${item.bonus.toFixed(2)} ${getGearLabel(item.type)})</span></div>
-            <button onclick="sellOldGearFromOverflow('${item.instanceId}')" style="background:#cc3333; color:white; border:none; padding:2px 6px; border-radius:3px; cursor:pointer;">Продать за +${price}💰</button>
+            <div>${localizedName(item)} <span style="color:#00e5ff;">(+${item.bonus.toFixed(2)} ${getGearLabel(item.type)})</span></div>
+            <button onclick="sellOldGearFromOverflow('${item.instanceId}')" style="background:#cc3333; color:white; border:none; padding:2px 6px; border-radius:3px; cursor:pointer;">${sellBtnLabel}</button>
         `;
         listDiv.appendChild(row);
     });
@@ -905,7 +1213,7 @@ function handlePulls(amount) {
     }
 
     if (pullsToPerform <= 0) {
-        showToast("Недостаточно Кредитов для призыва!", "#ff3333");
+        showToast(t('toast_not_enough_gold'), "#ff3333");
         return;
     }
 
@@ -937,7 +1245,7 @@ function handlePulls(amount) {
     const newMaxHp = calculateTotalHp();
     player.squadCurrentHp = Math.min(hpRatio * newMaxHp, newMaxHp);
 
-    document.getElementById('modal-title').innerText = `Призыв воительниц (x${pullsToPerform})`;
+    document.getElementById('modal-title').innerText = t('gacha_result_title', { n: pullsToPerform });
     showGachaModal(results, "char");
     renderInventory();
     updateUI();
@@ -946,7 +1254,7 @@ function handlePulls(amount) {
 
 function rollGear(tier, mode) {
     if (getGearCountByRarity(tier) >= getMaxGearLimit()) {
-        alert(`Ваша оружейная для редкости ${tier.toUpperCase()} забита! Максимум: ${getMaxGearLimit()} шт.`);
+        alert(t('alert_forge_full', { tier: tier.toUpperCase(), n: getMaxGearLimit() }));
         return;
     }
 
@@ -962,7 +1270,7 @@ function rollGear(tier, mode) {
     let totalCost = rollsToPerform * singleCost;
 
     if (rollsToPerform <= 0 || player.tokens[tier] < totalCost) {
-        alert(`Недостаточно жетонов ${tier.toUpperCase()} или нет свободного места!`);
+        alert(t('alert_not_enough_tokens_or_space', { tier: tier.toUpperCase() }));
         return;
     }
 
@@ -975,7 +1283,7 @@ function rollGear(tier, mode) {
         rolledItems.push(newGearInstance);
     }
 
-    document.getElementById('modal-title').innerText = `Кузня: Выковано реликвий (x${rollsToPerform})`;
+    document.getElementById('modal-title').innerText = t('forge_result_title', { n: rollsToPerform });
     showGachaModal(rolledItems, "gear");
     
     renderInventory();
@@ -988,14 +1296,14 @@ function buyCharacterCopy(charId, stars) {
     const cost = CHAR_TOKEN_COST[stars];
 
     if (player.tokens[tokenType] < cost) {
-        showToast(`Недостаточно жетонов! Требуется ${cost} ${TOKEN_EMOJIS[tokenType]}`, "#ff3333");
+        showToast(t('toast_not_enough_tokens', { cost: cost, emoji: TOKEN_EMOJIS[tokenType] }), "#ff3333");
         return;
     }
 
     let char = player.ownedCharacters.find(c => c.id === charId);
     if (char) {
         if (char.count >= 10) {
-            showToast("Максимальный уровень прорыва!", "#ffaa00");
+            showToast(t('toast_max_breakthrough'), "#ffaa00");
             return;
         }
 
@@ -1004,7 +1312,7 @@ function buyCharacterCopy(charId, stars) {
 
         player.tokens[tokenType] -= cost;
         char.count++;
-        showToast(`🧬 Успешно куплена копия персонажа! Прогресс: x${char.count}`, "#4caf50");
+        showToast(t('toast_copy_bought', { n: char.count }), "#4caf50");
         
         const newMaxHp = calculateTotalHp();
         player.squadCurrentHp = Math.min(hpRatio * newMaxHp, newMaxHp);
@@ -1025,7 +1333,7 @@ function sellGear(instanceId) {
     player.gold += price;
     player.gearInventory.splice(itemIndex, 1);
     
-    showToast(`💰 Реликвия продана за +${price} монет!`, '#4caf50');
+    showToast(t('toast_gear_sold', { price: price }), '#4caf50');
     updateUI();
     renderInventory();
     saveGame();
@@ -1034,7 +1342,7 @@ function sellGear(instanceId) {
 function bulkReforge(tier) {
     const unequipped = player.gearInventory.filter(g => g.rarity === tier && g.equippedTo === null);
     if (unequipped.length < 3) {
-        alert(`Необходимо минимум 3 свободных реликвии редкости ${tier.toUpperCase()} для перековки!`);
+        alert(t('alert_need3_reforge', { tier: tier.toUpperCase() }));
         return;
     }
 
@@ -1053,9 +1361,9 @@ function bulkReforge(tier) {
     
     if (currentIndex < tiersOrder.length - 1 && Math.random() <= 0.25) {
         finalTier = tiersOrder[currentIndex + 1];
-        showToast(`✨ Великолепный исход! Реликвия эволюционировала в ${finalTier.toUpperCase()}!`, '#ffd700');
+        showToast(t('toast_reforge_evo2', { tier: finalTier.toUpperCase() }), '#ffd700');
     } else {
-        showToast(`🔨 Перековка завершена. Получен предмет тира ${finalTier.toUpperCase()}`, '#ffffff');
+        showToast(t('toast_reforge_done2', { tier: finalTier.toUpperCase() }), '#ffffff');
     }
 
     const upgradeGear = generateRandomGear(finalTier);
@@ -1070,7 +1378,7 @@ function bulkReforgeAll(tier) {
     const countFree = () => player.gearInventory.filter(g => g.rarity === tier && g.equippedTo === null).length;
 
     if (countFree() < 3) {
-        alert(`Необходимо минимум 3 свободных реликвии редкости ${tier.toUpperCase()} для перековки!`);
+        alert(t('alert_need3_reforge', { tier: tier.toUpperCase() }));
         return;
     }
 
@@ -1100,7 +1408,7 @@ function bulkReforgeAll(tier) {
         reforges++;
     }
 
-    showToast(`🔨 Массовая перековка ${tier.toUpperCase()}: ${reforges}x, эволюций в след. тир: ${evolutions}`, rarityColors[tier] || '#ffffff');
+    showToast(t('toast_reforge_bulk', { tier: tier.toUpperCase(), n: reforges, evo: evolutions }), rarityColors[tier] || '#ffffff');
 
     renderInventory();
     updateUI();
@@ -1190,18 +1498,19 @@ function toggleSettings() {
 }
 
 function resetProgress() {
-    const firstConfirm = confirm(
-        "Вы уверены? Это НАВСЕГДА удалит весь прогресс: героинь, снаряжение, золото, жетоны и этаж. Отменить будет нельзя."
-    );
+    const firstConfirm = confirm(t('confirm_reset1'));
     if (!firstConfirm) return;
 
-    const secondConfirm = confirm(
-        "Точно-точно? Это последнее предупреждение - прогресс будет стёрт безвозвратно."
-    );
+    const secondConfirm = confirm(t('confirm_reset2'));
     if (!secondConfirm) return;
 
     localStorage.removeItem('waifu_idle_save_v2');
-    location.reload();
+    clearTimeout(cloudSaveTimer);
+    if (yaPlayer) {
+        yaPlayer.setData({}, true).catch(() => {}).finally(() => location.reload());
+    } else {
+        location.reload();
+    }
 }
 
 function toggleWiki() {
@@ -1404,10 +1713,10 @@ function grantMythicHeroChance() {
     if (unowned.length > 0) {
         const selected = unowned[Math.floor(Math.random() * unowned.length)];
         player.ownedCharacters.push({ ...selected, count: 1 });
-        showToast(`👑 В отряд снизошла МИФИЧЕСКАЯ богиня: ${selected.name}!`, '#ff3366');
+        showToast(t('toast_mythic_hero', { name: localizedName(selected) }), '#ff3366');
         renderInventory();
     } else {
-        showToast(`✨ Все мифические богини собраны! Выдано утешение: +500,000 золота!`, '#ffd700');
+        showToast(t('toast_mythic_all_collected'), '#ffd700');
         player.gold += 500000;
     }
     updateUI();
@@ -1421,7 +1730,7 @@ function rollMythicArtifactChance() {
             openOverflowModal();
         } else {
             player.gearInventory.push(mythicGear);
-            showToast(`✨ Абсолютный резонанс! Найден МИФИЧЕСКИЙ артефакт: ${mythicGear.name}!`, '#ff3366');
+            showToast(t('toast_mythic_artifact', { name: localizedName(mythicGear) }), '#ff3366');
             renderInventory();
         }
     }
@@ -1434,12 +1743,12 @@ function useMythicAbility(heroId) {
 
     if (heroId === "mythic_oneclick") {
         if (campState.isActive) {
-            showToast("Нельзя истреблять костры!", "#ff3333");
+            showToast(t('toast_no_camp_kill'), "#ff3333");
             return;
         }
         currentEnemy.hp = 0;
         player.mythicCooldowns[heroId] = Math.round(300 * cdrMult);
-        showToast("🌌 Пространство разорвано! Враг моментально аннигилирован!", "#ff3366");
+        showToast(t('toast_annihilate'), "#ff3366");
         rollMythicArtifactChance();
     } else if (heroId === "mythic_loot") {
         const tr = Math.random();
@@ -1453,7 +1762,7 @@ function useMythicAbility(heroId) {
             openOverflowModal();
         } else {
             player.gearInventory.push(gear);
-            showToast(`🎰 Удача улыбнулась: выдан предмет ${gear.name}!`, rarityColors[selectedTier]);
+            showToast(t('toast_loot_luck', { name: localizedName(gear) }), rarityColors[selectedTier]);
             renderInventory();
         }
         player.mythicCooldowns[heroId] = Math.round(300 * cdrMult);
@@ -1465,11 +1774,11 @@ function useMythicAbility(heroId) {
 
 function buyMythicArtifact(type) {
     if (player.gold < 1000000) {
-        showToast("Недостаточно кредитов! Лавка требует 1,000,000 монет.", "#ff3333");
+        showToast(t('toast_not_enough_gold_shop'), "#ff3333");
         return;
     }
     if (getGearCountByRarity('mythic') >= getMaxGearLimit()) {
-        alert("Оружейная мификов переполнена!");
+        alert(t('alert_mythic_full'));
         return;
     }
     player.gold -= 1000000;
@@ -1481,7 +1790,7 @@ function buyMythicArtifact(type) {
     item.pct = pool[0].pct;
 
     player.gearInventory.push(item);
-    showToast(`🏪 Куплено из лавки Вельзевул: ${item.name}!`, '#ff3366');
+    showToast(t('toast_shop_bought', { name: localizedName(item) }), '#ff3366');
     renderInventory();
     updateUI();
     saveGame();
@@ -1543,10 +1852,10 @@ function equipRecommendedGear(charId) {
     const best = getBestAvailableGearForChar(char);
 
     if (!best) {
-        showToast('Нет доступного снаряжения для экипировки', '#ff9800');
+        showToast(t('toast_no_gear_available'), '#ff9800');
     } else {
         best.equippedTo = charId;
-        showToast(`✅ Экипировано: ${best.name}`, rarityColors[best.rarity]);
+        showToast(t('toast_equipped', { name: localizedName(best) }), rarityColors[best.rarity]);
     }
 
     const newMaxHp = calculateTotalHp();
@@ -1573,20 +1882,25 @@ function equipRecommendedGearAll() {
     const newMaxHp = calculateTotalHp();
     player.squadCurrentHp = Math.min(hpRatio * newMaxHp, newMaxHp);
 
-    showToast('🎯 Рекомендованное снаряжение экипировано всему отряду!', '#ffd700');
+    showToast(t('toast_equipped_all'), '#ffd700');
     renderInventory();
     updateUI();
     saveGame();
 }
 
 function updateUI() {
-    document.getElementById('gold-display').innerText = Math.floor(player.gold).toLocaleString('ru-RU');
+    document.getElementById('gold-display').innerText = Math.floor(player.gold).toLocaleString(currentLang === 'en' ? 'en-US' : 'ru-RU');
     const pGold = calculateTotalGoldIncome();
-    document.getElementById('gold-speed-display').innerText = `+${pGold.toFixed(2)}/сек`;
+    document.getElementById('gold-speed-display').innerText = `+${pGold.toFixed(2)}/${t('gold_per_sec')}`;
     document.getElementById('income-display').innerText = calculateTotalBM().toFixed(2) + " БМ";
     
     const maxPullsCount = Math.min(Math.floor(player.gold / 100), MAX_PULLS_PER_ACTION);
-    document.getElementById('btn-summon-max').innerText = `Призыв МАКС (${maxPullsCount})`;
+    document.getElementById('btn-summon-max').innerText = currentLang === 'en' ? `Summon MAX (${maxPullsCount})` : `Призыв МАКС (${maxPullsCount})`;
+
+    const adBtn = document.getElementById('btn-summon-ad');
+    if (adBtn) {
+        adBtn.innerText = t('ad_summon_btn', { n: getAdSummonAmount() });
+    }
 
     document.getElementById('tok-c').innerText = `🟢 ${player.tokens.common}`;
     document.getElementById('tok-r').innerText = `🔵 ${player.tokens.rare}`;
@@ -1596,8 +1910,9 @@ function updateUI() {
     document.getElementById('unique-display').innerText = `${player.ownedCharacters.length} / ${TOTAL_CHARACTERS_COUNT}`;
     
     const limit = getMaxGearLimit();
+    const forgeTitle = currentLang === 'en' ? 'Ancient Relic Forge' : 'Древняя Кузня Реликвий';
     document.getElementById('warehouse-summary').innerText = 
-        `Древняя Кузня Реликвий (C: ${getGearCountByRarity('common')}/${limit} | R: ${getGearCountByRarity('rare')}/${limit} | E: ${getGearCountByRarity('epic')}/${limit} | L: ${getGearCountByRarity('legendary')}/${limit} | M: ${getGearCountByRarity('mythic')}/${limit})`;
+        `${forgeTitle} (C: ${getGearCountByRarity('common')}/${limit} | R: ${getGearCountByRarity('rare')}/${limit} | E: ${getGearCountByRarity('epic')}/${limit} | L: ${getGearCountByRarity('legendary')}/${limit} | M: ${getGearCountByRarity('mythic')}/${limit})`;
 
     const maxSquadHp = calculateTotalHp();
     const totalAtk = calculateTotalAtk();
@@ -1607,9 +1922,9 @@ function updateUI() {
     if (squadTextEl) {
         squadTextEl.innerText = `${player.squadCurrentHp.toFixed(2)} / ${maxSquadHp.toFixed(2)} HP`;
         document.getElementById('squad-hp-bar').style.width = `${squadHpPercent}%`;
-        document.getElementById('squad-info-atk').innerText = `${getCombatSquadAtk().toFixed(2)} АТК/с`;
-        document.getElementById('squad-info-count').innerText = `В строю: ${player.ownedCharacters.length} тян`;
-        document.getElementById('squad-info-bm').innerText = `Общая БМ: ${calculateTotalBM().toFixed(2)}`;
+        document.getElementById('squad-info-atk').innerText = `${getCombatSquadAtk().toFixed(2)} ${t('atk_per_sec')}`;
+        document.getElementById('squad-info-count').innerText = t('squad_count', { n: player.ownedCharacters.length });
+        document.getElementById('squad-info-bm').innerText = t('squad_bm', { n: calculateTotalBM().toFixed(2) });
         document.getElementById('boss-streak-display').innerText = player.bossWinStreak;
         document.getElementById('max-boss-streak-display').innerText = player.maxBossWinStreak;
         document.getElementById('time-alive-display').innerText = formatTime(player.timeAlive);
@@ -1621,7 +1936,7 @@ function updateUI() {
         if (player.ownedCharacters.length > 0) {
             mythicPanel.style.display = 'block';
             const diff = 1800 - player.mythicTimer;
-            document.getElementById('mythic-timer-display').innerText = `До прихода следующей мифической сущности: ${Math.floor(diff/60)} мин ${diff%60} сек`;
+            document.getElementById('mythic-timer-display').innerText = t('mythic_timer', { m: Math.floor(diff/60), s: diff%60 });
 
             const autoToggle = document.getElementById('auto-mythic-toggle');
             if (autoToggle) autoToggle.checked = !!player.settings.autoMythicAbilities;
@@ -1630,15 +1945,15 @@ function updateUI() {
                 const heroId = btn.dataset.heroId;
                 const cd = player.mythicCooldowns[heroId] || 0;
                 btn.disabled = cd > 0;
-                btn.innerText = cd > 0 ? `⏳ Перезарядка: ${cd}с` : '✨ Использовать способность';
+                btn.innerText = cd > 0 ? t('btn_ability_cd', { n: cd }) : t('btn_ability_ready');
             });
 
             const skillsContainer = document.getElementById('mythic-skills-container');
             skillsContainer.innerHTML = '';
             
             const actives = [
-                { id: "mythic_oneclick", label: "🌌 Аннигиляция Врага" },
-                { id: "mythic_loot", label: "🎰 Призыв Сокровища" }
+                { id: "mythic_oneclick", labelKey: "mythic_active_annihilate" },
+                { id: "mythic_loot", labelKey: "mythic_active_loot" }
             ];
             
             actives.forEach(act => {
@@ -1647,9 +1962,9 @@ function updateUI() {
                     const btn = document.createElement('button');
                     btn.className = 'btn-wiki-toggle';
                     const cd = player.mythicCooldowns[act.id] || 0;
-                    const fullLabel = `${act.label} (${heroChar ? heroChar.name : ''})`;
+                    const fullLabel = `${t(act.labelKey)} (${heroChar ? localizedName(heroChar) : ''})`;
                     if (cd > 0) {
-                        btn.innerText = `${fullLabel} (${cd}с)`;
+                        btn.innerText = `${fullLabel} (${cd}${currentLang === 'en' ? 's' : 'с'})`;
                         btn.style.background = '#4a5568';
                         btn.disabled = true;
                     } else {
@@ -1673,29 +1988,29 @@ function updateUI() {
     const enemyBmEl = document.getElementById('enemy-info-bm');
 
     if (campState.isActive) {
-        document.getElementById('stage-display').innerText = `ОТДЫХ`;
+        document.getElementById('stage-display').innerText = t('rest_word');
         document.getElementById('enemy-name').innerText = currentEnemy.name;
-        document.getElementById('hp-text').innerText = `Время стоянки: ${campState.timeLeft} сек`;
+        document.getElementById('hp-text').innerText = t('camp_status', { n: campState.timeLeft });
         const percent = (campState.timeLeft / 30) * 100;
         document.getElementById('hp-bar').style.width = `${percent}%`;
-        document.getElementById('battle-info').innerText = `Зона отдыха. Здоровье отряда зафиксировано на 100%. Идет поиск вещей...`;
+        document.getElementById('battle-info').innerText = t('camp_info');
         
-        if (enemyAtkEl) enemyAtkEl.innerText = `0.00 АТК/с`;
-        if (enemyBmEl) enemyBmEl.innerText = `БМ Врага: 0.00`;
+        if (enemyAtkEl) enemyAtkEl.innerText = `0.00 ${t('atk_per_sec')}`;
+        if (enemyBmEl) enemyBmEl.innerText = t('enemy_bm', { n: '0.00' });
     } else {
-        document.getElementById('stage-display').innerText = `ЭТАП ${player.battleStage}`;
+        document.getElementById('stage-display').innerText = `${t('stage_word')} ${player.battleStage}`;
         document.getElementById('enemy-name').innerText = currentEnemy.name;
         document.getElementById('hp-text').innerText = `${currentEnemy.hp.toFixed(2)} / ${currentEnemy.maxHp.toFixed(2)} HP`;
         const hpPercent = Math.max(0, (currentEnemy.hp / currentEnemy.maxHp) * 100);
         document.getElementById('hp-bar').style.width = `${hpPercent}%`;
         
         document.getElementById('battle-info').innerText = 
-            `Атака отряда: ${getCombatSquadAtk().toFixed(2)} АТК/сек | Сила монстра: ${currentEnemy.atk.toFixed(2)} АТК/сек | +${pGold.toFixed(2)} золото/с`;
+            t('battle_info', { atk: getCombatSquadAtk().toFixed(2), matk: currentEnemy.atk.toFixed(2), gold: pGold.toFixed(2) });
 
-        if (enemyAtkEl) enemyAtkEl.innerText = `${currentEnemy.atk.toFixed(2)} АТК/с`;
+        if (enemyAtkEl) enemyAtkEl.innerText = `${currentEnemy.atk.toFixed(2)} ${t('atk_per_sec')}`;
         if (enemyBmEl) {
             const enemyBM = currentEnemy.atk + currentEnemy.maxHp;
-            enemyBmEl.innerText = `БМ Врага: ${enemyBM.toFixed(2)}`;
+            enemyBmEl.innerText = t('enemy_bm', { n: enemyBM.toFixed(2) });
         }
     }
 }
@@ -1712,9 +2027,9 @@ function renderInventory() {
     const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
 
     player.ownedCharacters.forEach(char => {
-        let passiveHTML = char.passiveDesc && char.passive !== 'm_active' ? `<div class="char-passive">${char.passiveDesc}</div>` : '';
+        let passiveHTML = char.passiveDesc && char.passive !== 'm_active' ? `<div class="char-passive">${localizedPassiveDesc(char)}</div>` : '';
         if (char.count >= 10 && char.stars <= 5) {
-            passiveHTML += `<div class="char-passive awaken">${MAX_UPGRADE_PASSIVES[char.stars].desc}</div>`;
+            passiveHTML += `<div class="char-passive awaken">${localizedBreakthroughDesc(char.stars)}</div>`;
         }
 
         let currentCharAtk = char.baseAtk * (1 + (char.count - 1) * 0.5);
@@ -1776,7 +2091,7 @@ function renderInventory() {
         const freeItems = player.gearInventory.filter(g => g.rarity === rarity && g.equippedTo === null);
 
         if (freeItems.length === 0) {
-            rGrid.innerHTML = `<div style="font-size:11px; color: var(--text-muted); text-align:center; padding:10px 0;">Пусто</div>`;
+            rGrid.innerHTML = `<div style="font-size:11px; color: var(--text-muted); text-align:center; padding:10px 0;">${t('no_gear_empty')}</div>`;
             return;
         }
 
@@ -1785,12 +2100,13 @@ function renderInventory() {
             row.className = 'unassigned-item';
             row.style.borderLeftColor = rarityColors[gear.rarity];
             const pctTag = gear.pct ? ` (+${gear.pct}%)` : '';
+            const sellTitle = currentLang === 'en' ? `Sell for ${GEAR_SELL_PRICES[gear.rarity] || 50} 💰` : `Продать за ${GEAR_SELL_PRICES[gear.rarity] || 50} 💰`;
             row.innerHTML = `
                 <div class="unassigned-item-left">
                     ${buildGearPortraitHTML(gear, 'gear-portrait-sm')}
-                    <span>${gear.name}<br>+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag}</span>
+                    <span>${localizedName(gear)}<br>+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag}</span>
                 </div>
-                <button class="btn-sell-gear" onclick="sellGear('${gear.instanceId}')" title="Продать за ${GEAR_SELL_PRICES[gear.rarity] || 50} 💰">💰</button>
+                <button class="btn-sell-gear" onclick="sellGear('${gear.instanceId}')" title="${sellTitle}">💰</button>
             `;
             rGrid.appendChild(row);
         });
@@ -1812,18 +2128,18 @@ function showGachaModal(items, type) {
         if (type === "char") {
             el.className = 'char-card';
             el.style.setProperty('--rarity-color', rarityColors[item.stars]);
-            let starsStr = item.stars === 6 ? "👑 МИФИК" : "★".repeat(item.stars);
+            let starsStr = item.stars === 6 ? (currentLang === 'en' ? "👑 MYTHIC" : "👑 МИФИК") : "★".repeat(item.stars);
             el.innerHTML = `
                 ${buildCharPortraitSquareHTML(item)}
                 <div class="char-stars" style="color:${rarityColors[item.stars]}">${starsStr}</div>
-                <div class="char-name" style="white-space:normal;">${item.name}</div>
+                <div class="char-name" style="white-space:normal;">${localizedName(item)}</div>
             `;
         } else {
             el.className = 'gear-card-anim';
             el.style.setProperty('--rarity-color', rarityColors[item.rarity]);
             el.innerHTML = `
                 ${buildGearPortraitHTML(item, 'gear-portrait-lg')}
-                <div class="gear-title-anim">${item.name}</div>
+                <div class="gear-title-anim">${localizedName(item)}</div>
                 <div class="gear-bonus-anim">+${item.bonus.toFixed(2)} ${getGearLabel(item.type)}</div>
             `;
         }
@@ -1837,6 +2153,7 @@ function closeModal() {
 }
 
 setInterval(() => {
+    if (isAdFreeze) return;
     if (pendingDroppedGear !== null || document.getElementById('overflow-modal').style.display === 'flex') {
         return; 
     }
@@ -1871,7 +2188,7 @@ setInterval(() => {
             player.squadCurrentHp = maxSquadHp;
             const hasCdrChronos = player.ownedCharacters.some(c => c.id === "mythic_cdr_buff");
             player.mythicCooldowns.mythic_autoheal = Math.round(600 * (hasCdrChronos ? 0.9 : 1.0));
-            showToast("💖 Феникс восстал из пепла! ХП отряда полностью восстановлено!", "#ff3366");
+            showToast(t('toast_phoenix'), "#ff3366");
             rollMythicArtifactChance();
         }
     }
@@ -1891,7 +2208,7 @@ setInterval(() => {
                 const gear = generateRandomGear(tier);
                 player.gearInventory.push(gear);
                 campState.hasDroppedGear = true;
-                showToast(`🔥 Костер согрел: найдена экипировка ${gear.name} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)})!`, rarityColors[tier]);
+                showToast(t('toast_campfire_gear', { name: localizedName(gear), bonus: gear.bonus.toFixed(2), label: getGearLabel(gear.type) }), rarityColors[tier]);
                 renderInventory(); 
                 saveGame();
             }
@@ -1930,7 +2247,7 @@ setInterval(() => {
             triggerArenaEnemyAttack();
 
             if (player.squadCurrentHp <= 0) {
-                showToast("💀 Отряд повержен! Серия побед обнулена. Отступление на 1 этап назад.", "#ff3333");
+                showToast(t('toast_defeat'), "#ff3333");
                 playArenaSquadWipe();
                 player.bossWinStreak = 0;
                 player.timeAlive = 0;
@@ -1949,9 +2266,9 @@ setInterval(() => {
             if (player.bossWinStreak > player.maxBossWinStreak) player.maxBossWinStreak = player.bossWinStreak;
             
             if (player.battleStage >= 34 && player.battleStage % 5 === 4) {
-                showToast(`🏆 БОСС побежден! Серия побед подряд: ${player.bossWinStreak}`, '#ffd700');
+                showToast(t('toast_boss_win', { n: player.bossWinStreak }), '#ffd700');
             } else {
-                showToast(`⚔️ Враг повержен! Серия побед подряд: ${player.bossWinStreak}`, '#4caf50');
+                showToast(t('toast_win', { n: player.bossWinStreak }), '#4caf50');
             }
             executeMonsterDrop(); 
             player.battleStage++;
@@ -1978,7 +2295,7 @@ function resumeCampFromSave() {
 
     const bZone = document.getElementById('battle-zone-container');
     bZone.classList.add('camp-mode');
-    currentEnemy.name = "⛺ Привал у костра (Зона отдыха)";
+    currentEnemy.name = currentLang === 'en' ? "⛺ Campfire Rest (Resting Zone)" : "⛺ Привал у костра (Зона отдыха)";
     currentEnemy.emoji = "⛺";
     currentEnemy.spriteId = "camp";
     currentEnemy.maxHp = 30;
@@ -1991,10 +2308,187 @@ function resumeCampFromSave() {
     return true;
 }
 
-loadGame();
-if (!resumeCampFromSave()) {
-    spawnEnemy();
+let ysdk = null;
+let yaPlayer = null;
+let adTimerSec = 0;
+const AD_INTERVAL_SEC = 300;
+let isAdFreeze = false;
+
+async function initYandexSDK() {
+    try {
+        if (typeof YaGames === 'undefined') {
+            console.warn('Yandex Games SDK не найден (запуск вне платформы Yandex Games).');
+            return;
+        }
+        ysdk = await YaGames.init();
+        window.ysdk = ysdk;
+
+        try {
+            yaPlayer = await ysdk.getPlayer({ scopes: false });
+        } catch (e) {
+            console.warn('Не удалось получить объект игрока, облачные сохранения недоступны:', e);
+        }
+
+        if (!localStorage.getItem('waifu_idle_lang')) {
+            try {
+                const envLang = ysdk.environment.i18n.lang;
+                setLanguage(envLang === 'ru' ? 'ru' : 'en');
+            } catch (e) { }
+        }
+
+        if (ysdk.features && ysdk.features.LoadingAPI) {
+            ysdk.features.LoadingAPI.ready();
+        }
+    } catch (err) {
+        console.error('Ошибка инициализации Yandex SDK:', err);
+    }
 }
-renderInventory();
-updateUI();
-renderArena();
+
+function toggleFullscreen() {
+    if (ysdk && ysdk.screen && ysdk.screen.fullscreen) {
+        if (ysdk.screen.fullscreen.status === 'on') {
+            ysdk.screen.fullscreen.exit();
+        } else {
+            ysdk.screen.fullscreen.request();
+        }
+        return;
+    }
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+    } else {
+        document.exitFullscreen().catch(() => {});
+    }
+}
+
+function freezeGameForAd(freeze) {
+    isAdFreeze = freeze;
+    const overlay = document.getElementById('ad-freeze-overlay');
+    if (overlay) overlay.style.display = freeze ? 'flex' : 'none';
+    document.body.classList.toggle('game-frozen', freeze);
+}
+
+function showFullscreenAdWithFreeze() {
+    freezeGameForAd(true);
+    if (!ysdk || !ysdk.adv) {
+        setTimeout(() => freezeGameForAd(false), 1500);
+        return;
+    }
+    ysdk.adv.showFullscreenAdv({
+        callbacks: {
+            onClose: () => { freezeGameForAd(false); },
+            onError: () => { freezeGameForAd(false); },
+            onOffline: () => { freezeGameForAd(false); }
+        }
+    });
+}
+
+function getAdSummonAmount() {
+    return Math.min(Math.max(1, player.battleStage), 100);
+}
+
+function handleRewardedSummon() {
+    if (!ysdk || !ysdk.adv) {
+        showToast(t('toast_ad_unavailable'), '#ff9800');
+        return;
+    }
+    freezeGameForAd(true);
+    ysdk.adv.showRewardedVideo({
+        callbacks: {
+            onRewarded: () => {
+                const n = getAdSummonAmount();
+                const oldMaxHp = calculateTotalHp();
+                const hpRatio = oldMaxHp > 0 ? (player.squadCurrentHp / oldMaxHp) : 1;
+
+                let results = [];
+                for (let i = 0; i < n; i++) {
+                    let char = pullCharacter();
+                    results.push(char);
+                    let existing = player.ownedCharacters.find(c => c.id === char.id);
+                    if (existing) {
+                        if (existing.count < 10) {
+                            existing.count++;
+                        } else {
+                            if (char.stars === 1 || char.stars === 2) player.tokens.common += char.stars;
+                            else if (char.stars === 3) player.tokens.rare += 1;
+                            else if (char.stars === 4) player.tokens.epic += 1;
+                            else if (char.stars === 5) player.tokens.legendary += 1;
+                        }
+                    } else {
+                        player.ownedCharacters.push({ ...char, count: 1 });
+                    }
+                }
+
+                const newMaxHp = calculateTotalHp();
+                player.squadCurrentHp = Math.min(hpRatio * newMaxHp, newMaxHp);
+
+                document.getElementById('modal-title').innerText = t('gacha_result_title', { n: n });
+                showGachaModal(results, "char");
+                showToast(t('toast_ad_reward', { n: n }), '#4caf50');
+                renderInventory();
+                updateUI();
+                saveGame();
+            },
+            onClose: () => { freezeGameForAd(false); },
+            onError: () => { freezeGameForAd(false); showToast(t('toast_ad_unavailable'), '#ff9800'); }
+        }
+    });
+}
+
+setInterval(() => {
+    if (isAdFreeze) return;
+    adTimerSec++;
+    if (adTimerSec >= AD_INTERVAL_SEC) {
+        adTimerSec = 0;
+        showFullscreenAdWithFreeze();
+    }
+}, 1000);
+
+document.addEventListener('contextmenu', (e) => {
+    if (e.target.closest('.game-container, .wiki-drawer, .modal-overlay, .overflow-modal-overlay')) {
+        e.preventDefault();
+    }
+});
+
+let cloudSaveTimer = null;
+const CLOUD_SAVE_DEBOUNCE_MS = 4000;
+
+function scheduleCloudSave() {
+    if (!yaPlayer) return;
+    clearTimeout(cloudSaveTimer);
+    cloudSaveTimer = setTimeout(() => {
+        try {
+            const payload = JSON.parse(JSON.stringify(player));
+            yaPlayer.setData(payload, false).catch(err => console.warn('Ошибка облачного сохранения:', err));
+        } catch (e) {
+            console.warn('Не удалось подготовить данные для облачного сохранения:', e);
+        }
+    }, CLOUD_SAVE_DEBOUNCE_MS);
+}
+
+function flushCloudSaveNow() {
+    if (!yaPlayer) return;
+    clearTimeout(cloudSaveTimer);
+    try {
+        const payload = JSON.parse(JSON.stringify(player));
+        yaPlayer.setData(payload, true).catch(() => {});
+    } catch (e) { }
+}
+
+window.addEventListener('beforeunload', flushCloudSaveNow);
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') flushCloudSaveNow();
+});
+
+async function bootGame() {
+    await initYandexSDK();
+    await loadGame();
+    if (!resumeCampFromSave()) {
+        spawnEnemy();
+    }
+    renderInventory();
+    updateUI();
+    renderArena();
+    applyStaticTranslations();
+}
+
+bootGame();

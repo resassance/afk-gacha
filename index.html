@@ -2,24 +2,35 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
     <title>Fantasy Waifu Idle Chronicles</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://yandex.ru/games/sdk/v2"></script>
 </head>
 <body>
 
 <div id="toast-container" class="toast-container"></div>
 
+<div id="ad-freeze-overlay" class="ad-freeze-overlay">
+    <div class="ad-freeze-box">
+        <div class="ad-freeze-spinner"></div>
+        <div data-i18n="ad_freeze_title">Показ рекламы...</div>
+        <div class="ad-freeze-sub" data-i18n="ad_freeze_sub">Игра возобновится сразу после закрытия рекламного блока</div>
+    </div>
+</div>
+
 <div id="wiki-overlay" class="wiki-overlay" onclick="toggleWiki()"></div>
 
 <div id="wiki-drawer" class="wiki-drawer">
     <div class="wiki-drawer-header">
-        <span class="wiki-drawer-title">📖 Книга Воительниц</span>
+        <span class="wiki-drawer-title" data-i18n="wiki_title">📖 Книга Воительниц</span>
         <button class="btn-wiki-close" onclick="toggleWiki()">×</button>
     </div>
     <div class="wiki-tabs">
-        <button class="wiki-tab-btn active" id="wiki-tab-heroes" onclick="switchWikiTab('heroes')">👸 Героини</button>
-        <button class="wiki-tab-btn" id="wiki-tab-gear" onclick="switchWikiTab('gear')">⚔️ Снаряжение</button>
+        <button class="wiki-tab-btn active" id="wiki-tab-heroes" onclick="switchWikiTab('heroes')" data-i18n="wiki_tab_heroes">👸 Героини</button>
+        <button class="wiki-tab-btn" id="wiki-tab-gear" onclick="switchWikiTab('gear')" data-i18n="wiki_tab_gear">⚔️ Снаряжение</button>
     </div>
     <div class="wiki-content" id="wiki-content-list">
     </div>
@@ -28,16 +39,16 @@
 <div class="game-container">
     <div class="header-panel">
         <div class="stat-box">
-            <div class="stat-label">Золотые Кредиты</div>
+            <div class="stat-label" data-i18n="stat_gold">Золотые Кредиты</div>
             <div class="stat-value gold" id="gold-display">1 000</div>
             <div id="gold-speed-display" class="gold-speed-display">+0/сек</div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Общая БМ Отряда (АТК + ХП)</div>
+            <div class="stat-label" data-i18n="stat_bm">Общая БМ Отряда (АТК + ХП)</div>
             <div class="stat-value bm-value" id="income-display">0 БМ</div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Жетоны (Ковка и Выкуп Тян)</div>
+            <div class="stat-label" data-i18n="stat_tokens">Жетоны (Ковка и Выкуп Тян)</div>
             <div class="tokens-display">
                 <span class="tok-t common" id="tok-c">🟢 0</span>
                 <span class="tok-t rare" id="tok-r">🔵 0</span>
@@ -46,17 +57,18 @@
             </div>
         </div>
         <div class="stat-box">
-            <div class="stat-label">Собрано Тян</div>
+            <div class="stat-label" data-i18n="stat_unique">Собрано Тян</div>
             <div class="stat-value" id="unique-display">0 / 23</div>
         </div>
         
-        <button class="btn-wiki-toggle" onclick="toggleWiki()">📖 Справочник</button>
-        <button class="btn-wiki-toggle btn-settings-toggle" onclick="toggleSettings()">⚙️ Настройки</button>
+        <button class="btn-wiki-toggle" onclick="toggleWiki()" data-i18n="btn_wiki">📖 Справочник</button>
+        <button class="btn-wiki-toggle" onclick="toggleFullscreen()" data-i18n="btn_fullscreen">⛶ Полный экран</button>
+        <button class="btn-wiki-toggle btn-settings-toggle" onclick="toggleSettings()" data-i18n="btn_settings">⚙️ Настройки</button>
     </div>
 
     <div class="battle-section" id="battle-zone-container">
         <h3 class="battle-header">
-            <span class="stage-title" id="stage-display">ЭТАП 1</span>
+            <span class="stage-title" id="stage-display" data-i18n="stage_prefix">ЭТАП 1</span>
             <span class="enemy-name" id="enemy-name">Дикий Слайм</span>
         </h3>
         
@@ -80,7 +92,7 @@
     </div>
 
     <div id="squad-container" class="squad-panel">
-        <h3 class="squad-title">⚔️ Тактический статус отряда</h3>
+        <h3 class="squad-title" data-i18n="squad_title">⚔️ Тактический статус отряда</h3>
         <div class="squad-subinfo">
             <span id="squad-info-count">В строю: 0 тян</span> | 
             <span id="squad-info-atk">0.00 АТК/с</span> | 
@@ -92,18 +104,18 @@
         </div>
         
         <div class="squad-timers-block">
-            <span>Побед подряд (мобы/боссы): <strong id="boss-streak-display">0</strong></span> | 
-            <span>Рекорд серии: <strong id="max-boss-streak-display">0</strong></span>
-            <span>Живут без смертей: <strong id="time-alive-display">0 сек</strong></span>
-            <span>Общее время жизни: <strong id="total-time-display">0 сек</strong></span>
+            <span><span data-i18n="lbl_win_streak">Побед подряд (мобы/боссы):</span> <strong id="boss-streak-display">0</strong></span> | 
+            <span><span data-i18n="lbl_max_streak">Рекорд серии:</span> <strong id="max-boss-streak-display">0</strong></span>
+            <span><span data-i18n="lbl_time_alive">Живут без смертей:</span> <strong id="time-alive-display">0 сек</strong></span>
+            <span><span data-i18n="lbl_total_time">Общее время жизни:</span> <strong id="total-time-display">0 сек</strong></span>
         </div>
     </div>
 
     <div id="mythic-panel" class="squad-panel" style="display: none; border-color: #ff3366; background: linear-gradient(180deg, #1a0f13 0%, #13131a 100%);">
-        <h3 class="squad-title" style="color: #ff3366;">👑 Обитель Мифических Богинь</h3>
+        <h3 class="squad-title" style="color: #ff3366;" data-i18n="mythic_title">👑 Обитель Мифических Богинь</h3>
 
         <label class="auto-mythic-toggle-row">
-            <span>⚙️ Автоприменение активных способностей</span>
+            <span data-i18n="mythic_auto">⚙️ Автоприменение активных способностей</span>
             <span class="toggle-switch">
                 <input type="checkbox" id="auto-mythic-toggle" onchange="toggleAutoMythic(this.checked)">
                 <span class="toggle-slider"></span>
@@ -112,26 +124,27 @@
 
         <div id="mythic-skills-container" style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;"></div>
         <div id="mythic-shop-container" style="display: none; border-top: 1px dashed #ff3366; padding-top: 10px;">
-            <h4 style="color: #ffaa00; margin-bottom: 8px; font-size: 14px;">🏪 Измерительная Лавка Артефактов</h4>
+            <h4 style="color: #ffaa00; margin-bottom: 8px; font-size: 14px;" data-i18n="mythic_shop_title">🏪 Измерительная Лавка Артефактов</h4>
             <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-wiki-toggle" style="background: linear-gradient(135deg, #e65100 0%, #ff3366 100%);" onclick="buyMythicArtifact('atk')">🌌 Меч Бездны (1,000,000 Золота)</button>
-                <button class="btn-wiki-toggle" style="background: linear-gradient(135deg, #e65100 0%, #ff3366 100%);" onclick="buyMythicArtifact('hp')">👑 Щит Этернала (1,000,000 Золота)</button>
-                <button class="btn-wiki-toggle" style="background: linear-gradient(135deg, #e65100 0%, #ff3366 100%);" onclick="buyMythicArtifact('gold')">💎 Рог Изобилия (1,000,000 Золота)</button>
+                <button class="btn-wiki-toggle" style="background: linear-gradient(135deg, #e65100 0%, #ff3366 100%);" onclick="buyMythicArtifact('atk')" data-i18n="mythic_buy_atk">🌌 Меч Бездны (1,000,000 Золота)</button>
+                <button class="btn-wiki-toggle" style="background: linear-gradient(135deg, #e65100 0%, #ff3366 100%);" onclick="buyMythicArtifact('hp')" data-i18n="mythic_buy_hp">👑 Щит Этернала (1,000,000 Золота)</button>
+                <button class="btn-wiki-toggle" style="background: linear-gradient(135deg, #e65100 0%, #ff3366 100%);" onclick="buyMythicArtifact('gold')" data-i18n="mythic_buy_gold">💎 Рог Изобилия (1,000,000 Золота)</button>
             </div>
         </div>
         <div style="font-size: 11px; color: var(--text-muted); margin: 8px 0;" id="mythic-timer-display">До прихода мифической сущности: 30 мин 0 сек</div>
 
-        <div class="section-title" style="font-size:13px; margin-top:10px;">Мифический отряд</div>
+        <div class="section-title" style="font-size:13px; margin-top:10px;" data-i18n="mythic_squad">Мифический отряд</div>
         <div id="mythic-squad-grid" class="grid-container mythic-squad-grid"></div>
     </div>
 
     <div class="banner-section">
-        <h1 class="banner-title">Молитва Прекрасных Воительниц</h1>
-        <p class="banner-subtitle">1 призыв = 100 Кредитов. Соберите сильнейший гарем для покорения подземелий.</p>
+        <h1 class="banner-title" data-i18n="banner_title">Молитва Прекрасных Воительниц</h1>
+        <p class="banner-subtitle" data-i18n="banner_subtitle">1 призыв = 100 Кредитов. Соберите сильнейший гарем для покорения подземелий.</p>
         <div class="btn-group">
-            <button class="btn-summon btn-x1" onclick="handlePulls(1)">Призыв x1</button>
-            <button class="btn-summon btn-x10" onclick="handlePulls(10)">Призыв x10</button>
+            <button class="btn-summon btn-x1" onclick="handlePulls(1)" data-i18n="btn_summon_x1">Призыв x1</button>
+            <button class="btn-summon btn-x10" onclick="handlePulls(10)" data-i18n="btn_summon_x10">Призыв x10</button>
             <button class="btn-summon btn-xmax" onclick="handlePulls('max')" id="btn-summon-max">Призыв МАКС (0)</button>
+            <button class="btn-summon btn-ad-summon" onclick="handleRewardedSummon()" id="btn-summon-ad">📺 Призыв за рекламу (1)</button>
         </div>
     </div>
 
@@ -139,32 +152,32 @@
         <div class="section-title" id="warehouse-summary">Древняя Кузня Реликвий (Лимит: 50 мест на ранг)</div>
         <div class="gear-gacha-grid">
             <div class="gear-box style-common">
-                <div class="gear-box-title">🟢 Обычная Ковка</div>
-                <div class="gear-box-desc">Стоимость: 10 🟢</div>
+                <div class="gear-box-title" data-i18n="forge_common">🟢 Обычная Ковка</div>
+                <div class="gear-box-desc" data-i18n="forge_cost_c">Стоимость: 10 🟢</div>
                 <div class="btn-forge-group">
                     <button class="btn-forge" onclick="rollGear('common', 'one')">x1</button>
                     <button class="btn-forge btn-max" onclick="rollGear('common', 'max')">MAX</button>
                 </div>
             </div>
             <div class="gear-box style-rare">
-                <div class="gear-box-title">🔵 Редкая Ковка</div>
-                <div class="gear-box-desc">Стоимость: 10 🔵</div>
+                <div class="gear-box-title" data-i18n="forge_rare">🔵 Редкая Ковка</div>
+                <div class="gear-box-desc" data-i18n="forge_cost_r">Стоимость: 10 🔵</div>
                 <div class="btn-forge-group">
                     <button class="btn-forge" onclick="rollGear('rare', 'one')">x1</button>
                     <button class="btn-forge btn-max" onclick="rollGear('rare', 'max')">MAX</button>
                 </div>
             </div>
             <div class="gear-box style-epic">
-                <div class="gear-box-title">🟣 Эпическая Ковка</div>
-                <div class="gear-box-desc">Стоимость: 10 🟣</div>
+                <div class="gear-box-title" data-i18n="forge_epic">🟣 Эпическая Ковка</div>
+                <div class="gear-box-desc" data-i18n="forge_cost_e">Стоимость: 10 🟣</div>
                 <div class="btn-forge-group">
                     <button class="btn-forge" onclick="rollGear('epic', 'one')">x1</button>
                     <button class="btn-forge btn-max" onclick="rollGear('epic', 'max')">MAX</button>
                 </div>
             </div>
             <div class="gear-box style-legendary">
-                <div class="gear-box-title">🟡 Легендарная Ковка</div>
-                <div class="gear-box-desc">Стоимость: 5 🟡</div>
+                <div class="gear-box-title" data-i18n="forge_legendary">🟡 Легендарная Ковка</div>
+                <div class="gear-box-desc" data-i18n="forge_cost_l">Стоимость: 5 🟡</div>
                 <div class="btn-forge-group">
                     <button class="btn-forge" onclick="rollGear('legendary', 'one')">x1</button>
                     <button class="btn-forge btn-max" onclick="rollGear('legendary', 'max')">MAX</button>
@@ -174,23 +187,23 @@
     </div>
 
     <div class="reforge-section">
-        <div class="section-title">Мастерская утилизации и Сортировки реликвий</div>
+        <div class="section-title" data-i18n="reforge_title">Мастерская утилизации и Сортировки реликвий</div>
         <div class="reforge-controls">
             <div class="reforge-group">
-                <button class="btn-action-reforge reforge-c" onclick="bulkReforge('common')">Скрестить 3x Common</button>
+                <button class="btn-action-reforge reforge-c" onclick="bulkReforge('common')" data-i18n="reforge_c">Скрестить 3x Common</button>
                 <button class="btn-action-reforge reforge-c btn-reforge-max" onclick="bulkReforgeAll('common')">MAX</button>
             </div>
             <div class="reforge-group">
-                <button class="btn-action-reforge reforge-r" onclick="bulkReforge('rare')">Скрестить 3x Rare</button>
+                <button class="btn-action-reforge reforge-r" onclick="bulkReforge('rare')" data-i18n="reforge_r">Скрестить 3x Rare</button>
                 <button class="btn-action-reforge reforge-r btn-reforge-max" onclick="bulkReforgeAll('rare')">MAX</button>
             </div>
             <div class="reforge-group">
-                <button class="btn-action-reforge reforge-e" onclick="bulkReforge('epic')">Скрестить 3x Epic</button>
+                <button class="btn-action-reforge reforge-e" onclick="bulkReforge('epic')" data-i18n="reforge_e">Скрестить 3x Epic</button>
                 <button class="btn-action-reforge reforge-e btn-reforge-max" onclick="bulkReforgeAll('epic')">MAX</button>
             </div>
         </div>
         
-        <div class="unassigned-gear-title">Свободный склад по разрядам редкости:</div>
+        <div class="unassigned-gear-title" data-i18n="warehouse_free">Свободный склад по разрядам редкости:</div>
         <div class="unassigned-split-container">
             <div class="rarity-warehouse-block">
                 <div class="r-block-head common">🟢 Common</div>
@@ -217,10 +230,10 @@
 
     <div class="inventory-section">
         <div class="section-title flex-title">
-            <span>Ваш Боевой Отряд Тян</span>
-            <span class="subtitle-notice">Прямой выкуп дубликатов доступен за Жетоны!</span>
+            <span data-i18n="inv_title">Ваш Боевой Отряд Тян</span>
+            <span class="subtitle-notice" data-i18n="inv_subtitle">Прямой выкуп дубликатов доступен за Жетоны!</span>
         </div>
-        <button class="btn-equip-recommended-all" onclick="equipRecommendedGearAll()">🎯 Экипировать всем лучшее доступное снаряжение</button>
+        <button class="btn-equip-recommended-all" onclick="equipRecommendedGearAll()" data-i18n="btn_equip_all">🎯 Экипировать всем лучшее доступное снаряжение</button>
         <div class="grid-container" id="inventory-grid"></div>
     </div>
 </div>
@@ -229,24 +242,24 @@
     <div class="modal-content">
         <h2 class="modal-results-title" id="modal-title">Результаты Призыва</h2>
         <div class="gacha-results" id="modal-results-grid"></div>
-        <button class="btn-close-modal" onclick="closeModal()">Принять</button>
+        <button class="btn-close-modal" onclick="closeModal()" data-i18n="btn_accept">Принять</button>
     </div>
 </div>
 
 <div id="overflow-modal" class="overflow-modal-overlay">
     <div class="overflow-modal-content">
-        <h2 class="overflow-title">🚨 Оружейная переполнена!</h2>
-        <p class="overflow-subtitle">Вы выбили новый предмет, но в инвентаре нет свободного места. Выберите действие:</p>
+        <h2 class="overflow-title" data-i18n="overflow_title">🚨 Оружейная переполнена!</h2>
+        <p class="overflow-subtitle" data-i18n="overflow_subtitle">Вы выбили новый предмет, но в инвентаре нет свободного места. Выберите действие:</p>
         
         <div id="overflow-gear-info" class="overflow-gear-info-box"></div>
         
         <div class="overflow-btn-group">
-            <button onclick="sellPendingGearImmediate()" class="btn-overflow-action btn-sell">💰 Продать этот трофей</button>
-            <button id="btn-overflow-claim" onclick="claimPendingGear()" class="btn-overflow-action btn-claim" disabled>📥 Забрать трофей</button>
+            <button onclick="sellPendingGearImmediate()" class="btn-overflow-action btn-sell" data-i18n="overflow_sell">💰 Продать этот трофей</button>
+            <button id="btn-overflow-claim" onclick="claimPendingGear()" class="btn-overflow-action btn-claim" disabled data-i18n="overflow_claim">📥 Забрать трофей</button>
         </div>
         
         <hr class="overflow-divider">
-        <h4 class="overflow-manage-title">Управление инвентарем (Освободите место):</h4>
+        <h4 class="overflow-manage-title" data-i18n="overflow_manage">Управление инвентарем (Освободите место):</h4>
         
         <div id="overflow-inventory-list" class="overflow-list-container"></div>
     </div>
@@ -254,15 +267,20 @@
 
 <div id="settings-modal" class="modal-overlay">
     <div class="modal-content settings-modal-content">
-        <h2 class="modal-results-title">⚙️ Настройки</h2>
+        <h2 class="modal-results-title" data-i18n="settings_title">⚙️ Настройки</h2>
         <div class="settings-body">
             <div class="settings-row">
-                <div class="settings-row-title">Сброс прогресса</div>
-                <div class="settings-row-desc">Полностью удаляет всех героинь, снаряжение, золото и прогресс по этажам. Действие необратимо.</div>
-                <button class="btn-settings-reset" onclick="resetProgress()">🗑️ Полный сброс прогресса</button>
+                <div class="settings-row-title" data-i18n="settings_lang_title">Язык / Language</div>
+                <div class="settings-row-desc" data-i18n="settings_lang_desc">Переключить язык интерфейса игры.</div>
+                <button class="btn-settings-lang" onclick="toggleLanguage()" id="btn-lang-toggle">🌐 RU / EN</button>
+            </div>
+            <div class="settings-row">
+                <div class="settings-row-title" data-i18n="settings_reset_title">Сброс прогресса</div>
+                <div class="settings-row-desc" data-i18n="settings_reset_desc">Полностью удаляет всех героинь, снаряжение, золото и прогресс по этажам. Действие необратимо.</div>
+                <button class="btn-settings-reset" onclick="resetProgress()" data-i18n="settings_reset_btn">🗑️ Полный сброс прогресса</button>
             </div>
         </div>
-        <button class="btn-close-modal" onclick="toggleSettings()">Закрыть</button>
+        <button class="btn-close-modal" onclick="toggleSettings()" data-i18n="btn_close">Закрыть</button>
     </div>
 </div>
 
