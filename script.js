@@ -206,9 +206,13 @@ function applyStaticTranslations() {
     document.documentElement.lang = currentLang;
 }
 
-function setLanguage(lang) {
+function setLanguage(lang, opts) {
+    opts = opts || {};
     currentLang = lang;
     localStorage.setItem('waifu_idle_lang', lang);
+    if (opts.manual) {
+        localStorage.setItem('waifu_idle_lang_manual', '1');
+    }
     applyStaticTranslations();
     renderInventory();
     updateUI();
@@ -218,7 +222,7 @@ function setLanguage(lang) {
 }
 
 function toggleLanguage() {
-    setLanguage(currentLang === 'ru' ? 'en' : 'ru');
+    setLanguage(currentLang === 'ru' ? 'en' : 'ru', { manual: true });
 }
 
 const NAME_EN = {
@@ -2329,11 +2333,14 @@ async function initYandexSDK() {
             console.warn('Не удалось получить объект игрока, облачные сохранения недоступны:', e);
         }
 
-        if (!localStorage.getItem('waifu_idle_lang')) {
-            try {
-                const envLang = ysdk.environment.i18n.lang;
-                setLanguage(envLang === 'ru' ? 'ru' : 'en');
-            } catch (e) { }
+        try {
+            const envLang = ysdk.environment.i18n.lang;
+            const resolvedLang = envLang === 'ru' ? 'ru' : 'en';
+            const isManualOverride = localStorage.getItem('waifu_idle_lang_manual') === '1';
+            if (!isManualOverride) {
+                setLanguage(resolvedLang);
+            }
+        } catch (e) {
         }
 
         if (ysdk.features && ysdk.features.LoadingAPI) {
