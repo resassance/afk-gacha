@@ -732,15 +732,8 @@ function saveGame() {
 async function loadGame() {
     let parsed = null;
 
-    if (yaPlayer) {
-        try {
-            const cloudData = await yaPlayer.getData();
-            if (cloudData && Object.keys(cloudData).length > 0) {
-                parsed = cloudData;
-            }
-        } catch (e) {
-            console.warn('Облачное сохранение недоступно, используем локальное:', e);
-        }
+    if (Bridge.hasCloudSave()) {
+        parsed = await Bridge.loadCloudData();
     }
 
     if (!parsed) {
@@ -1510,8 +1503,8 @@ function resetProgress() {
 
     localStorage.removeItem('waifu_idle_save_v2');
     clearTimeout(cloudSaveTimer);
-    if (yaPlayer) {
-        yaPlayer.setData({}, true).catch(() => {}).finally(() => location.reload());
+    if (Bridge.hasCloudSave()) {
+        Bridge.saveCloudData({}, true).finally(() => location.reload());
     } else {
         location.reload();
     }
@@ -2312,62 +2305,35 @@ function resumeCampFromSave() {
     return true;
 }
 
-let ysdk = null;
-let yaPlayer = null;
 let adTimerSec = 0;
 const AD_INTERVAL_SEC = 300;
 let isAdFreeze = false;
 let isSdkPaused = false;
 
-async function initYandexSDK() {
-    try {
-        if (typeof YaGames === 'undefined') {
-            console.warn('Yandex Games SDK не найден (запуск вне платформы Yandex Games).');
-            return;
-        }
-        ysdk = await YaGames.init();
-        window.ysdk = ysdk;
-        ysdk.on('game_api_pause', () => {
+async function initPlatformSDK() {
+    await Bridge.init({
+        onPause: () => {
             isSdkPaused = true;
             document.body.classList.add('sdk-paused');
             flushCloudSaveNow();
-        });
-        ysdk.on('game_api_resume', () => {
+        },
+        onResume: () => {
             isSdkPaused = false;
             document.body.classList.remove('sdk-paused');
-        });
-
-        try {
-            yaPlayer = await ysdk.getPlayer({ scopes: false });
-        } catch (e) {
-            console.warn('Не удалось получить объект игрока, облачные сохранения недоступны:', e);
         }
+    });
 
-        try {
-            const envLang = ysdk.environment.i18n.lang;
-            const resolvedLang = envLang === 'ru' ? 'ru' : 'en';
-            const isManualOverride = localStorage.getItem('waifu_idle_lang_manual') === '1';
-            if (!isManualOverride) {
-                setLanguage(resolvedLang);
-            }
-        } catch (e) {
+    const envLang = Bridge.getEnvLanguage();
+    if (envLang) {
+        const isManualOverride = localStorage.getItem('waifu_idle_lang_manual') === '1';
+        if (!isManualOverride) {
+            setLanguage(envLang);
         }
-
-        if (ysdk.features && ysdk.features.LoadingAPI) {
-            ysdk.features.LoadingAPI.ready();
-        }
-    } catch (err) {
-        console.error('Ошибка инициализации Yandex SDK:', err);
     }
 }
 
 function toggleFullscreen() {
-    if (ysdk && ysdk.screen && ysdk.screen.fullscreen) {
-        if (ysdk.screen.fullscreen.status === 'on') {
-            ysdk.screen.fullscreen.exit();
-        } else {
-            ysdk.screen.fullscreen.request();
-        }
+    if (Bridge.toggleFullscreen()) {
         return;
     }
     if (!document.fullscreenElement) {
@@ -2386,17 +2352,14 @@ function freezeGameForAd(freeze) {
 
 function showFullscreenAdWithFreeze() {
     freezeGameForAd(true);
-    if (!ysdk || !ysdk.adv) {
-        setTimeout(() => freezeGameForAd(false), 1500);
-        return;
-    }
-    ysdk.adv.showFullscreenAdv({
-        callbacks: {
-            onClose: () => { freezeGameForAd(false); },
-            onError: () => { freezeGameForAd(false); },
-            onOffline: () => { freezeGameForAd(false); }
-        }
+    const started = Bridge.showInterstitial({
+        onClose: () => { freezeGameForAd(false); },
+        onError: () => { freezeGameForAd(false); },
+        onOffline: () => { freezeGameForAd(false); }
     });
+    if (!started) {
+        setTimeout(() => freezeGameForAd(false), 1500);
+    }
 }
 
 function getAdSummonAmount() {
@@ -2404,13 +2367,8 @@ function getAdSummonAmount() {
 }
 
 function handleRewardedSummon() {
-    if (!ysdk || !ysdk.adv) {
-        showToast(t('toast_ad_unavailable'), '#ff9800');
-        return;
-    }
     freezeGameForAd(true);
-    ysdk.adv.showRewardedVideo({
-        callbacks: {
+    const started = Bridge.showRewarded({
             onRewarded: () => {
                 const n = getAdSummonAmount();
                 const oldMaxHp = calculateTotalHp();
@@ -2445,10 +2403,13 @@ function handleRewardedSummon() {
                 updateUI();
                 saveGame();
             },
-            onClose: () => { freezeGameForAd(false); },
-            onError: () => { freezeGameForAd(false); showToast(t('toast_ad_unavailable'), '#ff9800'); }
-        }
+        onClose: () => { freezeGameForAd(false); },
+        onError: () => { freezeGameForAd(false); showToast(t('toast_ad_unavailable'), '#ff9800'); }
     });
+    if (!started) {
+        freezeGameForAd(false);
+        showToast(t('toast_ad_unavailable'), '#ff9800');
+    }
 }
 
 setInterval(() => {
@@ -2470,12 +2431,12 @@ let cloudSaveTimer = null;
 const CLOUD_SAVE_DEBOUNCE_MS = 4000;
 
 function scheduleCloudSave() {
-    if (!yaPlayer) return;
+    if (!Bridge.hasCloudSave()) return;
     clearTimeout(cloudSaveTimer);
     cloudSaveTimer = setTimeout(() => {
         try {
             const payload = JSON.parse(JSON.stringify(player));
-            yaPlayer.setData(payload, false).catch(err => console.warn('Ошибка облачного сохранения:', err));
+            Bridge.saveCloudData(payload, false);
         } catch (e) {
             console.warn('Не удалось подготовить данные для облачного сохранения:', e);
         }
@@ -2483,11 +2444,11 @@ function scheduleCloudSave() {
 }
 
 function flushCloudSaveNow() {
-    if (!yaPlayer) return;
+    if (!Bridge.hasCloudSave()) return;
     clearTimeout(cloudSaveTimer);
     try {
         const payload = JSON.parse(JSON.stringify(player));
-        yaPlayer.setData(payload, true).catch(() => {});
+        Bridge.saveCloudData(payload, true);
     } catch (e) {  }
 }
 
@@ -2497,7 +2458,9 @@ document.addEventListener('visibilitychange', () => {
 });
 
 async function bootGame() {
-    await initYandexSDK();
+    await initPlatformSDK();
+    Bridge.notifyLoadingStart();
+
     await loadGame();
     if (!resumeCampFromSave()) {
         spawnEnemy();
@@ -2506,6 +2469,9 @@ async function bootGame() {
     updateUI();
     renderArena();
     applyStaticTranslations();
+
+    Bridge.notifyLoadingStop();
+    Bridge.notifyGameplayStart();
 }
 
 bootGame();
