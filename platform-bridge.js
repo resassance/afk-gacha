@@ -8,6 +8,8 @@ const Bridge = (function () {
 
     let crazySdk = null;
 
+    let tg = null;
+
     let hooks = {
         onPause: null,
         onResume: null
@@ -18,10 +20,17 @@ const Bridge = (function () {
         try {
             const params = new URLSearchParams(window.location.search);
             const override = params.get('platform');
-            if (override === 'crazygames' || override === 'yandex') {
+            if (override === 'crazygames' || override === 'yandex' || override === 'telegram') {
                 return override;
             }
         } catch (e) { }
+
+        if (typeof window !== 'undefined' && window.Telegram && window.Telegram.WebApp) {
+            const wa = window.Telegram.WebApp;
+            if (wa.initData || (wa.initDataUnsafe && Object.keys(wa.initDataUnsafe).length > 0)) {
+                return 'telegram';
+            }
+        }
 
         const host = window.location.hostname || '';
         if (host.endsWith('crazygames.com')) return 'crazygames';
@@ -58,6 +67,11 @@ const Bridge = (function () {
 
         if (target === 'yandex') {
             await initYandex();
+            return;
+        }
+
+        if (target === 'telegram') {
+            await initTelegram();
             return;
         }
 
@@ -111,6 +125,98 @@ const Bridge = (function () {
         }
     }
 
+    async function initTelegram() {
+        try {
+            if (!window.Telegram || !window.Telegram.WebApp) {
+                throw new Error('window.Telegram.WebApp не найден — убедитесь, что telegram-web-app.js подключён ДО platform-bridge.js');
+            }
+
+            tg = window.Telegram.WebApp;
+            platform = 'telegram';
+
+            tg.ready();
+
+            try { tg.expand(); } catch (e) { }
+
+            try {
+                if (typeof tg.requestFullscreen === 'function') {
+                    tg.requestFullscreen();
+                }
+            } catch (e) { }
+
+            applyTelegramTheme();
+            try {
+                tg.onEvent('themeChanged', applyTelegramTheme);
+            } catch (e) { }
+
+            try {
+                if (typeof tg.disableVerticalSwipes === 'function') {
+                    tg.disableVerticalSwipes();
+                }
+            } catch (e) { }
+            try {
+                if (typeof tg.enableClosingConfirmation === 'function') {
+                    tg.enableClosingConfirmation();
+                }
+            } catch (e) { }
+
+            try {
+                tg.onEvent('viewportChanged', () => {
+                    if (tg.isExpanded === false && hooks.onPause) hooks.onPause();
+                });
+            } catch (e) { }
+            try {
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden) {
+                        if (hooks.onPause) hooks.onPause();
+                    } else {
+                        if (hooks.onResume) hooks.onResume();
+                    }
+                });
+            } catch (e) { }
+
+            try {
+                if (tg.setHeaderColor) tg.setHeaderColor('secondary_bg_color');
+            } catch (e) { }
+
+        } catch (err) {
+            console.error('Bridge(telegram): ошибка инициализации SDK:', err);
+            platform = 'none';
+            tg = null;
+        }
+    }
+
+    function applyTelegramTheme() {
+        if (!tg || !tg.themeParams) return;
+
+        const root = document.documentElement.style;
+        const tp = tg.themeParams;
+
+        const map = {
+            '--tg-theme-bg-color': tp.bg_color,
+            '--tg-theme-secondary-bg-color': tp.secondary_bg_color,
+            '--tg-theme-text-color': tp.text_color,
+            '--tg-theme-hint-color': tp.hint_color,
+            '--tg-theme-link-color': tp.link_color,
+            '--tg-theme-button-color': tp.button_color,
+            '--tg-theme-button-text-color': tp.button_text_color
+        };
+
+        Object.keys(map).forEach((key) => {
+            if (map[key]) root.setProperty(key, map[key]);
+        });
+
+        //if (tp.bg_color) root.setProperty('--bg-color', tp.bg_color);
+        //if (tp.text_color) root.setProperty('--text-main', tp.text_color);
+        //if (tp.hint_color) root.setProperty('--text-muted', tp.hint_color);
+
+        try {
+            if (tg.backgroundColor !== undefined && tp.bg_color && tg.setBackgroundColor) {
+                tg.setBackgroundColor(tp.bg_color);
+            }
+        } catch (e) { }
+    }
+
     function getPlatform() {
         return platform;
     }
@@ -129,6 +235,16 @@ const Bridge = (function () {
             const navLang = (navigator.language || 'en').toLowerCase();
             return navLang.startsWith('ru') ? 'ru' : 'en';
         }
+        if (platform === 'telegram' && tg) {
+            try {
+                const langCode = (tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.language_code)
+                    || navigator.language
+                    || 'en';
+                return langCode.toLowerCase().startsWith('ru') ? 'ru' : 'en';
+            } catch (e) {
+                return null;
+            }
+        }
         return null;
     }
 
@@ -143,6 +259,19 @@ const Bridge = (function () {
             }
             return true;
         }
+
+        if (platform === 'telegram' && tg) {
+            if (typeof tg.requestFullscreen !== 'function' || typeof tg.exitFullscreen !== 'function') {
+                return false;
+            }
+            if (tg.isFullscreen) {
+                tg.exitFullscreen();
+            } else {
+                tg.requestFullscreen();
+            }
+            return true;
+        }
+
         return false;
     }
 
@@ -258,11 +387,14 @@ const Bridge = (function () {
 
 
     const CRAZY_SAVE_KEY = 'waifu_idle_save_v2';
+    const TG_SAVE_KEY = 'waifu_idle_save_v2';
+    const TG_CLOUD_VALUE_LIMIT = 4096;
 
     /** @returns {boolean}  */
     function hasCloudSave() {
         if (platform === 'yandex') return !!yaPlayer;
         if (platform === 'crazygames') return !!(crazySdk && crazySdk.data);
+        if (platform === 'telegram') return !!(tg && tg.CloudStorage);
         return false;
     }
 
@@ -284,6 +416,20 @@ const Bridge = (function () {
                 return raw ? JSON.parse(raw) : null;
             } catch (e) {
                 console.warn('Bridge(crazygames): не удалось загрузить сохранение:', e);
+                return null;
+            }
+        }
+
+        if (platform === 'telegram' && tg && tg.CloudStorage) {
+            try {
+                const raw = await new Promise((resolve, reject) => {
+                    tg.CloudStorage.getItem(TG_SAVE_KEY, (err, value) => {
+                        if (err) reject(err); else resolve(value);
+                    });
+                });
+                return raw ? JSON.parse(raw) : null;
+            } catch (e) {
+                console.warn('Bridge(telegram): не удалось загрузить облачное сохранение:', e);
                 return null;
             }
         }
@@ -310,6 +456,26 @@ const Bridge = (function () {
                 console.warn('Bridge(crazygames): не удалось сохранить:', e);
             }
             return Promise.resolve();
+        }
+
+        if (platform === 'telegram' && tg && tg.CloudStorage) {
+            return new Promise((resolve) => {
+                try {
+                    const json = JSON.stringify(data);
+                    if (json.length > TG_CLOUD_VALUE_LIMIT) {
+                        console.warn('Bridge(telegram): сохранение превышает лимит CloudStorage (' + TG_CLOUD_VALUE_LIMIT + ' байт), запись пропущена. Нужно шардирование по ключам.');
+                        resolve();
+                        return;
+                    }
+                    tg.CloudStorage.setItem(TG_SAVE_KEY, json, (err) => {
+                        if (err) console.warn('Bridge(telegram): не удалось сохранить в облако:', err);
+                        resolve();
+                    });
+                } catch (e) {
+                    console.warn('Bridge(telegram): не удалось сохранить в облако:', e);
+                    resolve();
+                }
+            });
         }
 
         return Promise.resolve();
