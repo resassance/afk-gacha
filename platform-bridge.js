@@ -212,7 +212,7 @@ const Bridge = (function () {
 
         try {
             if (tg.backgroundColor !== undefined && tp.bg_color && tg.setBackgroundColor) {
-                tg.setBackgroundColor(tp.bg_color);
+                //tg.setBackgroundColor(tp.bg_color);
             }
         } catch (e) { }
     }
