@@ -101,7 +101,8 @@ const I18N = {
         wiki_range: "Диапазон бонуса: от {min} до {max} {label}{pct}",
         reason_gold_synergy: "синергия с золотой пассивкой", reason_atk_synergy: "синергия с атакующей пассивкой", reason_best_stat: "сильнейшая сторона героини",
         mythic_active_annihilate: "🌌 Аннигиляция Врага", mythic_active_loot: "🎰 Призыв Сокровища",
-        gear_picker_label: "⚔️ Снаряжение", stage_prefix: "ЭТАП 1"
+        gear_picker_label: "⚔️ Снаряжение", stage_prefix: "ЭТАП 1",
+        health_point: "ХП"
     },
     en: {
         wiki_title: "📖 Book of Warriors", wiki_tab_heroes: "👸 Heroines", wiki_tab_gear: "⚔️ Gear",
@@ -203,7 +204,8 @@ const I18N = {
         wiki_range: "Bonus range: from {min} to {max} {label}{pct}",
         reason_gold_synergy: "synergy with gold passive", reason_atk_synergy: "synergy with attack passive", reason_best_stat: "heroine's strongest stat",
         mythic_active_annihilate: "🌌 Annihilate Enemy", mythic_active_loot: "🎰 Summon Treasure",
-        gear_picker_label: "⚔️ Gear", stage_prefix: "STAGE 1"
+        gear_picker_label: "⚔️ Gear", stage_prefix: "STAGE 1",
+        health_point: "HP"
     }
 };
 
@@ -401,7 +403,7 @@ const rarityColors = {
 
 function getGearLabel(type) {
     if (type === 'atk') return currentLang === 'en' ? 'ATK' : 'АТК';
-    if (type === 'hp') return 'HP';
+    if (type === 'hp') return currentLang === 'en' ? 'HP' : 'ХП';
     if (type === 'gold') return currentLang === 'en' ? 'GOLD' : 'ЗОЛ';
     return '';
 }
@@ -493,7 +495,7 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
         <div class="char-card-details">
             <div class="char-stat-row">
                 <span class="char-income">${currentCharAtk.toFixed(2)} ${currentLang === 'en' ? 'ATK' : 'АТК'}</span>
-                <span class="char-hp-stat">${currentCharHp.toFixed(2)} HP</span>
+                <span class="char-hp-stat">${currentCharHp.toFixed(2)} ${currentLang === 'en' ? 'HP' : 'ХП'}</span>
             </div>
             <div class="char-stat-row"><span class="char-gold-income">+${currentCharGold.toFixed(2)} ${currentLang === 'en' ? 'GOLD/s' : 'ЗОЛ/с'}</span></div>
             ${passiveHTML}
@@ -1644,7 +1646,7 @@ function buildCopyStatsTable(char, currentCount) {
     }
     return `
         <table class="wiki-copy-table">
-            <thead><tr><th>${t('wiki_copies')}</th><th>${currentLang === 'en' ? 'ATK' : 'АТК'}</th><th>HP</th><th>${currentLang === 'en' ? 'GOLD/s' : 'ЗОЛ/с'}</th></tr></thead>
+            <thead><tr><th>${t('wiki_copies')}</th><th>${currentLang === 'en' ? 'ATK' : 'АТК'}</th><th>${currentLang === 'en' ? 'HP' : 'ХП'}</th><th>${currentLang === 'en' ? 'GOLD/s' : 'ЗОЛ/с'}</th></tr></thead>
             <tbody>${rows}</tbody>
         </table>
         ${char.stars <= 5 ? `<div style="font-size:9px; color:var(--text-muted); margin-top:4px;">💥 ${t('wiki_10th_copy_note', { desc: localizedBreakthroughDesc(char.stars) })}</div>` : ''}
@@ -1713,7 +1715,7 @@ function renderWikiBlock(rarityKey, pool, headTitle, container) {
                 <span>${ownedStatus}</span>
             </div>
             <div class="wiki-row-stats">
-                ${t('wiki_base_stats', { copy: isMythicHero ? '' : t('wiki_one_copy') })} ${currentLang === 'en' ? 'ATK' : 'АТК'} ${char.baseAtk.toFixed(2)} | HP ${char.baseHp.toFixed(2)} | ${currentLang === 'en' ? 'GOLD' : 'ЗОЛ'} +${char.baseGold.toFixed(2)}/${t('gold_per_sec')}
+                ${t('wiki_base_stats', { copy: isMythicHero ? '' : t('wiki_one_copy') })} ${currentLang === 'en' ? 'ATK' : 'АТК'} ${char.baseAtk.toFixed(2)} | ${currentLang === 'en' ? 'HP' : 'ХП'} ${char.baseHp.toFixed(2)} | ${currentLang === 'en' ? 'GOLD' : 'ЗОЛ'} +${char.baseGold.toFixed(2)}/${t('gold_per_sec')}
             </div>
             ${char.passiveDesc ? `<div class="wiki-row-passive">${t('wiki_effect_label')} ${localizedPassiveDesc(char)}</div>` : ''}
             <div class="wiki-row-mythic-rec">💠 ${t('wiki_best_mythic_gear')} ${localizedName(rec.item)} (${getGearLabel(rec.type)}, +${rec.item.pct}% ${t('wiki_to_total')}) — ${t(rec.reasonKey)}</div>
@@ -1981,7 +1983,7 @@ function updateUI() {
 
     const squadTextEl = document.getElementById('squad-hp-text');
     if (squadTextEl) {
-        squadTextEl.innerText = `${player.squadCurrentHp.toFixed(2)} / ${maxSquadHp.toFixed(2)} HP`;
+        squadTextEl.innerText = `${player.squadCurrentHp.toFixed(2)} / ${maxSquadHp.toFixed(2)} ${currentLang === 'en' ? 'HP' : 'ХП'}`;
         document.getElementById('squad-hp-bar').style.width = `${squadHpPercent}%`;
         document.getElementById('squad-info-atk').innerText = `${getCombatSquadAtk().toFixed(2)} ${t('atk_per_sec')}`;
         document.getElementById('squad-info-count').innerText = t('squad_count', { n: player.ownedCharacters.length });
@@ -2061,7 +2063,7 @@ function updateUI() {
     } else {
         document.getElementById('stage-display').innerText = `${t('stage_word')} ${player.battleStage}`;
         document.getElementById('enemy-name').innerText = currentEnemy.name;
-        document.getElementById('hp-text').innerText = `${currentEnemy.hp.toFixed(2)} / ${currentEnemy.maxHp.toFixed(2)} HP`;
+        document.getElementById('hp-text').innerText = `${currentEnemy.hp.toFixed(2)} / ${currentEnemy.maxHp.toFixed(2)} ${currentLang === 'en' ? 'HP' : 'ХП'}`;
         const hpPercent = Math.max(0, (currentEnemy.hp / currentEnemy.maxHp) * 100);
         document.getElementById('hp-bar').style.width = `${hpPercent}%`;
         
