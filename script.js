@@ -2127,7 +2127,7 @@ function renderInventory() {
         if (char.passive === "double_bm") currentCharAtk *= 2;
 
         let isMax = char.count >= 10 || char.stars === 6;
-        let countText = char.stars === 6 ? "UNIQUE" : (isMax ? "MAX" : `x${char.count}`);
+        let countText = char.stars === 6 ? "UNIQUE" : (isMax ? "M+" : `x${char.count}`);
 
         const isExpanded = expandedCharIds.has(char.id);
         const card = document.createElement('div');
