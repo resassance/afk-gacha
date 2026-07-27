@@ -1529,11 +1529,11 @@ function toggleSettings() {
     modal.style.display = (modal.style.display === 'flex') ? 'none' : 'flex';
 }
 
-function resetProgress() {
-    const firstConfirm = confirm(t('confirm_reset1'));
+async function resetProgress() {
+    const firstConfirm = await customConfirm(t('confirm_reset1'));
     if (!firstConfirm) return;
 
-    const secondConfirm = confirm(t('confirm_reset2'));
+    const secondConfirm = await customConfirm(t('confirm_reset2'));
     if (!secondConfirm) return;
 
     localStorage.removeItem('waifu_idle_save_v2');
@@ -1543,6 +1543,41 @@ function resetProgress() {
     } else {
         location.reload();
     }
+}
+
+function customConfirm(text) {
+    return new Promise((resolve) => {
+        const overlay = document.createElement('div');
+        overlay.className = 'modal-overlay';
+        overlay.style.display = 'flex';
+        overlay.style.zIndex = '10000';
+
+        const modal = document.createElement('div');
+        modal.className = 'modal-content settings-modal-content';
+        modal.style.cssText = 'max-width: 380px; padding: 24px; text-align: center;';
+
+        modal.innerHTML = `
+            <h3 class="modal-results-title" style="font-size: 18px; margin-bottom: 12px; color: #ff3366;">⚠️ Подтверждение</h3>
+            <p style="font-size: 13px; color: var(--text-main); margin-bottom: 20px; line-height: 1.5;">${text}</p>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="confirm-btn-yes" class="btn-settings-reset" style="flex: 1; padding: 10px;">Да</button>
+                <button id="confirm-btn-no" class="btn-close-modal" style="flex: 1; padding: 10px; width: auto; align-self: auto; margin: 0; background: #252535; color: #fff; border: 1px solid rgba(255,255,255,0.1);">Отмена</button>
+            </div>
+        `;
+
+        overlay.appendChild(modal);
+        document.body.appendChild(overlay);
+
+        modal.querySelector('#confirm-btn-yes').onclick = () => {
+            document.body.removeChild(overlay);
+            resolve(true);
+        };
+
+        modal.querySelector('#confirm-btn-no').onclick = () => {
+            document.body.removeChild(overlay);
+            resolve(false);
+        };
+    });
 }
 
 function toggleWiki() {
