@@ -1272,3 +1272,20 @@ body.game-frozen {
     .gear-title-anim { font-size: 11px; }
     .gear-bonus-anim { font-size: 10px; }
 }
+
+body {
+    background-color: #0d0e15;
+    background-image: 
+        linear-gradient(
+            to right, 
+            rgba(13, 14, 21, 0.2) 0%,
+            rgba(13, 14, 21, 0.98) 25%,
+            rgba(13, 14, 21, 0.98) 75%,
+            rgba(13, 14, 21, 0.2) 100% 
+        ),
+        url('promo/Fantasy Waifu Arena Banner.png');
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
