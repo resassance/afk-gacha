@@ -100,10 +100,6 @@ const Bridge = (function () {
             } catch (e) {
                 console.warn('Bridge(yandex): игрок недоступен, облачные сохранения выключены:', e);
             }
-
-            if (ysdk.features && ysdk.features.LoadingAPI) {
-                ysdk.features.LoadingAPI.ready();
-            }
         } catch (err) {
             console.error('Bridge(yandex): ошибка инициализации SDK:', err);
             platform = 'none';
@@ -206,13 +202,9 @@ const Bridge = (function () {
             if (map[key]) root.setProperty(key, map[key]);
         });
 
-        //if (tp.bg_color) root.setProperty('--bg-color', tp.bg_color);
-        //if (tp.text_color) root.setProperty('--text-main', tp.text_color);
-        //if (tp.hint_color) root.setProperty('--text-muted', tp.hint_color);
 
         try {
             if (tg.backgroundColor !== undefined && tp.bg_color && tg.setBackgroundColor) {
-                //tg.setBackgroundColor(tp.bg_color);
             }
         } catch (e) { }
     }
@@ -385,6 +377,16 @@ const Bridge = (function () {
         }
     }
 
+    /**
+     * Call this ONLY after the game screen is fully rendered and interactive
+     * (i.e. at the very end of boot, after DOM render, not right after SDK init).
+     */
+    function notifyGameReady() {
+        if (platform === 'yandex' && ysdk && ysdk.features && ysdk.features.LoadingAPI) {
+            ysdk.features.LoadingAPI.ready();
+        }
+    }
+
 
     const CRAZY_SAVE_KEY = 'waifu_idle_save_v2';
     const TG_SAVE_KEY = 'waifu_idle_save_v2';
@@ -494,6 +496,7 @@ const Bridge = (function () {
         notifyLoadingStart,
         notifyLoadingStop,
         notifyHappyMoment,
+        notifyGameReady,
         hasCloudSave,
         loadCloudData,
         saveCloudData

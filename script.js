@@ -18,7 +18,7 @@ const I18N = {
         forge_common: "🟢 Обычная Ковка", forge_rare: "🔵 Редкая Ковка", forge_epic: "🟣 Эпическая Ковка", forge_legendary: "🟡 Легендарная Ковка",
         forge_cost_c: "Стоимость: 10 🟢", forge_cost_r: "Стоимость: 10 🔵", forge_cost_e: "Стоимость: 10 🟣", forge_cost_l: "Стоимость: 5 🟡",
         reforge_title: "Мастерская утилизации и Сортировки реликвий",
-        reforge_c: "Скрестить 3x Common", reforge_r: "Скрестить 3x Rare", reforge_e: "Скрестить 3x Epic",
+        reforge_c: "Скрестить 3x Обычный", reforge_r: "Скрестить 3x Редкий", reforge_e: "Скрестить 3x Эпический",
         warehouse_free: "Свободный склад по разрядам редкости:",
         inv_title: "Ваш Боевой Отряд Тян", inv_subtitle: "Прямой выкуп дубликатов доступен за Жетоны!",
         btn_equip_all: "🎯 Экипировать всем лучшее доступное снаряжение",
@@ -27,7 +27,7 @@ const I18N = {
         overflow_subtitle: "Вы выбили новый предмет, но в инвентаре нет свободного места. Выберите действие:",
         overflow_sell: "💰 Продать этот трофей", overflow_claim: "📥 Забрать трофей",
         overflow_manage: "Управление инвентарем (Освободите место):",
-        settings_title: "⚙️ Настройки", settings_lang_title: "Язык / Language", settings_lang_desc: "Переключить язык интерфейса игры.",
+        settings_title: "⚙️ Настройки", settings_lang_title: "Язык", settings_lang_desc: "Переключить язык интерфейса игры.",
         settings_reset_title: "Сброс прогресса",
         settings_reset_desc: "Полностью удаляет всех героинь, снаряжение, золото и прогресс по этажам. Действие необратимо.",
         settings_reset_btn: "🗑️ Полный сброс прогресса", btn_close: "Закрыть",
@@ -89,6 +89,15 @@ const I18N = {
         wiki_effect: "Эффект: {desc}",
         wiki_best_mythic: "💠 Лучший мифик-артефакт: {name} ({label}, +{pct}% к итогу) — {reason}",
         wiki_copy_stats: "📊 Статы по количеству копий", wiki_copies: "Копий",
+        wiki_10th_copy_note: "на 10 копии срабатывает \"{desc}\"",
+        wiki_rank_suffix: "Ранг", wiki_mythic_rank: "МИФИЧЕСКИЙ РАНГ",
+        wiki_status_obtained: "Получена", wiki_status_unlocked: "Открыта (копий: {n}/10)", wiki_status_locked: "Закрыта",
+        wiki_base_stats: "Базовые{copy}:", wiki_one_copy: " (1 копия)",
+        wiki_effect_label: "Эффект:",
+        wiki_best_mythic_gear: "Лучший мифик-артефакт:", wiki_to_total: "к итогу",
+        wiki_reason_gold_synergy: "синергия с золотой пассивкой", wiki_reason_atk_synergy: "синергия с атакующей пассивкой", wiki_reason_strongest_side: "сильнейшая сторона героини",
+        wiki_fixed_bonus: "плюс фикс. +{pct}% к итоговому стату персонажа",
+        wiki_bonus_range: "Диапазон бонуса: от {min} до {max}",
         wiki_range: "Диапазон бонуса: от {min} до {max} {label}{pct}",
         reason_gold_synergy: "синергия с золотой пассивкой", reason_atk_synergy: "синергия с атакующей пассивкой", reason_best_stat: "сильнейшая сторона героини",
         mythic_active_annihilate: "🌌 Аннигиляция Врага", mythic_active_loot: "🎰 Призыв Сокровища",
@@ -120,7 +129,7 @@ const I18N = {
         overflow_subtitle: "You found a new item, but there's no free inventory space. Choose an action:",
         overflow_sell: "💰 Sell this trophy", overflow_claim: "📥 Claim trophy",
         overflow_manage: "Manage inventory (free up space):",
-        settings_title: "⚙️ Settings", settings_lang_title: "Язык / Language", settings_lang_desc: "Switch the game's interface language.",
+        settings_title: "⚙️ Settings", settings_lang_title: "Language", settings_lang_desc: "Switch the game's interface language.",
         settings_reset_title: "Reset Progress",
         settings_reset_desc: "Permanently deletes all heroines, gear, gold and floor progress. This cannot be undone.",
         settings_reset_btn: "🗑️ Full progress reset", btn_close: "Close",
@@ -182,6 +191,15 @@ const I18N = {
         wiki_effect: "Effect: {desc}",
         wiki_best_mythic: "💠 Best mythic artifact: {name} ({label}, +{pct}% total) — {reason}",
         wiki_copy_stats: "📊 Stats by copy count", wiki_copies: "Copies",
+        wiki_10th_copy_note: "the 10th copy triggers \"{desc}\"",
+        wiki_rank_suffix: "Rank", wiki_mythic_rank: "MYTHIC RANK",
+        wiki_status_obtained: "Obtained", wiki_status_unlocked: "Unlocked (copies: {n}/10)", wiki_status_locked: "Locked",
+        wiki_base_stats: "Base{copy}:", wiki_one_copy: " (1 copy)",
+        wiki_effect_label: "Effect:",
+        wiki_best_mythic_gear: "Best mythic artifact:", wiki_to_total: "to total",
+        wiki_reason_gold_synergy: "synergy with gold passive", wiki_reason_atk_synergy: "synergy with ATK passive", wiki_reason_strongest_side: "heroine's strongest stat",
+        wiki_fixed_bonus: "plus a fixed +{pct}% to the character's final stat",
+        wiki_bonus_range: "Bonus range: from {min} to {max}",
         wiki_range: "Bonus range: from {min} to {max} {label}{pct}",
         reason_gold_synergy: "synergy with gold passive", reason_atk_synergy: "synergy with attack passive", reason_best_stat: "heroine's strongest stat",
         mythic_active_annihilate: "🌌 Annihilate Enemy", mythic_active_loot: "🎰 Summon Treasure",
@@ -202,7 +220,7 @@ function applyStaticTranslations() {
         el.textContent = t(el.dataset.i18n);
     });
     const langBtn = document.getElementById('btn-lang-toggle');
-    if (langBtn) langBtn.innerText = currentLang === 'ru' ? '🌐 RU (нажмите для EN)' : '🌐 EN (click for RU)';
+    if (langBtn) langBtn.innerText = currentLang === 'ru' ? '🌐 Русский (текущий) - переключиться на Английский язык' : '🌐 English (current) - switch to Russian language';
     document.documentElement.lang = currentLang;
 }
 
@@ -268,6 +286,20 @@ function localizedPassiveDesc(char) {
 function localizedBreakthroughDesc(stars) {
     if (currentLang === 'en') return MAX_UPGRADE_PASSIVES_EN[stars];
     return MAX_UPGRADE_PASSIVES[stars].desc;
+}
+
+const TIER_LABEL = {
+    common: { ru: "ОБЫЧНЫЙ", en: "COMMON" },
+    rare: { ru: "РЕДКИЙ", en: "RARE" },
+    epic: { ru: "ЭПИЧЕСКИЙ", en: "EPIC" },
+    legendary: { ru: "ЛЕГЕНДАРНЫЙ", en: "LEGENDARY" },
+    mythic: { ru: "МИФИЧЕСКИЙ", en: "MYTHIC" }
+};
+
+function tierLabel(tier) {
+    const key = (tier || '').toLowerCase();
+    if (TIER_LABEL[key]) return TIER_LABEL[key][currentLang === 'en' ? 'en' : 'ru'];
+    return (tier || '').toUpperCase();
 }
 
 const MONSTER_PREFIXES_EN = ["Wild", "Cursed", "Cave", "Bloodied", "Elite", "Infernal", "Ancient"];
@@ -427,7 +459,7 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
         pickerHTML += `
             <div class="gear-picker-item ${isEq ? 'equipped' : ''}" style="border-left-color:${rarityColors[gear.rarity]}" onclick="changeEquipmentFromPicker('${char.id}','${gear.instanceId}')">
                 ${buildGearPortraitHTML(gear, 'gear-portrait-sm')}
-                <span class="gpi-text">[${gear.rarity.toUpperCase()}] ${localizedName(gear)} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag})</span>
+                <span class="gpi-text">[${tierLabel(gear.rarity)}] ${localizedName(gear)} (+${gear.bonus.toFixed(2)} ${getGearLabel(gear.type)}${pctTag})</span>
                 ${isEq ? '<span class="gpi-check">✓</span>' : ''}
             </div>
         `;
@@ -455,7 +487,7 @@ function buildCharCardHTML(char, currentCharAtk, currentCharHp, currentCharGold,
                  onerror="this.style.display='none';">
             <div class="char-portrait-namebar">
                 <div class="char-portrait-name">${localizedName(char)}</div>
-                <button class="char-expand-btn" onclick="toggleCharExpand('${char.id}')" title="Подробнее">▼</button>
+                <button class="char-expand-btn" onclick="toggleCharExpand('${char.id}')" title="${currentLang === 'en' ? 'Details' : 'Подробнее'}">▼</button>
             </div>
         </div>
         <div class="char-card-details">
@@ -707,15 +739,18 @@ function getMaxGearLimit() {
 }
 
 function formatTime(seconds) {
-    if (seconds <= 0) return "0 сек";
+    const unitH = currentLang === 'en' ? 'h' : 'ч';
+    const unitM = currentLang === 'en' ? 'min' : 'мин';
+    const unitS = currentLang === 'en' ? 'sec' : 'сек';
+    if (seconds <= 0) return `0 ${unitS}`;
     const h = Math.floor(seconds / 3600);
     const m = Math.floor((seconds % 3600) / 60);
     const s = seconds % 60;
-    
+
     let result = "";
-    if (h > 0) result += `${h} ч `;
-    if (m > 0) result += `${m} мин `;
-    if (s > 0 || result === "") result += `${s} сек`;
+    if (h > 0) result += `${h} ${unitH} `;
+    if (m > 0) result += `${m} ${unitM} `;
+    if (s > 0 || result === "") result += `${s} ${unitS}`;
     return result.trim();
 }
 
@@ -1064,7 +1099,7 @@ function sellPendingGearImmediate() {
 function claimPendingGear() {
     if (!pendingDroppedGear) return;
     if (getGearCountByRarity(pendingDroppedGear.rarity) >= getMaxGearLimit()) {
-        alert(t('alert_warehouse_full_rarity'));
+        showToast(t('alert_warehouse_full_rarity'), '#ff5252');
         return;
     }
     player.gearInventory.push(pendingDroppedGear);
@@ -1095,7 +1130,7 @@ function sellOldGearFromOverflow(instanceId) {
 function bulkReforgeFromOverflow(tier) {
     const unequipped = player.gearInventory.filter(g => g.rarity === tier && g.equippedTo === null);
     if (unequipped.length < 3) {
-        alert(t('alert_need3_reforge', { tier: tier.toUpperCase() }));
+        showToast(t('alert_need3_reforge', { tier: tierLabel(tier) }), '#ff5252');
         return;
     }
 
@@ -1114,9 +1149,9 @@ function bulkReforgeFromOverflow(tier) {
     
     if (currentIndex < tiersOrder.length - 1 && Math.random() <= 0.25) {
         finalTier = tiersOrder[currentIndex + 1];
-        showToast(t('toast_reforge_evo', { tier: finalTier.toUpperCase() }), '#ffd700');
+        showToast(t('toast_reforge_evo', { tier: tierLabel(finalTier) }), '#ffd700');
     } else {
-        showToast(t('toast_reforge_done', { tier: finalTier.toUpperCase() }), '#ffffff');
+        showToast(t('toast_reforge_done', { tier: tierLabel(finalTier) }), '#ffffff');
     }
 
     const upgradeGear = generateRandomGear(finalTier);
@@ -1162,7 +1197,7 @@ function renderOverflowInventoryManager() {
             const btn = document.createElement('button');
             btn.className = "btn-reforge-quick";
             btn.style.background = rarityColors[t2];
-            btn.innerText = currentLang === 'en' ? `🔨 Combine 3 ${t2.toUpperCase()} (-2 slots)` : `🔨 Сжать 3 ${t2.toUpperCase()} (-2 слота)`;
+            btn.innerText = currentLang === 'en' ? `🔨 Combine 3 ${tierLabel(t2)} (-2 slots)` : `🔨 Сжать 3 ${tierLabel(t2)} (-2 слота)`;
             btn.onclick = () => bulkReforgeFromOverflow(t2);
             reforgeContainer.appendChild(btn);
         }
@@ -1251,7 +1286,7 @@ function handlePulls(amount) {
 
 function rollGear(tier, mode) {
     if (getGearCountByRarity(tier) >= getMaxGearLimit()) {
-        alert(t('alert_forge_full', { tier: tier.toUpperCase(), n: getMaxGearLimit() }));
+        showToast(t('alert_forge_full', { tier: tierLabel(tier), n: getMaxGearLimit() }), '#ff5252');
         return;
     }
 
@@ -1267,7 +1302,7 @@ function rollGear(tier, mode) {
     let totalCost = rollsToPerform * singleCost;
 
     if (rollsToPerform <= 0 || player.tokens[tier] < totalCost) {
-        alert(t('alert_not_enough_tokens_or_space', { tier: tier.toUpperCase() }));
+        showToast(t('alert_not_enough_tokens_or_space', { tier: tierLabel(tier) }), '#ff5252');
         return;
     }
 
@@ -1339,7 +1374,7 @@ function sellGear(instanceId) {
 function bulkReforge(tier) {
     const unequipped = player.gearInventory.filter(g => g.rarity === tier && g.equippedTo === null);
     if (unequipped.length < 3) {
-        alert(t('alert_need3_reforge', { tier: tier.toUpperCase() }));
+        showToast(t('alert_need3_reforge', { tier: tierLabel(tier) }), '#ff5252');
         return;
     }
 
@@ -1358,9 +1393,9 @@ function bulkReforge(tier) {
     
     if (currentIndex < tiersOrder.length - 1 && Math.random() <= 0.25) {
         finalTier = tiersOrder[currentIndex + 1];
-        showToast(t('toast_reforge_evo2', { tier: finalTier.toUpperCase() }), '#ffd700');
+        showToast(t('toast_reforge_evo2', { tier: tierLabel(finalTier) }), '#ffd700');
     } else {
-        showToast(t('toast_reforge_done2', { tier: finalTier.toUpperCase() }), '#ffffff');
+        showToast(t('toast_reforge_done2', { tier: tierLabel(finalTier) }), '#ffffff');
     }
 
     const upgradeGear = generateRandomGear(finalTier);
@@ -1375,7 +1410,7 @@ function bulkReforgeAll(tier) {
     const countFree = () => player.gearInventory.filter(g => g.rarity === tier && g.equippedTo === null).length;
 
     if (countFree() < 3) {
-        alert(t('alert_need3_reforge', { tier: tier.toUpperCase() }));
+        showToast(t('alert_need3_reforge', { tier: tierLabel(tier) }), '#ff5252');
         return;
     }
 
@@ -1405,7 +1440,7 @@ function bulkReforgeAll(tier) {
         reforges++;
     }
 
-    showToast(t('toast_reforge_bulk', { tier: tier.toUpperCase(), n: reforges, evo: evolutions }), rarityColors[tier] || '#ffffff');
+    showToast(t('toast_reforge_bulk', { tier: tierLabel(tier), n: reforges, evo: evolutions }), rarityColors[tier] || '#ffffff');
 
     renderInventory();
     updateUI();
@@ -1544,9 +1579,9 @@ function renderWikiList() {
     listContainer.innerHTML = '';
 
     Object.keys(CHARACTER_DATABASE).forEach(rarity => {
-        renderWikiBlock(rarity, CHARACTER_DATABASE[rarity], "★".repeat(rarity) + " Ранг", listContainer);
+        renderWikiBlock(rarity, CHARACTER_DATABASE[rarity], "★".repeat(rarity) + " " + t('wiki_rank_suffix'), listContainer);
     });
-    renderWikiBlock(6, MYTHIC_HEROES_POOL, "👑 МИФИЧЕСКИЙ РАНГ", listContainer);
+    renderWikiBlock(6, MYTHIC_HEROES_POOL, "👑 " + t('wiki_mythic_rank'), listContainer);
 }
 
 function buildCopyStatsTable(char, currentCount) {
@@ -1574,10 +1609,10 @@ function buildCopyStatsTable(char, currentCount) {
     }
     return `
         <table class="wiki-copy-table">
-            <thead><tr><th>Копий</th><th>АТК</th><th>HP</th><th>ЗОЛ/с</th></tr></thead>
+            <thead><tr><th>${t('wiki_copies')}</th><th>${currentLang === 'en' ? 'ATK' : 'АТК'}</th><th>HP</th><th>${currentLang === 'en' ? 'GOLD/s' : 'ЗОЛ/с'}</th></tr></thead>
             <tbody>${rows}</tbody>
         </table>
-        ${char.stars <= 5 ? `<div style="font-size:9px; color:var(--text-muted); margin-top:4px;">💥 на 10 копии срабатывает "${MAX_UPGRADE_PASSIVES[char.stars].desc}"</div>` : ''}
+        ${char.stars <= 5 ? `<div style="font-size:9px; color:var(--text-muted); margin-top:4px;">💥 ${t('wiki_10th_copy_note', { desc: localizedBreakthroughDesc(char.stars) })}</div>` : ''}
     `;
 }
 
@@ -1601,10 +1636,10 @@ function recommendMythicGear(char) {
     const mGold = GEAR_POOLS.mythic.find(g => g.type === 'gold');
 
     if (char.passive && GOLD_PASSIVES.includes(char.passive)) {
-        return { type: 'gold', item: mGold, reason: 'синергия с золотой пассивкой' };
+        return { type: 'gold', item: mGold, reasonKey: 'wiki_reason_gold_synergy' };
     }
     if (char.passive && ATK_PASSIVES.includes(char.passive)) {
-        return { type: 'atk', item: mAtk, reason: 'синергия с атакующей пассивкой' };
+        return { type: 'atk', item: mAtk, reasonKey: 'wiki_reason_atk_synergy' };
     }
 
     const relAtk = char.baseAtk / ROSTER_STAT_AVG.atk;
@@ -1612,9 +1647,9 @@ function recommendMythicGear(char) {
     const relGold = char.baseGold / ROSTER_STAT_AVG.gold;
 
     const best = Math.max(relAtk, relHp, relGold);
-    if (best === relGold) return { type: 'gold', item: mGold, reason: 'сильнейшая сторона героини' };
-    if (best === relAtk) return { type: 'atk', item: mAtk, reason: 'сильнейшая сторона героини' };
-    return { type: 'hp', item: mHp, reason: 'сильнейшая сторона героини' };
+    if (best === relGold) return { type: 'gold', item: mGold, reasonKey: 'wiki_reason_strongest_side' };
+    if (best === relAtk) return { type: 'atk', item: mAtk, reasonKey: 'wiki_reason_strongest_side' };
+    return { type: 'hp', item: mHp, reasonKey: 'wiki_reason_strongest_side' };
 }
 
 function renderWikiBlock(rarityKey, pool, headTitle, container) {
@@ -1633,23 +1668,23 @@ function renderWikiBlock(rarityKey, pool, headTitle, container) {
 
         const isMythicHero = char.stars === 6;
         const ownedStatus = isOwned
-            ? (isMythicHero ? '✅ Получена' : `✅ Открыта (копий: ${ownedChar.count}/10)`)
-            : '🔒 Закрыта';
+            ? (isMythicHero ? '✅ ' + t('wiki_status_obtained') : `✅ ${t('wiki_status_unlocked', { n: ownedChar.count })}`)
+            : '🔒 ' + t('wiki_status_locked');
         const rec = recommendMythicGear(char);
 
         row.innerHTML = `
             <div class="wiki-row-top">
-                <div class="wiki-row-name">${buildCharPortraitHTML(char, 'char-portrait-sm')}<span>${char.name}</span></div>
+                <div class="wiki-row-name">${buildCharPortraitHTML(char, 'char-portrait-sm')}<span>${localizedName(char)}</span></div>
                 <span>${ownedStatus}</span>
             </div>
             <div class="wiki-row-stats">
-                Базовые${isMythicHero ? '' : ' (1 копия)'}: АТК ${char.baseAtk.toFixed(2)} | HP ${char.baseHp.toFixed(2)} | ЗОЛ +${char.baseGold.toFixed(2)}/с
+                ${t('wiki_base_stats', { copy: isMythicHero ? '' : t('wiki_one_copy') })} ${currentLang === 'en' ? 'ATK' : 'АТК'} ${char.baseAtk.toFixed(2)} | HP ${char.baseHp.toFixed(2)} | ${currentLang === 'en' ? 'GOLD' : 'ЗОЛ'} +${char.baseGold.toFixed(2)}/${t('gold_per_sec')}
             </div>
-            ${char.passiveDesc ? `<div class="wiki-row-passive">Эффект: ${char.passiveDesc}</div>` : ''}
-            <div class="wiki-row-mythic-rec">💠 Лучший мифик-артефакт: ${rec.item.name} (${getGearLabel(rec.type)}, +${rec.item.pct}% к итогу) — ${rec.reason}</div>
+            ${char.passiveDesc ? `<div class="wiki-row-passive">${t('wiki_effect_label')} ${localizedPassiveDesc(char)}</div>` : ''}
+            <div class="wiki-row-mythic-rec">💠 ${t('wiki_best_mythic_gear')} ${localizedName(rec.item)} (${getGearLabel(rec.type)}, +${rec.item.pct}% ${t('wiki_to_total')}) — ${t(rec.reasonKey)}</div>
             ${isMythicHero ? '' : `
             <details class="wiki-copy-details">
-                <summary>📊 Статы по количеству копий</summary>
+                <summary>${t('wiki_copy_stats')}</summary>
                 ${buildCopyStatsTable(char, isOwned ? ownedChar.count : 0)}
             </details>`}
         `;
@@ -1665,18 +1700,12 @@ function renderWikiGearList() {
     if (!listContainer) return;
     listContainer.innerHTML = '';
 
-    const tierTitles = {
-        common: '🟢 ОБЫЧНОЕ',
-        rare: '🔵 РЕДКОЕ',
-        epic: '🟣 ЭПИЧЕСКОЕ',
-        legendary: '🟡 ЛЕГЕНДАРНОЕ',
-        mythic: '👑 МИФИЧЕСКОЕ'
-    };
+    const tierEmoji = { common: '🟢', rare: '🔵', epic: '🟣', legendary: '🟡', mythic: '👑' };
 
     Object.keys(GEAR_POOLS).forEach(tier => {
         const block = document.createElement('div');
         block.className = 'wiki-rarity-block';
-        block.innerHTML = `<div class="wiki-rarity-head" style="color: ${rarityColors[tier]};">${tierTitles[tier]}</div>`;
+        block.innerHTML = `<div class="wiki-rarity-head" style="color: ${rarityColors[tier]};">${tierEmoji[tier]} ${tierLabel(tier)}</div>`;
 
         const list = document.createElement('div');
         list.className = 'wiki-list';
@@ -1686,15 +1715,15 @@ function renderWikiGearList() {
             const row = document.createElement('div');
             row.className = `wiki-row ${owned ? 'owned' : 'unowned'}`;
 
-            const pctLine = g.pct ? ` (плюс фикс. +${g.pct}% к итоговому стату персонажа)` : '';
+            const pctLine = g.pct ? ` (${t('wiki_fixed_bonus', { pct: g.pct })})` : '';
 
             row.innerHTML = `
                 <div class="wiki-row-top">
-                    <div class="wiki-row-name">${buildGearPortraitHTML(g, 'gear-portrait-sm')}<span>${g.name}</span></div>
+                    <div class="wiki-row-name">${buildGearPortraitHTML(g, 'gear-portrait-sm')}<span>${localizedName(g)}</span></div>
                     <span>${getGearLabel(g.type)}</span>
                 </div>
                 <div class="wiki-row-stats">
-                    Диапазон бонуса: от ${g.minBonus.toFixed(2)} до ${g.maxBonus.toFixed(2)} ${getGearLabel(g.type)}${pctLine}
+                    ${t('wiki_bonus_range', { min: g.minBonus.toFixed(2), max: g.maxBonus.toFixed(2) })} ${getGearLabel(g.type)}${pctLine}
                 </div>
             `;
             list.appendChild(row);
@@ -1775,7 +1804,7 @@ function buyMythicArtifact(type) {
         return;
     }
     if (getGearCountByRarity('mythic') >= getMaxGearLimit()) {
-        alert(t('alert_mythic_full'));
+        showToast(t('alert_mythic_full'), '#ff5252');
         return;
     }
     player.gold -= 1000000;
@@ -2422,9 +2451,15 @@ setInterval(() => {
 }, 1000);
 
 document.addEventListener('contextmenu', (e) => {
-    if (e.target.closest('.game-container, .wiki-drawer, .modal-overlay, .overflow-modal-overlay')) {
-        e.preventDefault();
-    }
+    e.preventDefault();
+});
+
+document.addEventListener('selectstart', (e) => {
+    e.preventDefault();
+});
+
+document.addEventListener('dragstart', (e) => {
+    e.preventDefault();
 });
 
 let cloudSaveTimer = null;
@@ -2459,6 +2494,8 @@ document.addEventListener('visibilitychange', () => {
 
 async function bootGame() {
     await initPlatformSDK();
+    applyStaticTranslations();
+    document.body.style.visibility = 'visible';
     Bridge.notifyLoadingStart();
 
     await loadGame();
@@ -2472,6 +2509,9 @@ async function bootGame() {
 
     Bridge.notifyLoadingStop();
     Bridge.notifyGameplayStart();
+    Bridge.notifyGameReady();
 }
+
+setTimeout(() => { document.body.style.visibility = 'visible'; }, 4000);
 
 bootGame();
