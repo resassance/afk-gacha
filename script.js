@@ -1973,7 +1973,7 @@ function updateUI() {
     const limit = getMaxGearLimit();
     const forgeTitle = currentLang === 'en' ? 'Ancient Relic Forge' : 'Древняя Кузня Реликвий';
     document.getElementById('warehouse-summary').innerText = 
-        `${forgeTitle} (C: ${getGearCountByRarity('common')}/${limit} | R: ${getGearCountByRarity('rare')}/${limit} | E: ${getGearCountByRarity('epic')}/${limit} | L: ${getGearCountByRarity('legendary')}/${limit} | M: ${getGearCountByRarity('mythic')}/${limit})`;
+        `${forgeTitle} (🟢: ${getGearCountByRarity('common')}/${limit} | 🔵: ${getGearCountByRarity('rare')}/${limit} | 🟣: ${getGearCountByRarity('epic')}/${limit} | 🟡: ${getGearCountByRarity('legendary')}/${limit} | 🔴: ${getGearCountByRarity('mythic')}/${limit})`;
 
     const maxSquadHp = calculateTotalHp();
     const totalAtk = calculateTotalAtk();
