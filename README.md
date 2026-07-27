@@ -1,5 +1,5 @@
 <div align="center">
-<img src="promo/Fantasy Waifu Arena Banner RU.png" alt="Fantasy Waifu Idle Chronicles — баннер" width="100%">
+<img src="promo/Fantasy Waifu Arena Banner.png" alt="Fantasy Waifu Arena — баннер" width="100%">
 
 <br><br>
 
