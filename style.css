@@ -1118,6 +1118,49 @@ body.game-frozen {
     margin: 0 auto;
     width: 100%;
 }
+
+/* Выравниваем карточки экипировки по вертикали */
+.gacha-results .gear-card-anim {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 10px 6px !important;
+    min-height: 125px !important;
+    height: 100% !important;
+    box-sizing: border-box !important;
+    white-space: normal !important; /* Возвращаем нормальный перенос элементов */
+    overflow: hidden !important;
+}
+
+/* Фиксируем иконку снаряжения по центру */
+.gacha-results .gear-card-anim .gear-portrait,
+.gacha-results .gear-card-anim .gear-portrait-lg {
+    width: 44px !important;
+    height: 44px !important;
+    flex-shrink: 0 !important;
+    margin: 0 auto 6px auto !important;
+}
+
+/* Название предмета */
+.gacha-results .gear-card-anim .gear-title-anim {
+    font-size: 11px !important;
+    line-height: 1.2em !important;
+    text-align: center !important;
+    color: #ffffff !important;
+    margin-bottom: 4px !important;
+    white-space: normal !important;
+    word-break: break-word !important;
+}
+
+/* Характеристика / бонус предмета */
+.gacha-results .gear-card-anim .gear-bonus-anim {
+    font-size: 10px !important;
+    color: #00e5ff !important;
+    text-align: center !important;
+    white-space: normal !important;
+}
+
 .gear-title-anim { font-size: 13px; font-weight: bold; margin-bottom: 8px; color: #fff; text-overflow: ellipsis; overflow: hidden; }
 .gear-bonus-anim { font-size: 12px; color: #00e5ff; font-weight: 600; }
 
