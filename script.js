@@ -234,6 +234,7 @@ function setLanguage(lang, opts) {
         localStorage.setItem('waifu_idle_lang_manual', '1');
     }
     applyStaticTranslations();
+    refreshEnemyNameLocalization();
     renderInventory();
     updateUI();
     if (document.getElementById('wiki-drawer').classList.contains('open')) {
@@ -960,6 +961,27 @@ function getGoldReward(stage, hpMod) {
     return Math.floor(reward) + 2;
 }
 
+function buildEnemyName() {
+    if (campState.isActive) {
+        return currentLang === 'en' ? "⛺ Campfire Rest (Resting Zone)" : "⛺ Привал у костра (Зона отдыха)";
+    }
+    const pIndex = (player.battleStage - 1) % MONSTER_PREFIXES.length;
+    const tIndex = (player.battleStage - 1) % MONSTER_TYPES.length;
+    const isBoss = (player.battleStage >= 34 && player.battleStage % 5 === 4);
+    const prefixes = currentLang === 'en' ? MONSTER_PREFIXES_EN : MONSTER_PREFIXES;
+    const types = currentLang === 'en' ? MONSTER_TYPES_EN : MONSTER_TYPES;
+    const bossTag = currentLang === 'en' ? "👹 [BOSS]" : "👹 [БОСС]";
+    const levelTag = currentLang === 'en' ? "Lvl" : "Ур.";
+    const prefix = isBoss ? bossTag : prefixes[pIndex];
+    return `${prefix} ${types[tIndex]} [${levelTag}. ${player.battleStage}]`;
+}
+
+function refreshEnemyNameLocalization() {
+    currentEnemy.name = buildEnemyName();
+    const nameEl = document.getElementById('enemy-name');
+    if (nameEl) nameEl.innerText = currentEnemy.name;
+}
+
 function spawnEnemy() {
     const bZone = document.getElementById('battle-zone-container');
     
@@ -969,7 +991,7 @@ function spawnEnemy() {
         campState.hasDroppedGear = false;
         
         bZone.classList.add('camp-mode');
-        currentEnemy.name = currentLang === 'en' ? "⛺ Campfire Rest (Resting Zone)" : "⛺ Привал у костра (Зона отдыха)";
+        currentEnemy.name = buildEnemyName();
         currentEnemy.emoji = "⛺";
         currentEnemy.spriteId = "camp";
         currentEnemy.maxHp = 30;
@@ -988,15 +1010,9 @@ function spawnEnemy() {
 
     const pIndex = (player.battleStage - 1) % MONSTER_PREFIXES.length;
     const tIndex = (player.battleStage - 1) % MONSTER_TYPES.length;
-    
     const isBoss = (player.battleStage >= 34 && player.battleStage % 5 === 4);
-    const prefixes = currentLang === 'en' ? MONSTER_PREFIXES_EN : MONSTER_PREFIXES;
-    const types = currentLang === 'en' ? MONSTER_TYPES_EN : MONSTER_TYPES;
-    const bossTag = currentLang === 'en' ? "👹 [BOSS]" : "👹 [БОСС]";
-    const levelTag = currentLang === 'en' ? "Lvl" : "Ур.";
-    const prefix = isBoss ? bossTag : prefixes[pIndex];
-    
-    currentEnemy.name = `${prefix} ${types[tIndex]} [${levelTag}. ${player.battleStage}]`;
+
+    currentEnemy.name = buildEnemyName();
     currentEnemy.emoji = isBoss ? BOSS_EMOJI : MONSTER_TYPE_EMOJIS[tIndex];
     currentEnemy.spriteId = MONSTER_TYPE_IDS[tIndex] + (isBoss ? BOSS_SPRITE_SUFFIX : '');
     
@@ -2358,7 +2374,7 @@ function resumeCampFromSave() {
 
     const bZone = document.getElementById('battle-zone-container');
     bZone.classList.add('camp-mode');
-    currentEnemy.name = currentLang === 'en' ? "⛺ Campfire Rest (Resting Zone)" : "⛺ Привал у костра (Зона отдыха)";
+    currentEnemy.name = buildEnemyName();
     currentEnemy.emoji = "⛺";
     currentEnemy.spriteId = "camp";
     currentEnemy.maxHp = 30;
