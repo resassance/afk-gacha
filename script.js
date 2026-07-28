@@ -1971,7 +1971,7 @@ function updateUI() {
     document.getElementById('gold-display').innerText = Math.floor(player.gold).toLocaleString(currentLang === 'en' ? 'en-US' : 'ru-RU');
     const pGold = calculateTotalGoldIncome();
     document.getElementById('gold-speed-display').innerText = `+${pGold.toFixed(2)}/${t('gold_per_sec')}`;
-    document.getElementById('income-display').innerText = calculateTotalBM().toFixed(2) + " БМ";
+    document.getElementById('income-display').innerText = calculateTotalBM().toFixed(2);
     
     const maxPullsCount = Math.min(Math.floor(player.gold / 100), MAX_PULLS_PER_ACTION);
     document.getElementById('btn-summon-max').innerText = currentLang === 'en' ? `Summon MAX (${maxPullsCount})` : `Призыв МАКС (${maxPullsCount})`;
