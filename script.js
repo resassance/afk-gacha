@@ -222,7 +222,7 @@ function applyStaticTranslations() {
         el.textContent = t(el.dataset.i18n);
     });
     const langBtn = document.getElementById('btn-lang-toggle');
-    if (langBtn) langBtn.innerText = currentLang === 'ru' ? '🌐 Русский (текущий) - переключиться на Английский язык' : '🌐 English (current) - switch to Russian language';
+    if (langBtn) langBtn.innerText = currentLang === 'ru' ? '🌐 Русский (текущий) — переключиться на English' : '🌐 English (current) — switch to Русский';
     document.documentElement.lang = currentLang;
 }
 
