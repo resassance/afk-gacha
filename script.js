@@ -31,6 +31,8 @@ const I18N = {
         settings_reset_title: "Сброс прогресса",
         settings_reset_desc: "Полностью удаляет всех героинь, снаряжение, монеты и прогресс по этажам. Действие необратимо.",
         settings_reset_btn: "🗑️ Полный сброс прогресса", btn_close: "Закрыть",
+        settings_tutorial_title: "Обучение", settings_tutorial_desc: "Показать вступительное обучение ещё раз.",
+        settings_tutorial_btn: "📖 Показать обучение",
         ad_freeze_title: "Показ рекламы...", ad_freeze_sub: "Игра возобновится сразу после закрытия рекламного блока",
         gold_per_sec: "сек", stage_word: "ЭТАП", rest_word: "ОТДЫХ",
         gacha_result_title: "Призыв воительниц (x{n})", forge_result_title: "Кузня: Выковано реликвий (x{n})",
@@ -102,7 +104,19 @@ const I18N = {
         reason_gold_synergy: "синергия с золотой пассивкой", reason_atk_synergy: "синергия с атакующей пассивкой", reason_best_stat: "сильнейшая сторона героини",
         mythic_active_annihilate: "🌌 Аннигиляция Врага", mythic_active_loot: "🎰 Призыв Сокровища",
         gear_picker_label: "⚔️ Снаряжение", stage_prefix: "ЭТАП 1",
-        health_point: "ХП"
+        health_point: "ХП",
+        onboarding_skip: "Пропустить", onboarding_next: "Далее", onboarding_prev: "Назад", onboarding_start: "Начать игру!",
+        onb_1_title: "💰 Трать золото на призыв",
+        onb_2_title: "⚔️ Команда автоматически сражается с монстрами",
+        onb_3_title: "🛠️ Улучшайте команду",
+        onb_3_b1: "Получайте снаряжение и экипируйте им персонажей",
+        onb_3_b2: "Выбивайте дубли персонажей через призыв",
+        onb_4_title: "💎 Всё в игре имеет редкость",
+        onb_4_b1: "Перековывайте снаряжение в более высокую редкость",
+        onb_4_b2: "Более редкие персонажи сильнее",
+        onb_5_title: "👑 Разблокируй мифическую редкость",
+        onb_5_b1: "Мифические богини имеют лучшие способности!",
+        onb_5_b2: "Мифические артефакты усиливают в разы лучше!"
     },
     en: {
         wiki_title: "📖 Book of Warriors", wiki_tab_heroes: "👸 Heroines", wiki_tab_gear: "⚔️ Gear",
@@ -134,6 +148,8 @@ const I18N = {
         settings_reset_title: "Reset Progress",
         settings_reset_desc: "Permanently deletes all heroines, gear, coins and floor progress. This cannot be undone.",
         settings_reset_btn: "🗑️ Full progress reset", btn_close: "Close",
+        settings_tutorial_title: "Tutorial", settings_tutorial_desc: "Show the intro tutorial again.",
+        settings_tutorial_btn: "📖 Show tutorial",
         ad_freeze_title: "Showing ad...", ad_freeze_sub: "The game will resume right after the ad closes",
         gold_per_sec: "sec", stage_word: "STAGE", rest_word: "REST",
         gacha_result_title: "Summon results (x{n})", forge_result_title: "Forge: Relics crafted (x{n})",
@@ -205,7 +221,19 @@ const I18N = {
         reason_gold_synergy: "synergy with gold passive", reason_atk_synergy: "synergy with attack passive", reason_best_stat: "heroine's strongest stat",
         mythic_active_annihilate: "🌌 Annihilate Enemy", mythic_active_loot: "🎰 Summon Treasure",
         gear_picker_label: "⚔️ Gear", stage_prefix: "STAGE 1",
-        health_point: "HP"
+        health_point: "HP",
+        onboarding_skip: "Skip", onboarding_next: "Next", onboarding_prev: "Back", onboarding_start: "Start playing!",
+        onb_1_title: "💰 Spend gold to summon",
+        onb_2_title: "⚔️ Your squad fights monsters automatically",
+        onb_3_title: "🛠️ Upgrade your squad",
+        onb_3_b1: "Get gear and equip your heroines with it",
+        onb_3_b2: "Pull duplicate heroines through summoning",
+        onb_4_title: "💎 Everything has a rarity tier",
+        onb_4_b1: "Reforge gear into a higher rarity",
+        onb_4_b2: "Rarer heroines are stronger",
+        onb_5_title: "👑 Unlock Mythic rarity",
+        onb_5_b1: "Mythic goddesses have the best abilities!",
+        onb_5_b2: "Mythic artifacts boost your stats far more!"
     }
 };
 
@@ -222,7 +250,7 @@ function applyStaticTranslations() {
         el.textContent = t(el.dataset.i18n);
     });
     const langBtn = document.getElementById('btn-lang-toggle');
-    if (langBtn) langBtn.innerText = currentLang === 'ru' ? '🌐 Русский (текущий) — переключиться на English' : '🌐 English (current) — switch to Русский';
+    if (langBtn) langBtn.textContent = currentLang === 'ru' ? 'English' : 'Русский';
     document.documentElement.lang = currentLang;
 }
 
@@ -239,6 +267,10 @@ function setLanguage(lang, opts) {
     updateUI();
     if (document.getElementById('wiki-drawer').classList.contains('open')) {
         switchWikiTab(currentWikiTab);
+    }
+    const onboardingModal = document.getElementById('onboarding-modal');
+    if (onboardingModal && onboardingModal.style.display === 'flex') {
+        renderOnboardingSlide();
     }
 }
 
@@ -1267,6 +1299,8 @@ function handlePulls(amount) {
         return;
     }
 
+    clearSummonHighlight();
+
     const oldMaxHp = calculateTotalHp();
     const hpRatio = oldMaxHp > 0 ? (player.squadCurrentHp / oldMaxHp) : 1;
 
@@ -1555,6 +1589,7 @@ async function resetProgress() {
     if (!secondConfirm) return;
 
     localStorage.removeItem('waifu_idle_save_v2');
+    localStorage.removeItem('waifu_idle_onboarding_seen');
     clearTimeout(cloudSaveTimer);
     if (Bridge.hasCloudSave()) {
         Bridge.saveCloudData({}, true).finally(() => location.reload());
@@ -2452,6 +2487,7 @@ function handleRewardedSummon() {
     freezeGameForAd(true);
     const started = Bridge.showRewarded({
             onRewarded: () => {
+                clearSummonHighlight();
                 const n = getAdSummonAmount();
                 const oldMaxHp = calculateTotalHp();
                 const hpRatio = oldMaxHp > 0 ? (player.squadCurrentHp / oldMaxHp) : 1;
@@ -2563,6 +2599,89 @@ async function bootGame() {
     Bridge.notifyLoadingStop();
     Bridge.notifyGameplayStart();
     Bridge.notifyGameReady();
+
+    if (localStorage.getItem('waifu_idle_onboarding_seen') !== '1') {
+        showOnboarding();
+    }
+}
+
+const ONBOARDING_SLIDES = [
+    { img: 'assets/tutorial/step1.png', titleKey: 'onb_1_title', bullets: [] },
+    { img: 'assets/tutorial/step2.png', titleKey: 'onb_2_title', bullets: [] },
+    { img: 'assets/tutorial/step3.png', titleKey: 'onb_3_title', bullets: ['onb_3_b1', 'onb_3_b2'] },
+    { img: 'assets/tutorial/step4.png', titleKey: 'onb_4_title', bullets: ['onb_4_b1', 'onb_4_b2'] },
+    { img: 'assets/tutorial/step5.png', titleKey: 'onb_5_title', bullets: ['onb_5_b1', 'onb_5_b2'] }
+];
+let onboardingIndex = 0;
+
+function renderOnboardingSlide() {
+    const slide = ONBOARDING_SLIDES[onboardingIndex];
+
+    const img = document.getElementById('onboarding-slide-img');
+    img.style.display = 'block';
+    img.src = slide.img;
+
+    document.getElementById('onboarding-slide-title').textContent = t(slide.titleKey);
+
+    const bulletsEl = document.getElementById('onboarding-slide-bullets');
+    bulletsEl.innerHTML = slide.bullets.map(key => `<li>${t(key)}</li>`).join('');
+    bulletsEl.style.display = slide.bullets.length ? 'block' : 'none';
+
+    const dotsEl = document.getElementById('onboarding-dots');
+    dotsEl.innerHTML = ONBOARDING_SLIDES.map((_, i) =>
+        `<span class="onboarding-dot${i === onboardingIndex ? ' active' : ''}"></span>`).join('');
+
+    const isLast = onboardingIndex === ONBOARDING_SLIDES.length - 1;
+    document.getElementById('btn-onboarding-prev').style.display = onboardingIndex === 0 ? 'none' : 'inline-block';
+    const nextBtn = document.getElementById('btn-onboarding-next');
+    nextBtn.textContent = isLast ? t('onboarding_start') : t('onboarding_next');
+    nextBtn.classList.toggle('btn-onboarding-final', isLast);
+}
+
+function showOnboarding() {
+    onboardingIndex = 0;
+    renderOnboardingSlide();
+    document.getElementById('onboarding-modal').style.display = 'flex';
+}
+
+function closeOnboarding(highlightSummonAfter) {
+    localStorage.setItem('waifu_idle_onboarding_seen', '1');
+    document.getElementById('onboarding-modal').style.display = 'none';
+    if (highlightSummonAfter) {
+        highlightSummonSection();
+    }
+}
+
+function onboardingNext() {
+    if (onboardingIndex < ONBOARDING_SLIDES.length - 1) {
+        onboardingIndex++;
+        renderOnboardingSlide();
+    } else {
+        closeOnboarding(true);
+    }
+}
+
+function onboardingPrev() {
+    if (onboardingIndex > 0) {
+        onboardingIndex--;
+        renderOnboardingSlide();
+    }
+}
+
+function skipOnboarding() {
+    closeOnboarding(false);
+}
+
+function highlightSummonSection() {
+    const section = document.querySelector('.banner-section');
+    if (!section) return;
+    section.classList.add('summon-highlight');
+    section.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+function clearSummonHighlight() {
+    const section = document.querySelector('.banner-section');
+    if (section) section.classList.remove('summon-highlight');
 }
 
 setTimeout(() => { document.body.style.visibility = 'visible'; }, 4000);

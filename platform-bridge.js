@@ -48,6 +48,14 @@ const Bridge = (function () {
         });
     }
 
+    /**
+     * Динамическая загрузка SDK Яндекс Игр строго по документации:
+     * https://yandex.ru/dev/games/doc/ru/sdk/sdk-about#install
+     * Путь ОБЯЗАТЕЛЬНО относительный ('/sdk.js'), т.к. игра загружается
+     * архивом на сервер Яндекса через Консоль разработчика. Абсолютный путь
+     * https://sdk.games.s3.yandex.net/sdk.js используется только при
+     * размещении на собственном домене (см. docs, раздел "Свой домен").
+     */
     function loadYandexSdk() {
         return new Promise((resolve, reject) => {
             const script = document.createElement('script');

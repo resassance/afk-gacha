@@ -61,9 +61,9 @@
             <div class="stat-value" id="unique-display">0 / 23</div>
         </div>
         
-        <button class="btn-wiki-toggle" onclick="toggleWiki()" data-i18n="btn_wiki">📖 Справочник</button>
-        <button class="btn-wiki-toggle" onclick="toggleFullscreen()" data-i18n="btn_fullscreen">⛶ Полный экран</button>
-        <button class="btn-wiki-toggle btn-settings-toggle" onclick="toggleSettings()" data-i18n="btn_settings">⚙️ Настройки</button>
+        <button class="btn-wiki-toggle btn-header-nav" onclick="toggleWiki()" data-i18n="btn_wiki">📖 Справочник</button>
+        <button class="btn-wiki-toggle btn-header-nav" onclick="toggleFullscreen()" data-i18n="btn_fullscreen">⛶ Полный экран</button>
+        <button class="btn-wiki-toggle btn-header-nav" onclick="toggleSettings()" data-i18n="btn_settings">⚙️ Настройки</button>
     </div>
 
     <div class="battle-section" id="battle-zone-container">
@@ -267,6 +267,7 @@
 
 <div id="settings-modal" class="modal-overlay">
     <div class="modal-content settings-modal-content">
+        <button class="btn-settings-close" onclick="toggleSettings()" aria-label="Close">×</button>
         <h2 class="modal-results-title" data-i18n="settings_title">⚙️ Настройки</h2>
         <div class="settings-body">
             <div class="settings-row">
@@ -279,8 +280,33 @@
                 <div class="settings-row-desc" data-i18n="settings_reset_desc">Полностью удаляет всех героинь, снаряжение, золото и прогресс по этажам. Действие необратимо.</div>
                 <button class="btn-settings-reset" onclick="resetProgress()" data-i18n="settings_reset_btn">🗑️ Полный сброс прогресса</button>
             </div>
+            <div class="settings-row">
+                <div class="settings-row-title" data-i18n="settings_tutorial_title">Обучение</div>
+                <div class="settings-row-desc" data-i18n="settings_tutorial_desc">Показать вступительное обучение ещё раз.</div>
+                <button class="btn-settings-tutorial" onclick="toggleSettings(); showOnboarding();" data-i18n="settings_tutorial_btn">📖 Показать обучение</button>
+            </div>
         </div>
-        <button class="btn-close-modal" onclick="toggleSettings()" data-i18n="btn_close">Закрыть</button>
+    </div>
+</div>
+
+<div id="onboarding-modal" class="modal-overlay">
+    <div class="modal-content onboarding-modal-content">
+        <button class="btn-onboarding-skip" onclick="skipOnboarding()" data-i18n="onboarding_skip">Пропустить</button>
+
+        <div class="onboarding-slide-media">
+            <img id="onboarding-slide-img" class="onboarding-slide-img" src="" alt=""
+                 onerror="this.style.display='none';" onload="this.style.display='block';">
+        </div>
+
+        <h2 class="onboarding-slide-title" id="onboarding-slide-title"></h2>
+        <ul class="onboarding-slide-bullets" id="onboarding-slide-bullets"></ul>
+
+        <div class="onboarding-dots" id="onboarding-dots"></div>
+
+        <div class="onboarding-nav">
+            <button class="btn-onboarding-prev" id="btn-onboarding-prev" onclick="onboardingPrev()" data-i18n="onboarding_prev">Назад</button>
+            <button class="btn-onboarding-next" id="btn-onboarding-next" onclick="onboardingNext()">Далее</button>
+        </div>
     </div>
 </div>
 
