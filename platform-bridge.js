@@ -48,6 +48,25 @@ const Bridge = (function () {
         });
     }
 
+    /**
+     * Динамическая загрузка SDK Яндекс Игр строго по документации:
+     * https://yandex.ru/dev/games/doc/ru/sdk/sdk-about#install
+     * Путь ОБЯЗАТЕЛЬНО относительный ('/sdk.js'), т.к. игра загружается
+     * архивом на сервер Яндекса через Консоль разработчика. Абсолютный путь
+     * https://sdk.games.s3.yandex.net/sdk.js используется только при
+     * размещении на собственном домене (см. docs, раздел "Свой домен").
+     */
+    function loadYandexSdk() {
+        return new Promise((resolve, reject) => {
+            const script = document.createElement('script');
+            script.src = '/sdk.js';
+            script.async = true;
+            script.onload = () => resolve();
+            script.onerror = () => reject(new Error('Не удалось загрузить SDK Яндекс Игр (/sdk.js)'));
+            document.body.appendChild(script);
+        });
+    }
+
 
     /**
      * @param {Object} opts
@@ -82,7 +101,7 @@ const Bridge = (function () {
 
     async function initYandex() {
         try {
-            await loadScript('https://yandex.ru/games/sdk/v2');
+            await loadYandexSdk();
             if (typeof YaGames === 'undefined') throw new Error('YaGames не определён после загрузки скрипта');
 
             ysdk = await YaGames.init();
